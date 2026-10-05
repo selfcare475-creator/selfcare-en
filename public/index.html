@@ -8657,7 +8657,7 @@ function productSubcat(p){
   const d = (p.desc || "").toLowerCase();
   const c = p.cat || "";
   const t = `${n} ${d}`;
-  if(manualSubcats[p.name]) return manualSubcats[p.name];
+  if(manualSubcats[p.name] && !(p.subcategory && DB_SUB_TO_SITE[String(p.subcategory).trim()])) return manualSubcats[p.name];
 
   // Sun & beach
   if(includesAny(t, ["repel", "mosquito", "insects", "off "])) return "Repellents";
