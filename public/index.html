@@ -9373,6 +9373,9 @@ const categoryCorrectionMap = {
 const originalProductSubcatBeforeReview = productSubcat;
 productSubcat = function(p){
   if(!p) return originalProductSubcatBeforeReview(p);
+  // DB subcategory is the source of truth: when the product carries a DB subcategory
+  // that maps to a site section, use it and ignore the legacy name-based correction map.
+  try{ if(p.subcategory && DB_SUB_TO_SITE[String(p.subcategory).trim()]) return originalProductSubcatBeforeReview(p); }catch(e){}
   const corrected = categoryCorrectionMap[p.name];
   return corrected || originalProductSubcatBeforeReview(p);
 };
@@ -10880,7 +10883,9 @@ loadSplitCatalogData().then(()=>{
       // en-v31: ALWAYS rebuild category buckets from the DB-overlaid products so the
       // grid reflects the real main_category/subcategory and never keeps the stale
       // categorization baked into products-en.json.
-      products.forEach((p, idx) => { p._idx = idx; });
+      // en-v33: clear per-product memo caches so categorization recomputes from the
+      // freshly overlaid DB subcategory (otherwise stale first-paint values persist).
+      products.forEach((p, idx) => { p._idx = idx; p._subcat = undefined; p._mainKey = undefined; p._priorityScore = undefined; p._sortKey = undefined; });
       try { rebuildBestSellersFromProducts("en"); } catch(e){}
       productCache = [];
       buildFastCategoryBucketsAsync();
@@ -10925,7 +10930,7 @@ setTimeout(()=>{
       window.__scDynAddedNew = false;
       await loadDynamicProducts();
       if(window.__scDynChanged === false && !window.__scDynAddedNew){ window.__scDynSyncBusy = false; return; }
-      products.forEach((p, idx) => { p._idx = idx; });
+      products.forEach((p, idx) => { p._idx = idx; p._subcat = undefined; p._mainKey = undefined; p._priorityScore = undefined; p._sortKey = undefined; });
       try { rebuildBestSellersFromProducts("en"); } catch(e){}
       productCache = [];
       buildFastCategoryBucketsAsync();
