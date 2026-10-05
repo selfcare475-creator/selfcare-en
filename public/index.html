@@ -7874,8 +7874,11 @@ const categoryGroups = {
       "Masks",
       "Scrubs",
       "Body care",
-      "Baby care",
+      "Deodorants",
+      "Soap",
+      "Foot & hand care",
       "Lips",
+      "Baby care",
       "Dental care",
       "Repellents"
     ]
@@ -7887,6 +7890,7 @@ const categoryGroups = {
       "Conditioners",
       "Hair masks",
       "Serums & oils",
+      "Natural oils",
       "Ampoules",
       "Hair loss care",
       "Anti-dandruff"
@@ -8645,10 +8649,10 @@ var DB_SUB_TO_SITE = {
   "Vitamins & minerals":"Vitamins & minerals","Omega 3":"Vitamins & minerals","Hair, skin & nails":"Vitamins & minerals",
   "Collagen (oral)":"Collagen","Sport & protein":"Sport & protein","Immunity":"Immunity","Energy & performance":"Energy & performance","Men's vitality":"Men’s vitality",
   "Face creams":"Face creams","Eye care":"Face creams","Serums":"Serums","Face masks":"Masks","Scrubs & exfoliation":"Scrubs",
-  "Body care":"Body care","Deodorant":"Body care","Soap & cleansing":"Body care","Foot & hand care":"Body care",
+  "Body care":"Body care","Deodorant":"Deodorants","Soap & cleansing":"Soap","Foot & hand care":"Foot & hand care",
   "Lips":"Lips","Baby care":"Baby care","Oral care":"Dental care","Nail care":"Body care","Cosmetics":"Body care",
   "Mosquito protection":"Repellents",
-  "Shampoo":"Shampoos","Conditioner":"Conditioners","Hair mask":"Hair masks","Hair serum & oil":"Serums & oils","Natural oils":"Serums & oils","Hair ampoules":"Ampoules","Hair loss":"Hair loss care","Anti-dandruff":"Anti-dandruff","Hair care":"Serums & oils",
+  "Shampoo":"Shampoos","Conditioner":"Conditioners","Hair mask":"Hair masks","Hair serum & oil":"Serums & oils","Natural oils":"Natural oils","Hair ampoules":"Ampoules","Hair loss":"Hair loss care","Anti-dandruff":"Anti-dandruff","Hair care":"Serums & oils",
   "Sunscreen SPF 50":"Sun protection SPF 50","Sunscreen SPF 30-45":"Sun protection SPF 30–45","Sunscreen":"Sun protection SPF 30–45","Kids sun":"Kids sun protection","Tanning":"Tanning oils","After sun":"After sun","Sun & beach":"After sun"
 };
 function productSubcat(p){
@@ -11804,7 +11808,7 @@ function scStripDigits(el){
   ["Preparation + delivery takes at least 90 minutes.","التجهيز + التوصيل بياخد 90 دقيقة على الأقل."],
   ["Your basket is empty","سلتك فاضية"],["Add your hotel and room number.","اكتب اسم فندقك ورقم الغرفة."],
   ["New","جديد"],["Preparing","بنجهّز"],["On the way","في الطريق"],["Delivered","تم التوصيل"],["Cancelled","ملغي"],["Confirmed","تم التأكيد"],
-  ["Care Kits","باقات العناية"],["Beauty Kits","باقات التجميل"],["Diarrhea & stomach","إسهال ومعدة"],["Sunburn & SPF","حروق الشمس وواقي"],["Cold & sore throat","برد والتهاب الحلق"],["Pain & fever","ألم وحرارة"],["Allergy","حساسية"],["Eye drops","قطرات عين"],["Mosquito protection","الحماية من الناموس"],["Cosmetics","تجميل"],["Sleep support","دعم النوم"],["Antibiotics","مضادات حيوية"],["Digestion","هضم"],["Sleep","نوم"],["Weight loss & diabetes","تخسيس وسكر"],["Diabetes","السكري"],["Weight loss","التخسيس"],["Mental health","الصحة النفسية"],["Urinary & kidney","المسالك البولية"],["Repellents","طارد الناموس"],["Cold & flu","برد وإنفلونزا"],["Pain relief","مسكّنات"],["Eyes & ears","عيون وآذان"],["Skin medicines","أدوية جلدية"],["Veins & circulation","أوردة ودورة دموية"],["Chronic care","أدوية مزمنة"],["Men’s health","صحة الرجل"],["Women’s care","العناية بالمرأة"],["Vitamins & minerals","فيتامينات ومعادن"],["Collagen","كولاجين"],["Energy & performance","طاقة وأداء"],["Sport & protein","رياضة وبروتين"],["Men’s vitality","حيوية الرجل"],["Immunity","مناعة"],["Face creams","كريمات الوجه"],["Serums","سيرومات"],["Masks","ماسكات"],["Scrubs","مقشّرات"],["Body care","العناية بالجسم"],["Baby care","عناية الأطفال"],["Lips","شفايف"],["Dental care","العناية بالأسنان"],["Shampoos","شامبوهات"],["Conditioners","بلسم"],["Hair masks","ماسكات شعر"],["Serums & oils","سيرومات وزيوت"],["Ampoules","أمبولات"],["Hair loss care","علاج تساقط الشعر"],["Anti-dandruff","ضد القشرة"],["Sun protection SPF 50","واقي شمس SPF 50"],["Sun protection SPF 30–45","واقي شمس SPF 30–45"],["Kids sun protection","واقي شمس للأطفال"],["Tanning oils","زيوت تسمير"],["After sun","بعد الشمس"]
+  ["Care Kits","باقات العناية"],["Beauty Kits","باقات التجميل"],["Diarrhea & stomach","إسهال ومعدة"],["Sunburn & SPF","حروق الشمس وواقي"],["Cold & sore throat","برد والتهاب الحلق"],["Pain & fever","ألم وحرارة"],["Allergy","حساسية"],["Eye drops","قطرات عين"],["Mosquito protection","الحماية من الناموس"],["Cosmetics","تجميل"],["Sleep support","دعم النوم"],["Antibiotics","مضادات حيوية"],["Digestion","هضم"],["Sleep","نوم"],["Weight loss & diabetes","تخسيس وسكر"],["Diabetes","السكري"],["Weight loss","التخسيس"],["Mental health","الصحة النفسية"],["Urinary & kidney","المسالك البولية"],["Repellents","طارد الناموس"],["Cold & flu","برد وإنفلونزا"],["Pain relief","مسكّنات"],["Eyes & ears","عيون وآذان"],["Skin medicines","أدوية جلدية"],["Veins & circulation","أوردة ودورة دموية"],["Chronic care","أدوية مزمنة"],["Men’s health","صحة الرجل"],["Women’s care","العناية بالمرأة"],["Vitamins & minerals","فيتامينات ومعادن"],["Collagen","كولاجين"],["Energy & performance","طاقة وأداء"],["Sport & protein","رياضة وبروتين"],["Men’s vitality","حيوية الرجل"],["Immunity","مناعة"],["Face creams","كريمات الوجه"],["Serums","سيرومات"],["Masks","ماسكات"],["Scrubs","مقشّرات"],["Body care","العناية بالجسم"],["Deodorants","مزيلات العرق"],["Soap","صابون"],["Foot & hand care","العناية بالقدم واليد"],["Natural oils","زيوت طبيعية"],["Baby care","عناية الأطفال"],["Lips","شفايف"],["Dental care","العناية بالأسنان"],["Shampoos","شامبوهات"],["Conditioners","بلسم"],["Hair masks","ماسكات شعر"],["Serums & oils","سيرومات وزيوت"],["Ampoules","أمبولات"],["Hair loss care","علاج تساقط الشعر"],["Anti-dandruff","ضد القشرة"],["Sun protection SPF 50","واقي شمس SPF 50"],["Sun protection SPF 30–45","واقي شمس SPF 30–45"],["Kids sun protection","واقي شمس للأطفال"],["Tanning oils","زيوت تسمير"],["After sun","بعد الشمس"]
  ];
  var D={}; P.forEach(function(p){D[p[0]]=p[1];});
  var REGEX=[
