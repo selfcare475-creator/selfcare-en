@@ -7840,7 +7840,8 @@ const categoryGroups = {
       "Antibiotics",
       "Digestion",
       "Sleep",
-      "Weight loss & diabetes",
+      "Diabetes",
+      "Weight loss",
       "Cold & flu",
       "Pain relief",
       "Eyes & ears",
@@ -7848,6 +7849,8 @@ const categoryGroups = {
       "Skin medicines",
       "Veins & circulation",
       "Chronic care",
+      "Mental health",
+      "Urinary & kidney",
       "Men’s health",
       "Women’s care"
     ]
@@ -7873,7 +7876,8 @@ const categoryGroups = {
       "Body care",
       "Baby care",
       "Lips",
-      "Dental care"
+      "Dental care",
+      "Repellents"
     ]
   },
   hair: {
@@ -8629,7 +8633,26 @@ Object.assign(manualSubcats, {
 
 });
 
+var DB_SUB_TO_SITE = {
+  "Cold & flu":"Cold & flu","Nasal congestion":"Cold & flu","Cough & mucus":"Cold & flu","Throat & cough":"Cold & flu",
+  "Pain & fever":"Pain relief","Muscle & joint":"Pain relief","Migraine":"Pain relief",
+  "Digestion":"Digestion","Reflux & acidity":"Digestion","Diarrhea & gut":"Digestion","Cramps & bloating":"Digestion","Nausea":"Digestion","Constipation":"Digestion","Antiparasitic":"Digestion",
+  "Eyes & ears":"Eyes & ears","Allergy":"Allergy","Antibiotics":"Antibiotics",
+  "Skin medicines":"Skin medicines","Hemorrhoid care":"Veins & circulation",
+  "Chronic care":"Chronic care","Weight loss & diabetes":"Diabetes",
+  "Diabetes":"Diabetes","Weight loss":"Weight loss","Mental health":"Mental health","Urinary & kidney":"Urinary & kidney",
+  "Sleep support":"Sleep","Men's health":"Men’s health","Women's care":"Women’s care",
+  "Vitamins & minerals":"Vitamins & minerals","Omega 3":"Vitamins & minerals","Hair, skin & nails":"Vitamins & minerals",
+  "Collagen (oral)":"Collagen","Sport & protein":"Sport & protein","Immunity":"Immunity","Energy & performance":"Energy & performance","Men's vitality":"Men’s vitality",
+  "Face creams":"Face creams","Eye care":"Face creams","Serums":"Serums","Face masks":"Masks","Scrubs & exfoliation":"Scrubs",
+  "Body care":"Body care","Deodorant":"Body care","Soap & cleansing":"Body care","Foot & hand care":"Body care",
+  "Lips":"Lips","Baby care":"Baby care","Oral care":"Dental care","Nail care":"Body care","Cosmetics":"Body care",
+  "Mosquito protection":"Repellents",
+  "Shampoo":"Shampoos","Conditioner":"Conditioners","Hair mask":"Hair masks","Hair serum & oil":"Serums & oils","Natural oils":"Serums & oils","Hair ampoules":"Ampoules","Hair loss":"Hair loss care","Anti-dandruff":"Anti-dandruff","Hair care":"Serums & oils",
+  "Sunscreen SPF 50":"Sun protection SPF 50","Sunscreen SPF 30-45":"Sun protection SPF 30–45","Sunscreen":"Sun protection SPF 30–45","Kids sun":"Kids sun protection","Tanning":"Tanning oils","After sun":"After sun","Sun & beach":"After sun"
+};
 function productSubcat(p){
+  try{ if(p && p.subcategory){ var _m = DB_SUB_TO_SITE[String(p.subcategory).trim()]; if(_m) return _m; } }catch(e){}
   const n = (p.name || "").toLowerCase();
   const d = (p.desc || "").toLowerCase();
   const c = p.cat || "";
@@ -9089,7 +9112,7 @@ function productIngredientLine(p){
   }
 
   if(!ingredient){
-    if(["Antibiotics","Sleep","Men’s health","Weight loss & diabetes","Chronic care","Women’s care","Skin medicines","Digestion","Pain relief","Allergy","Cold & flu","Eyes & ears"].includes(sub)){
+    if(["Antibiotics","Sleep","Men’s health","Weight loss & diabetes","Diabetes","Weight loss","Mental health","Urinary & kidney","Chronic care","Women’s care","Skin medicines","Digestion","Pain relief","Allergy","Cold & flu","Eyes & ears"].includes(sub)){
       ingredient = "See product label";
       label = "Active";
     } else {
@@ -9219,7 +9242,7 @@ function productUseFor(p){
 }
 function productNeedsAdvice(p){
   const sub = productSubcat(p);
-  return ["Antibiotics","Sleep","Men’s health","Weight loss & diabetes","Chronic care","Women’s care","Skin medicines"].includes(sub) || normalizeText(p.desc).includes("medical supervision") || normalizeText(p.desc).includes("medical advice");
+  return ["Antibiotics","Sleep","Men’s health","Weight loss & diabetes","Diabetes","Weight loss","Mental health","Urinary & kidney","Chronic care","Women’s care","Skin medicines"].includes(sub) || normalizeText(p.desc).includes("medical supervision") || normalizeText(p.desc).includes("medical advice");
 }
 
 function productBadge(p){
@@ -10850,13 +10873,12 @@ loadSplitCatalogData().then(()=>{
 
   scheduleNonCriticalWork(()=>{
     loadDynamicProducts().finally(()=>{
-      /* v-stable: identical data + no new products = do NOT touch the page */
-      if(window.__scDynChanged === false && !window.__scDynAddedNew) return;
+      // en-v31: ALWAYS rebuild category buckets from the DB-overlaid products so the
+      // grid reflects the real main_category/subcategory and never keeps the stale
+      // categorization baked into products-en.json.
       products.forEach((p, idx) => { p._idx = idx; });
-      // en-v27: Rebuild best sellers list from products table (admin-controlled)
       try { rebuildBestSellersFromProducts("en"); } catch(e){}
       productCache = [];
-      // en-v14: use chunked async rebuild — doesn't freeze the page
       buildFastCategoryBucketsAsync();
     });
   }, 1500);
@@ -11782,7 +11804,7 @@ function scStripDigits(el){
   ["Preparation + delivery takes at least 90 minutes.","التجهيز + التوصيل بياخد 90 دقيقة على الأقل."],
   ["Your basket is empty","سلتك فاضية"],["Add your hotel and room number.","اكتب اسم فندقك ورقم الغرفة."],
   ["New","جديد"],["Preparing","بنجهّز"],["On the way","في الطريق"],["Delivered","تم التوصيل"],["Cancelled","ملغي"],["Confirmed","تم التأكيد"],
-  ["Care Kits","باقات العناية"],["Beauty Kits","باقات التجميل"],["Diarrhea & stomach","إسهال ومعدة"],["Sunburn & SPF","حروق الشمس وواقي"],["Cold & sore throat","برد والتهاب الحلق"],["Pain & fever","ألم وحرارة"],["Allergy","حساسية"],["Eye drops","قطرات عين"],["Mosquito protection","الحماية من الناموس"],["Cosmetics","تجميل"],["Sleep support","دعم النوم"],["Antibiotics","مضادات حيوية"],["Digestion","هضم"],["Sleep","نوم"],["Weight loss & diabetes","تخسيس وسكر"],["Cold & flu","برد وإنفلونزا"],["Pain relief","مسكّنات"],["Eyes & ears","عيون وآذان"],["Skin medicines","أدوية جلدية"],["Veins & circulation","أوردة ودورة دموية"],["Chronic care","أدوية مزمنة"],["Men’s health","صحة الرجل"],["Women’s care","العناية بالمرأة"],["Vitamins & minerals","فيتامينات ومعادن"],["Collagen","كولاجين"],["Energy & performance","طاقة وأداء"],["Sport & protein","رياضة وبروتين"],["Men’s vitality","حيوية الرجل"],["Immunity","مناعة"],["Face creams","كريمات الوجه"],["Serums","سيرومات"],["Masks","ماسكات"],["Scrubs","مقشّرات"],["Body care","العناية بالجسم"],["Baby care","عناية الأطفال"],["Lips","شفايف"],["Dental care","العناية بالأسنان"],["Shampoos","شامبوهات"],["Conditioners","بلسم"],["Hair masks","ماسكات شعر"],["Serums & oils","سيرومات وزيوت"],["Ampoules","أمبولات"],["Hair loss care","علاج تساقط الشعر"],["Anti-dandruff","ضد القشرة"],["Sun protection SPF 50","واقي شمس SPF 50"],["Sun protection SPF 30–45","واقي شمس SPF 30–45"],["Kids sun protection","واقي شمس للأطفال"],["Tanning oils","زيوت تسمير"],["After sun","بعد الشمس"]
+  ["Care Kits","باقات العناية"],["Beauty Kits","باقات التجميل"],["Diarrhea & stomach","إسهال ومعدة"],["Sunburn & SPF","حروق الشمس وواقي"],["Cold & sore throat","برد والتهاب الحلق"],["Pain & fever","ألم وحرارة"],["Allergy","حساسية"],["Eye drops","قطرات عين"],["Mosquito protection","الحماية من الناموس"],["Cosmetics","تجميل"],["Sleep support","دعم النوم"],["Antibiotics","مضادات حيوية"],["Digestion","هضم"],["Sleep","نوم"],["Weight loss & diabetes","تخسيس وسكر"],["Diabetes","السكري"],["Weight loss","التخسيس"],["Mental health","الصحة النفسية"],["Urinary & kidney","المسالك البولية"],["Repellents","طارد الناموس"],["Cold & flu","برد وإنفلونزا"],["Pain relief","مسكّنات"],["Eyes & ears","عيون وآذان"],["Skin medicines","أدوية جلدية"],["Veins & circulation","أوردة ودورة دموية"],["Chronic care","أدوية مزمنة"],["Men’s health","صحة الرجل"],["Women’s care","العناية بالمرأة"],["Vitamins & minerals","فيتامينات ومعادن"],["Collagen","كولاجين"],["Energy & performance","طاقة وأداء"],["Sport & protein","رياضة وبروتين"],["Men’s vitality","حيوية الرجل"],["Immunity","مناعة"],["Face creams","كريمات الوجه"],["Serums","سيرومات"],["Masks","ماسكات"],["Scrubs","مقشّرات"],["Body care","العناية بالجسم"],["Baby care","عناية الأطفال"],["Lips","شفايف"],["Dental care","العناية بالأسنان"],["Shampoos","شامبوهات"],["Conditioners","بلسم"],["Hair masks","ماسكات شعر"],["Serums & oils","سيرومات وزيوت"],["Ampoules","أمبولات"],["Hair loss care","علاج تساقط الشعر"],["Anti-dandruff","ضد القشرة"],["Sun protection SPF 50","واقي شمس SPF 50"],["Sun protection SPF 30–45","واقي شمس SPF 30–45"],["Kids sun protection","واقي شمس للأطفال"],["Tanning oils","زيوت تسمير"],["After sun","بعد الشمس"]
  ];
  var D={}; P.forEach(function(p){D[p[0]]=p[1];});
  var REGEX=[
