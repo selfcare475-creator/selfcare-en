@@ -15,4 +15,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: da77fd5165dc79f35a5d3c58ca9dc021
-          command: pages deploy public --project-name=generaltest --branch=catfix-db
+          command: pages deploy public --project-name=generaltest --branch=main
