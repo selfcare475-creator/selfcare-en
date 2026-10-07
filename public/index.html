@@ -11084,7 +11084,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.15</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.16</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
@@ -11320,12 +11320,12 @@ function scOrderStepsHtml(oid, doneCount, cancelled){
 }
 /* v-track2: order tracking card (5 real stages; two of them move by the delivery time) */
 var SC_TRACK_TXT = {
-  en:{s1:"Order received",s2:"Being prepared",s3:"Picked up by courier",s4:"On the way to you",s5:"Delivered",h1:"We got your order",h2:"Your order is being prepared",h3:"Your courier has your order",h4:"On the way to you",h5:"Delivered — enjoy!",hx:"Order cancelled",eta:"Arriving",today:"today",tomorrow:"tomorrow",around:"around",items:"items",help:"Need help? WhatsApp us",reorder:"↻ Order again",deliveredAt:"Delivered",details:"Order details",subtotal:"Products",delivery:"Delivery",free:"Free",total:"Total",room:"Room"},
-  cs:{s1:"Objednávka přijata",s2:"Připravujeme",s3:"Kurýr převzal objednávku",s4:"Na cestě k vám",s5:"Doručeno",h1:"Objednávku jsme přijali",h2:"Vaši objednávku připravujeme",h3:"Kurýr má vaši objednávku",h4:"Na cestě k vám",h5:"Doručeno — ať slouží!",hx:"Objednávka zrušena",eta:"Doručení",today:"dnes",tomorrow:"zítra",around:"kolem",items:"ks",help:"Potřebujete pomoc? WhatsApp",reorder:"↻ Objednat znovu",deliveredAt:"Doručeno",details:"Detail objednávky",subtotal:"Produkty",delivery:"Doprava",free:"Zdarma",total:"Celkem",room:"Pokoj"},
-  de:{s1:"Bestellung eingegangen",s2:"Wird vorbereitet",s3:"Vom Kurier abgeholt",s4:"Auf dem Weg zu Ihnen",s5:"Zugestellt",h1:"Wir haben Ihre Bestellung erhalten",h2:"Ihre Bestellung wird vorbereitet",h3:"Der Kurier hat Ihre Bestellung",h4:"Auf dem Weg zu Ihnen",h5:"Zugestellt – alles Gute!",hx:"Bestellung storniert",eta:"Ankunft",today:"heute",tomorrow:"morgen",around:"gegen",items:"Artikel",help:"Hilfe? WhatsApp",reorder:"↻ Erneut bestellen",deliveredAt:"Zugestellt",details:"Bestelldetails",subtotal:"Produkte",delivery:"Lieferung",free:"Kostenlos",total:"Gesamt",room:"Zimmer"},
-  ru:{s1:"Заказ принят",s2:"Готовим",s3:"Курьер забрал заказ",s4:"В пути к вам",s5:"Доставлен",h1:"Мы получили ваш заказ",h2:"Ваш заказ готовится",h3:"Заказ у курьера",h4:"В пути к вам",h5:"Доставлен — будьте здоровы!",hx:"Заказ отменён",eta:"Доставка",today:"сегодня",tomorrow:"завтра",around:"около",items:"шт.",help:"Нужна помощь? WhatsApp",reorder:"↻ Заказать снова",deliveredAt:"Доставлен",details:"Детали заказа",subtotal:"Товары",delivery:"Доставка",free:"Бесплатно",total:"Итого",room:"Номер"},
-  uk:{s1:"Замовлення прийнято",s2:"Готуємо",s3:"Кур’єр забрав замовлення",s4:"В дорозі до вас",s5:"Доставлено",h1:"Ми отримали ваше замовлення",h2:"Ваше замовлення готується",h3:"Замовлення у кур’єра",h4:"В дорозі до вас",h5:"Доставлено — будьте здорові!",hx:"Замовлення скасовано",eta:"Доставка",today:"сьогодні",tomorrow:"завтра",around:"близько",items:"шт.",help:"Потрібна допомога? WhatsApp",reorder:"↻ Замовити знову",deliveredAt:"Доставлено",details:"Деталі замовлення",subtotal:"Товари",delivery:"Доставка",free:"Безкоштовно",total:"Разом",room:"Номер"},
-  pl:{s1:"Zamówienie przyjęte",s2:"Przygotowujemy",s3:"Kurier odebrał zamówienie",s4:"W drodze do Ciebie",s5:"Dostarczono",h1:"Otrzymaliśmy Twoje zamówienie",h2:"Twoje zamówienie jest przygotowywane",h3:"Kurier ma Twoje zamówienie",h4:"W drodze do Ciebie",h5:"Dostarczono — na zdrowie!",hx:"Zamówienie anulowane",eta:"Dostawa",today:"dziś",tomorrow:"jutro",around:"około",items:"szt.",help:"Potrzebujesz pomocy? WhatsApp",reorder:"↻ Zamów ponownie",deliveredAt:"Dostarczono",details:"Szczegóły zamówienia",subtotal:"Produkty",delivery:"Dostawa",free:"Gratis",total:"Razem",room:"Pokój"}
+  en:{receipt:"⬇ Download receipt (PDF)",s1:"Order received",s2:"Being prepared",s3:"Picked up by courier",s4:"On the way to you",s5:"Delivered",h1:"We got your order",h2:"Your order is being prepared",h3:"Your courier has your order",h4:"On the way to you",h5:"Delivered — enjoy!",hx:"Order cancelled",eta:"Arriving",today:"today",tomorrow:"tomorrow",around:"around",items:"items",help:"Need help? WhatsApp us",reorder:"↻ Order again",deliveredAt:"Delivered",details:"Order details",subtotal:"Products",delivery:"Delivery",free:"Free",total:"Total",room:"Room"},
+  cs:{receipt:"⬇ Stáhnout účtenku (PDF)",s1:"Objednávka přijata",s2:"Připravujeme",s3:"Kurýr převzal objednávku",s4:"Na cestě k vám",s5:"Doručeno",h1:"Objednávku jsme přijali",h2:"Vaši objednávku připravujeme",h3:"Kurýr má vaši objednávku",h4:"Na cestě k vám",h5:"Doručeno — ať slouží!",hx:"Objednávka zrušena",eta:"Doručení",today:"dnes",tomorrow:"zítra",around:"kolem",items:"ks",help:"Potřebujete pomoc? WhatsApp",reorder:"↻ Objednat znovu",deliveredAt:"Doručeno",details:"Detail objednávky",subtotal:"Produkty",delivery:"Doprava",free:"Zdarma",total:"Celkem",room:"Pokoj"},
+  de:{receipt:"⬇ Beleg herunterladen (PDF)",s1:"Bestellung eingegangen",s2:"Wird vorbereitet",s3:"Vom Kurier abgeholt",s4:"Auf dem Weg zu Ihnen",s5:"Zugestellt",h1:"Wir haben Ihre Bestellung erhalten",h2:"Ihre Bestellung wird vorbereitet",h3:"Der Kurier hat Ihre Bestellung",h4:"Auf dem Weg zu Ihnen",h5:"Zugestellt – alles Gute!",hx:"Bestellung storniert",eta:"Ankunft",today:"heute",tomorrow:"morgen",around:"gegen",items:"Artikel",help:"Hilfe? WhatsApp",reorder:"↻ Erneut bestellen",deliveredAt:"Zugestellt",details:"Bestelldetails",subtotal:"Produkte",delivery:"Lieferung",free:"Kostenlos",total:"Gesamt",room:"Zimmer"},
+  ru:{receipt:"⬇ Скачать чек (PDF)",s1:"Заказ принят",s2:"Готовим",s3:"Курьер забрал заказ",s4:"В пути к вам",s5:"Доставлен",h1:"Мы получили ваш заказ",h2:"Ваш заказ готовится",h3:"Заказ у курьера",h4:"В пути к вам",h5:"Доставлен — будьте здоровы!",hx:"Заказ отменён",eta:"Доставка",today:"сегодня",tomorrow:"завтра",around:"около",items:"шт.",help:"Нужна помощь? WhatsApp",reorder:"↻ Заказать снова",deliveredAt:"Доставлен",details:"Детали заказа",subtotal:"Товары",delivery:"Доставка",free:"Бесплатно",total:"Итого",room:"Номер"},
+  uk:{receipt:"⬇ Завантажити чек (PDF)",s1:"Замовлення прийнято",s2:"Готуємо",s3:"Кур’єр забрав замовлення",s4:"В дорозі до вас",s5:"Доставлено",h1:"Ми отримали ваше замовлення",h2:"Ваше замовлення готується",h3:"Замовлення у кур’єра",h4:"В дорозі до вас",h5:"Доставлено — будьте здорові!",hx:"Замовлення скасовано",eta:"Доставка",today:"сьогодні",tomorrow:"завтра",around:"близько",items:"шт.",help:"Потрібна допомога? WhatsApp",reorder:"↻ Замовити знову",deliveredAt:"Доставлено",details:"Деталі замовлення",subtotal:"Товари",delivery:"Доставка",free:"Безкоштовно",total:"Разом",room:"Номер"},
+  pl:{receipt:"⬇ Pobierz paragon (PDF)",s1:"Zamówienie przyjęte",s2:"Przygotowujemy",s3:"Kurier odebrał zamówienie",s4:"W drodze do Ciebie",s5:"Dostarczono",h1:"Otrzymaliśmy Twoje zamówienie",h2:"Twoje zamówienie jest przygotowywane",h3:"Kurier ma Twoje zamówienie",h4:"W drodze do Ciebie",h5:"Dostarczono — na zdrowie!",hx:"Zamówienie anulowane",eta:"Dostawa",today:"dziś",tomorrow:"jutro",around:"około",items:"szt.",help:"Potrzebujesz pomocy? WhatsApp",reorder:"↻ Zamów ponownie",deliveredAt:"Dostarczono",details:"Szczegóły zamówienia",subtotal:"Produkty",delivery:"Dostawa",free:"Gratis",total:"Razem",room:"Pokój"}
 };
 function scTrackLang(){ var l="en"; try{ if(typeof displayLanguage!=="undefined"&&displayLanguage) l=String(displayLanguage); }catch(e){} return SC_TRACK_TXT[l]?l:"en"; }
 function scTrackT(k){ var d=SC_TRACK_TXT[scTrackLang()]; return d[k]||SC_TRACK_TXT.en[k]||""; }
@@ -11447,10 +11447,107 @@ function scTrackCardHtml(o, r, nowMs, idx){
   h+='<div style="display:flex;gap:8px;padding:12px 16px 14px">';
   if(!S.cancelled && S.stage<5) h+='<a href="https://wa.me/201501401776" target="_blank" rel="noopener" style="flex:1;text-align:center;text-decoration:none;border:1.5px solid #25D366;color:#128C7E;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px">💬 '+scTrackT("help")+'</a>';
   h+='<button type="button" onclick="scReorderFromHistory('+(idx||0)+')" style="flex:1;border:none;background:'+((S.stage===5||S.cancelled)?'linear-gradient(135deg,#0f766e,#14a08f)':'#eef6f4')+';color:'+((S.stage===5||S.cancelled)?'#fff':teal)+';font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px;cursor:pointer">'+scTrackT("reorder")+'</button>';
-  h+='</div></div>';
+  h+='</div>';
+  if(!S.cancelled) h+='<div style="padding:0 16px 14px;margin-top:-4px"><button type="button" onclick="scDownloadReceipt('+(idx||0)+')" style="width:100%;border:1.5px dashed #b9d3ce;background:#fff;color:#17324d;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px;cursor:pointer">'+scTrackT("receipt")+'</button></div>';
+  h+='</div>';
   return h;
 }
 
+/* v-receipt: customer can download a PDF receipt for any order shown in My Orders */
+function scRcAscii(s){
+  var t = String(s==null?"":s);
+  try{ t = t.normalize("NFD").replace(/[̀-ͯ]/g, ""); }catch(e){}
+  return t.replace(/[–—]/g, "-").replace(/[‘’]/g, "'").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, " ").trim();
+}
+function scRcEsc(s){ return scRcAscii(s).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)"); }
+function scRcWrap(text, max){
+  var words = String(text||"").split(/\s+/), out = [], line = "";
+  words.forEach(function(w){ if((line+" "+w).trim().length > max){ if(line) out.push(line); line = w; } else line = (line+" "+w).trim(); });
+  if(line) out.push(line);
+  return out;
+}
+function scRcMoney(n){ var v = Number(n)||0; return (Math.round(v*100)/100).toString(); }
+function scRcPdf(lines){
+  var pageW = 226, margin = 14, lineH = 12;
+  var pageH = Math.max(360, 70 + lines.length*lineH);
+  var y = pageH - 24, content = "BT\n";
+  lines.forEach(function(l){
+    if(l.type === "rule"){ content += "ET\n0.6 w "+margin+" "+(y+4)+" m "+(pageW-margin)+" "+(y+4)+" l S\nBT\n"; y -= 9; return; }
+    var font = l.bold ? "F2" : "F1", size = l.size || 9, x = margin, txt = scRcEsc(l.text);
+    var approx = txt.length*size*0.48;
+    if(l.align === "center") x = Math.max(margin, (pageW-approx)/2);
+    content += "/"+font+" "+size+" Tf "+x.toFixed(1)+" "+y.toFixed(1)+" Td ("+txt+") Tj "+(-x).toFixed(1)+" "+(-y).toFixed(1)+" Td\n";
+    y -= lineH;
+  });
+  content += "ET";
+  var objs = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+pageW+" "+pageH+"] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>",
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>",
+    "<< /Length "+content.length+" >>\nstream\n"+content+"\nendstream"
+  ];
+  var pdf = "%PDF-1.4\n", offsets = [0];
+  objs.forEach(function(o, i){ offsets[i+1] = pdf.length; pdf += (i+1)+" 0 obj\n"+o+"\nendobj\n"; });
+  var xref = pdf.length;
+  pdf += "xref\n0 "+(objs.length+1)+"\n0000000000 65535 f \n";
+  for(var i=1;i<=objs.length;i++) pdf += String(offsets[i]).padStart(10,"0")+" 00000 n \n";
+  pdf += "trailer\n<< /Size "+(objs.length+1)+" /Root 1 0 R >>\nstartxref\n"+xref+"\n%%EOF";
+  return new Blob([pdf], {type:"application/pdf"});
+}
+function scReceiptLines(o, r){
+  r = r || {};
+  var lines = [];
+  var add = function(text, size, bold, align){ lines.push({type:"text", text:String(text||""), size:size||9, bold:!!bold, align:align||"left"}); };
+  var rule = function(){ lines.push({type:"rule"}); };
+  var two = function(n){ return String(n).padStart(2,"0"); };
+  var c = scCairoParts(r.created_at ? Date.parse(r.created_at) : (o.ts||Date.now()));
+  var items = Array.isArray(o.items) ? o.items : [];
+  var sub = 0; items.forEach(function(it){ sub += (Number(it.price)||0)*(Number(it.qty)||1); });
+  var productTotal = (r.product_total!=null) ? Number(r.product_total) : sub;
+  var hasFee = (r.delivery_fee!=null);
+  var fee = hasFee ? Number(r.delivery_fee) : 0;
+  var grand = (r.total!=null) ? Number(r.total) : (Number(o.total) || (productTotal+fee));
+  add("Self Care Pharmacy", 14, true, "center");
+  add("Order Receipt", 11, true, "center");
+  rule();
+  add("Order Number: #"+scRcAscii(o.id||"-"), 9, true);
+  add("Date: "+two(c.d)+"/"+two(c.m)+"/"+c.y+" "+two(c.h)+":"+two(c.mi), 8);
+  if(r.hotel) add("Hotel: "+(scRcAscii(r.hotel)||"-"), 8);
+  if(r.room) add("Room / Note: "+(scRcAscii(r.room)||"-"), 8);
+  var due = scTrackDueMs(o, r);
+  if(due){ var d = scCairoParts(due); add("Delivery: "+two(d.d)+"/"+two(d.m)+"/"+d.y+" around "+two(d.h)+":"+two(d.mi), 8); }
+  if(r.payment) add("Payment Method: "+(scRcAscii(r.payment)||"-"), 8);
+  rule();
+  add("Items", 10, true, "center");
+  if(!items.length) add("No items", 8);
+  items.forEach(function(it, i){
+    var name = scRcAscii(it.name) || "Item", qty = Number(it.qty)||1, price = Number(it.price)||0;
+    scRcWrap((i+1)+". "+name, 30).forEach(function(part, j){ add(part, 8, j===0); });
+    add("   Qty: "+qty+"   Unit: "+scRcMoney(price)+" EGP   Total: "+scRcMoney(qty*price)+" EGP", 7.6);
+  });
+  rule();
+  add("Products Total: "+scRcMoney(productTotal)+" EGP", 9, true);
+  if(hasFee) add("Delivery Fee: "+(fee>0 ? scRcMoney(fee)+" EGP" : "Free"), 9, true);
+  add("Grand Total: "+scRcMoney(grand)+" EGP", 11, true);
+  rule();
+  scRcWrap("Please check all items with the courier before payment.", 38).forEach(function(x){ add(x, 8, false, "center"); });
+  add("Self Care Pharmacy - Dr. Awny", 9, true, "center");
+  add("Hurghada - Egypt", 8, false, "center");
+  return lines;
+}
+function scDownloadReceipt(idx){
+  try{
+    var o = scGetOrderHistory()[idx];
+    if(!o) return;
+    var blob = scRcPdf(scReceiptLines(o, scTrackCache[String(o.id)] || null));
+    var url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = "SelfCare_Receipt_Order_"+(scRcAscii(o.id)||"order")+".pdf";
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ try{ URL.revokeObjectURL(url); a.remove(); }catch(e){} }, 2000);
+  }catch(e){}
+}
 var SC_TRACK_CACHE_KEY="scTrackCacheV1";
 var scTrackCache=(function(){ try{ var c=JSON.parse(localStorage.getItem(SC_TRACK_CACHE_KEY)||"{}"); return (c&&typeof c==="object")?c:{}; }catch(e){ return {}; } })();
 function scOrderHistoryHtml(){
