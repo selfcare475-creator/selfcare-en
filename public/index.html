@@ -11084,7 +11084,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.14</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.15</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
@@ -11318,48 +11318,189 @@ function scOrderStepsHtml(oid, doneCount, cancelled){
   }
   return h + '</div>';
 }
+/* v-track2: order tracking card (5 real stages; two of them move by the delivery time) */
+var SC_TRACK_TXT = {
+  en:{s1:"Order received",s2:"Being prepared",s3:"Picked up by courier",s4:"On the way to you",s5:"Delivered",h1:"We got your order",h2:"Your order is being prepared",h3:"Your courier has your order",h4:"On the way to you",h5:"Delivered — enjoy!",hx:"Order cancelled",eta:"Arriving",today:"today",tomorrow:"tomorrow",around:"around",items:"items",help:"Need help? WhatsApp us",reorder:"↻ Order again",deliveredAt:"Delivered",details:"Order details",subtotal:"Products",delivery:"Delivery",free:"Free",total:"Total",room:"Room"},
+  cs:{s1:"Objednávka přijata",s2:"Připravujeme",s3:"Kurýr převzal objednávku",s4:"Na cestě k vám",s5:"Doručeno",h1:"Objednávku jsme přijali",h2:"Vaši objednávku připravujeme",h3:"Kurýr má vaši objednávku",h4:"Na cestě k vám",h5:"Doručeno — ať slouží!",hx:"Objednávka zrušena",eta:"Doručení",today:"dnes",tomorrow:"zítra",around:"kolem",items:"ks",help:"Potřebujete pomoc? WhatsApp",reorder:"↻ Objednat znovu",deliveredAt:"Doručeno",details:"Detail objednávky",subtotal:"Produkty",delivery:"Doprava",free:"Zdarma",total:"Celkem",room:"Pokoj"},
+  de:{s1:"Bestellung eingegangen",s2:"Wird vorbereitet",s3:"Vom Kurier abgeholt",s4:"Auf dem Weg zu Ihnen",s5:"Zugestellt",h1:"Wir haben Ihre Bestellung erhalten",h2:"Ihre Bestellung wird vorbereitet",h3:"Der Kurier hat Ihre Bestellung",h4:"Auf dem Weg zu Ihnen",h5:"Zugestellt – alles Gute!",hx:"Bestellung storniert",eta:"Ankunft",today:"heute",tomorrow:"morgen",around:"gegen",items:"Artikel",help:"Hilfe? WhatsApp",reorder:"↻ Erneut bestellen",deliveredAt:"Zugestellt",details:"Bestelldetails",subtotal:"Produkte",delivery:"Lieferung",free:"Kostenlos",total:"Gesamt",room:"Zimmer"},
+  ru:{s1:"Заказ принят",s2:"Готовим",s3:"Курьер забрал заказ",s4:"В пути к вам",s5:"Доставлен",h1:"Мы получили ваш заказ",h2:"Ваш заказ готовится",h3:"Заказ у курьера",h4:"В пути к вам",h5:"Доставлен — будьте здоровы!",hx:"Заказ отменён",eta:"Доставка",today:"сегодня",tomorrow:"завтра",around:"около",items:"шт.",help:"Нужна помощь? WhatsApp",reorder:"↻ Заказать снова",deliveredAt:"Доставлен",details:"Детали заказа",subtotal:"Товары",delivery:"Доставка",free:"Бесплатно",total:"Итого",room:"Номер"},
+  uk:{s1:"Замовлення прийнято",s2:"Готуємо",s3:"Кур’єр забрав замовлення",s4:"В дорозі до вас",s5:"Доставлено",h1:"Ми отримали ваше замовлення",h2:"Ваше замовлення готується",h3:"Замовлення у кур’єра",h4:"В дорозі до вас",h5:"Доставлено — будьте здорові!",hx:"Замовлення скасовано",eta:"Доставка",today:"сьогодні",tomorrow:"завтра",around:"близько",items:"шт.",help:"Потрібна допомога? WhatsApp",reorder:"↻ Замовити знову",deliveredAt:"Доставлено",details:"Деталі замовлення",subtotal:"Товари",delivery:"Доставка",free:"Безкоштовно",total:"Разом",room:"Номер"},
+  pl:{s1:"Zamówienie przyjęte",s2:"Przygotowujemy",s3:"Kurier odebrał zamówienie",s4:"W drodze do Ciebie",s5:"Dostarczono",h1:"Otrzymaliśmy Twoje zamówienie",h2:"Twoje zamówienie jest przygotowywane",h3:"Kurier ma Twoje zamówienie",h4:"W drodze do Ciebie",h5:"Dostarczono — na zdrowie!",hx:"Zamówienie anulowane",eta:"Dostawa",today:"dziś",tomorrow:"jutro",around:"około",items:"szt.",help:"Potrzebujesz pomocy? WhatsApp",reorder:"↻ Zamów ponownie",deliveredAt:"Dostarczono",details:"Szczegóły zamówienia",subtotal:"Produkty",delivery:"Dostawa",free:"Gratis",total:"Razem",room:"Pokój"}
+};
+function scTrackLang(){ var l="en"; try{ if(typeof displayLanguage!=="undefined"&&displayLanguage) l=String(displayLanguage); }catch(e){} return SC_TRACK_TXT[l]?l:"en"; }
+function scTrackT(k){ var d=SC_TRACK_TXT[scTrackLang()]; return d[k]||SC_TRACK_TXT.en[k]||""; }
+function scTrackEsc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(m){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]; }); }
+function scTrackTime(ms){ var c=scCairoParts(ms); var h=c.h, m=String(c.mi).padStart(2,"0"); if(scTrackLang()!=="en") return String(h).padStart(2,"0")+":"+m; var ap=h>=12?"PM":"AM"; return (h%12||12)+":"+m+" "+ap; }
+/* Delivery moment = order day (+1 if "Tomorrow") at the chosen hour; a rescheduled delivery_date wins. */
+function scCairoParts(ms){
+  try{
+    var f=new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Cairo",hour12:false,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).formatToParts(new Date(ms)), o={};
+    f.forEach(function(p){ o[p.type]=p.value; });
+    return {y:Number(o.year), m:Number(o.month), d:Number(o.day), h:Number(o.hour)%24, mi:Number(o.minute)};
+  }catch(e){ var d=new Date(ms); return {y:d.getFullYear(), m:d.getMonth()+1, d:d.getDate(), h:d.getHours(), mi:d.getMinutes()}; }
+}
+function scCairoToMs(y,m,d,h,mi){
+  var guess=Date.UTC(y,m-1,d,h,mi||0);
+  for(var k=0;k<2;k++){ var p=scCairoParts(guess); guess -= (Date.UTC(p.y,p.m-1,p.d,p.h,p.mi) - Date.UTC(y,m-1,d,h,mi||0)); }
+  return guess;
+}
+function scTrackDueMs(o, r){
+  try{
+    r = r || {};
+    var hm = String(r.delivery_time || "").match(/(\d{1,2})(?::(\d{2}))?/);
+    if(!hm) return null;
+    var hh=Number(hm[1]), mm=Number(hm[2]||0);
+    if(r.delivery_date){ var p=String(r.delivery_date).split("-"); if(p.length===3) return scCairoToMs(Number(p[0]), Number(p[1]), Number(p[2]), hh, mm); }
+    var b = scCairoParts(r.created_at ? Date.parse(r.created_at) : (o.ts||Date.now()));
+    var add = /tomorrow|zítra|zitra|morgen|завтра|jutro/i.test(String(r.delivery_day||"")) ? 1 : 0;
+    return scCairoToMs(b.y, b.m, b.d + add, hh, mm);
+  }catch(e){ return null; }
+}
+/* Returns {stage:1..5, cancelled, times:[ms|null x5], due} */
+function scTrackState(o, r, nowMs){
+  var now = nowMs || Date.now(); r = r || {};
+  var st = String(r.status||"").toLowerCase();
+  var due = scTrackDueMs(o, r);
+  var t = [ (r.created_at?Date.parse(r.created_at):(o.ts||null)), null, null, null, null ];
+  var stage = 1;
+  if(r.pharmacy_status==="preparing" || r.pharmacy_status==="done"){ stage=2; t[1]= r.pharmacy_preparing_at?Date.parse(r.pharmacy_preparing_at):(r.pharmacy_prepared_at?Date.parse(r.pharmacy_prepared_at):null); }
+  if(r.delivery_status==="assigned" || st.indexOf("delivery")!==-1){ stage=3; t[2]= r.courier_assigned_at?Date.parse(r.courier_assigned_at):null; if(!t[1]) t[1]=t[2]; }
+  if(due){
+    if(now >= due - 3600000 && stage>=1){ stage=Math.max(stage,4); t[3]=due-3600000; if(!t[1]) t[1]=t[3]; if(!t[2]) t[2]=t[3]; }
+    if(now >= due + 3600000){ stage=5; t[4]=due; }
+  }
+  if(st.indexOf("deliver")!==-1 && st.indexOf("out")===-1){ stage=5; if(!t[4]) t[4]= due || now; }
+  if(r.courier_arrived){ stage=Math.max(stage,5); if(r.courier_arrived_at) t[4]=Date.parse(r.courier_arrived_at); }
+  return { stage:stage, cancelled: st.indexOf("cancel")!==-1, times:t, due:due };
+}
+function scTrackCardHtml(o, r, nowMs, idx){
+  var now = nowMs || Date.now();
+  var S = scTrackState(o, r, now);
+  var teal="#0f766e", navy="#17324d", hot="#D6501B", grey="#9ab0ac", line="#dbe7e4";
+  var icons=["🧾","💊","📦","🛵","✓"];
+  var names=[scTrackT("s1"),scTrackT("s2"),scTrackT("s3"),scTrackT("s4"),scTrackT("s5")];
+  var d = o.ts ? scCairoParts(o.ts) : null;
+  var dateStr = d ? (String(d.d).padStart(2,"0")+"."+String(d.m).padStart(2,"0")+"."+d.y) : "";
+  var head, sub="", headBg, headIcon;
+  if(S.cancelled){ head=scTrackT("hx"); headBg="linear-gradient(135deg,#b3261e,#d9534f)"; headIcon="✕"; }
+  else {
+    head=scTrackT("h"+S.stage); headIcon=icons[S.stage-1];
+    headBg = S.stage===5 ? "linear-gradient(135deg,#0f766e,#14a08f)" : (S.stage===4 ? "linear-gradient(135deg,#D6501B,#ef7a3d)" : "linear-gradient(135deg,#17324d,#0f766e)");
+    if(S.stage===5){ sub = S.times[4] ? scTrackT("deliveredAt")+" · "+scTrackTime(S.times[4]) : ""; }
+    else if(S.due){
+      var dd=scCairoParts(S.due), n=scCairoParts(now);
+      var dayDiff=Math.round((Date.UTC(dd.y,dd.m-1,dd.d)-Date.UTC(n.y,n.m-1,n.d))/86400000);
+      var dayTxt = dayDiff===0?scTrackT("today"):(dayDiff===1?scTrackT("tomorrow"):(String(dd.d).padStart(2,"0")+"."+String(dd.m).padStart(2,"0")));
+      sub = scTrackT("eta")+" "+dayTxt+" "+scTrackT("around")+" "+scTrackTime(S.due);
+    }
+  }
+  var h='<div class="sc-track" data-oid="'+scTrackEsc(o.id||"")+'" data-idx="'+(idx||0)+'" style="border:1px solid #dcebe8;border-radius:18px;margin-top:12px;background:#fff;box-shadow:0 4px 16px rgba(15,45,60,.07);overflow:hidden;font-family:Nunito,Arial,sans-serif">';
+  h+='<div style="background:'+headBg+';color:#fff;padding:14px 16px;display:flex;gap:12px;align-items:center">'
+    +'<div style="width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none">'+headIcon+'</div>'
+    +'<div style="min-width:0"><div style="font-weight:900;font-size:16px;line-height:1.2">'+head+'</div>'+(sub?'<div style="font-size:12.5px;font-weight:700;opacity:.92;margin-top:3px">'+sub+'</div>':'')+'</div></div>';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px 0;font-size:12.5px"><span style="font-weight:800;color:'+navy+'">#'+scTrackEsc(o.id||"—")+(dateStr?' <span style="font-weight:600;color:#8aa5a1">• '+dateStr+'</span>':'')+'</span></div>';
+  if(!S.cancelled){
+    h+='<div style="padding:12px 16px 4px">';
+    for(var i=0;i<5;i++){
+      var done = i < S.stage-1, cur = i===S.stage-1, last=i===4;
+      if(S.stage===5){ done=true; cur=false; }
+      var col = done?teal:(cur?hot:line);
+      var tm = S.times[i] && (done||cur) ? scTrackTime(S.times[i]) : "";
+      h+='<div style="display:flex;gap:12px;align-items:stretch;min-height:'+(last?'26':'40')+'px">'
+        +'<div style="display:flex;flex-direction:column;align-items:center;flex:none;width:26px">'
+          +'<div style="width:'+(cur?26:22)+'px;height:'+(cur?26:22)+'px;border-radius:50%;background:'+((done||cur)?col:'#fff')+';border:2.5px solid '+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:'+(cur?13:11)+'px;font-weight:900;'+(cur?'box-shadow:0 0 0 5px rgba(214,80,27,.16);':'')+'">'+(done?'✓':(cur?icons[i]:''))+'</div>'
+          +(last?'':'<div style="flex:1;width:2.5px;background:'+(done?teal:line)+';margin:2px 0"></div>')
+        +'</div>'
+        +'<div style="flex:1;display:flex;justify-content:space-between;align-items:flex-start;padding-top:'+(cur?4:2)+'px;gap:8px">'
+          +'<span style="font-size:'+(cur?14:13)+'px;font-weight:'+(cur?900:(done?800:600))+';color:'+(cur?navy:(done?teal:grey))+'">'+names[i]+'</span>'
+          +'<span style="font-size:11.5px;font-weight:700;color:'+(cur?hot:'#8aa5a1')+';white-space:nowrap">'+tm+'</span>'
+        +'</div></div>';
+    }
+    h+='</div>';
+  }
+  /* order details: one clean row per item + totals */
+  var its=(o.items||[]), cnt=0; its.forEach(function(it){ cnt+=Number(it.qty)||1; });
+  var sub0=0; its.forEach(function(it){ sub0+=(Number(it.price)||0)*(Number(it.qty)||1); });
+  var fee=(r && r.delivery_fee!=null)?Number(r.delivery_fee):null;
+  var subT=(r && r.product_total!=null)?Number(r.product_total):(sub0||null);
+  var tot=(r && r.total!=null)?Number(r.total):(Number(o.total)||0);
+  h+='<div style="margin:8px 16px 0;border-top:1px solid #e8f0ee;padding-top:10px">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:12px;font-weight:900;color:'+navy+';letter-spacing:.2px">'+scTrackT("details")+'</span><span style="font-size:11.5px;font-weight:700;color:#8aa5a1">'+cnt+' '+((cnt===1&&scTrackLang()==="en")?"item":scTrackT("items"))+'</span></div>';
+  its.forEach(function(it){
+    var q=Number(it.qty)||1, pr=(Number(it.price)||0)*q;
+    h+='<div style="display:flex;align-items:center;gap:10px;padding:6px 0">'
+      +'<span style="flex:none;min-width:30px;text-align:center;background:#eef6f4;color:'+teal+';font-weight:900;font-size:12px;padding:3px 0;border-radius:8px">'+q+'×</span>'
+      +'<span style="flex:1;font-size:13px;font-weight:700;color:#2b4a5e;line-height:1.3">'+scTrackEsc(it.name)+'</span>'
+      +(pr?'<span style="flex:none;font-size:12.5px;font-weight:800;color:#5a7975;white-space:nowrap">'+pr+' EGP</span>':'')
+      +'</div>';
+  });
+  h+='<div style="background:#f6faf9;border-radius:12px;padding:9px 12px;margin-top:8px">';
+  if(subT!=null && fee!=null){
+    h+='<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#5a7975;padding:2px 0"><span>'+scTrackT("subtotal")+'</span><span>'+subT+' EGP</span></div>';
+    h+='<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#5a7975;padding:2px 0"><span>'+scTrackT("delivery")+'</span><span>'+(fee>0?(fee+' EGP'):scTrackT("free"))+'</span></div>';
+  }
+  h+='<div style="display:flex;justify-content:space-between;font-size:14px;font-weight:900;color:'+navy+';padding:'+((subT!=null&&fee!=null)?'5px 0 1px;border-top:1px dashed #d9e6e3;margin-top:4px':'1px 0')+'"><span>'+scTrackT("total")+'</span><span style="color:'+teal+'">'+tot+' EGP</span></div>';
+  h+='</div>';
+  var place=[]; if(r && r.hotel) place.push("📍 "+scTrackEsc(r.hotel)+(r.room?(" · "+scTrackT("room")+" "+scTrackEsc(r.room)):"")); if(r && r.payment) place.push("💳 "+scTrackEsc(r.payment));
+  if(place.length) h+='<div style="font-size:11.5px;font-weight:700;color:#7a9590;margin-top:8px;line-height:1.6">'+place.join(' &nbsp;•&nbsp; ')+'</div>';
+  h+='</div>';
+  h+='<div style="display:flex;gap:8px;padding:12px 16px 14px">';
+  if(!S.cancelled && S.stage<5) h+='<a href="https://wa.me/201501401776" target="_blank" rel="noopener" style="flex:1;text-align:center;text-decoration:none;border:1.5px solid #25D366;color:#128C7E;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px">💬 '+scTrackT("help")+'</a>';
+  h+='<button type="button" onclick="scReorderFromHistory('+(idx||0)+')" style="flex:1;border:none;background:'+((S.stage===5||S.cancelled)?'linear-gradient(135deg,#0f766e,#14a08f)':'#eef6f4')+';color:'+((S.stage===5||S.cancelled)?'#fff':teal)+';font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px;cursor:pointer">'+scTrackT("reorder")+'</button>';
+  h+='</div></div>';
+  return h;
+}
+
+var SC_TRACK_CACHE_KEY="scTrackCacheV1";
+var scTrackCache=(function(){ try{ var c=JSON.parse(localStorage.getItem(SC_TRACK_CACHE_KEY)||"{}"); return (c&&typeof c==="object")?c:{}; }catch(e){ return {}; } })();
 function scOrderHistoryHtml(){
   var hist = scGetOrderHistory();
   if(!hist.length) return "";
-  var rows = hist.map(function(o, i){
-    var d = o.ts ? new Date(o.ts) : null;
-    var dateStr = d ? (String(d.getDate()).padStart(2,"0") + "." + String(d.getMonth()+1).padStart(2,"0") + "." + d.getFullYear()) : "";
-    var itemsStr = (o.items||[]).map(function(it){ return it.qty + "× " + it.name; }).join(", ");
-    return '<div style="border:1px solid #dcebe8;border-radius:16px;padding:12px 14px;margin-top:10px;background:#fff;box-shadow:0 2px 10px rgba(15,45,60,.05)">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">' +
-        '<span style="font-weight:800;color:#17324d;font-size:14px">#' + (o.id||"—") + (dateStr ? ' <span style="font-weight:500;color:#8aa5a1;font-size:12px">• ' + dateStr + '</span>' : '') + '</span>' +
-        '<span style="font-weight:900;font-size:14px;color:#0f766e">' + (o.total||0) + ' EGP</span>' +
-      '</div>' +
-      scOrderStepsHtml(o.id||"", 1, false) +
-      '<div style="font-size:12px;color:#5a7975;line-height:1.55;margin-top:6px;border-top:1px dashed #e3eeec;padding-top:8px">' + itemsStr + '</div>' +
-      '<button type="button" onclick="scReorderFromHistory(' + i + ')" style="margin-top:10px;border:none;background:linear-gradient(135deg,#0f766e,#14a08f);color:#fff;font-weight:800;font-size:13px;padding:9px 14px;border-radius:12px;cursor:pointer;width:100%">' + scOrderHistText("reorder") + '</button>' +
-    '</div>';
-  }).join("");
+  var now = Date.now();
+  var rows = hist.map(function(o, i){ return scTrackCardHtml(o, scTrackCache[String(o.id)] || null, now, i); }).join("");
   return '<div id="scOrderHistory">' +
     '<div style="font-weight:800;font-size:14px;color:#17324d;margin-top:12px">' + scOrderHistText("title") + '</div>' + rows + '</div>';
 }
-/* v-live-status: pull real order progress from the pharmacy system and update the step bars */
+function scTrackRerender(){
+  try{
+    var hist = scGetOrderHistory(), now = Date.now();
+    document.querySelectorAll(".sc-track[data-oid]").forEach(function(el){
+      var i = Number(el.getAttribute("data-idx")) || 0, o = hist[i];
+      if(!o || String(o.id) !== el.getAttribute("data-oid")) return;
+      el.outerHTML = scTrackCardHtml(o, scTrackCache[String(o.id)] || null, now, i);
+    });
+  }catch(e){}
+}
+/* v-track2: pull real progress from the pharmacy system, keep it for the next visit, redraw the cards */
 function scRefreshOrderStatuses(){
   try{
+    scTrackRerender();
     if(typeof SB_URL === "undefined" || typeof SB_HEADERS === "undefined") return;
-    var ids = scGetOrderHistory().map(function(o){ return o.id; }).filter(function(x){ return x !== "" && x != null; });
+    var ids = scGetOrderHistory().map(function(o){ return o.id; }).filter(function(x){ return /^[0-9]+$/.test(String(x)); });
     if(!ids.length) return;
-    fetch(SB_URL + "/rest/v1/orders?id=in.(" + ids.join(",") + ")&select=id,status,pharmacy_status,delivery_status", { headers: SB_HEADERS })
+    fetch(SB_URL + "/rest/v1/orders?id=in.(" + ids.join(",") + ")&select=id,status,pharmacy_status,delivery_status,created_at,delivery_day,delivery_time,delivery_date,pharmacy_preparing_at,pharmacy_prepared_at,courier_assigned_at,courier_arrived,courier_arrived_at,product_total,delivery_fee,total,hotel,room,payment", { headers: SB_HEADERS })
       .then(function(r){ return r.ok ? r.json() : []; })
       .then(function(rows){
-        (rows||[]).forEach(function(r){
-          var el = document.querySelector('.sc-steps[data-oid="' + String(r.id) + '"]');
-          if(!el) return;
-          var st = String(r.status||"").toLowerCase();
-          var cancelled = st.indexOf("cancel") !== -1;
-          var doneCount = 1;
-          if(r.pharmacy_status === "preparing" || r.pharmacy_status === "done") doneCount = 2;
-          if(r.delivery_status === "assigned" || st.indexOf("delivery") !== -1) doneCount = 3;
-          el.outerHTML = scOrderStepsHtml(String(r.id), doneCount, cancelled);
-        });
+        if(!rows || !rows.length) return;
+        var keep = {};
+        rows.forEach(function(r){ keep[String(r.id)] = r; });
+        ids.forEach(function(id){ if(!keep[String(id)] && scTrackCache[String(id)]) keep[String(id)] = scTrackCache[String(id)]; });
+        scTrackCache = keep;
+        try{ localStorage.setItem(SC_TRACK_CACHE_KEY, JSON.stringify(keep)); }catch(e){}
+        scTrackRerender();
       }).catch(function(){});
   }catch(e){}
 }
+/* keep the open panel live: stages move on their own, no refresh needed */
+var scTrackTimer = null;
+(function(){
+  var open0 = scOpenMyOrders, close0 = scCloseMyOrders;
+  scOpenMyOrders = function(){ open0(); try{ clearInterval(scTrackTimer); scTrackTimer = setInterval(scRefreshOrderStatuses, 60000); }catch(e){} };
+  scCloseMyOrders = function(){ try{ clearInterval(scTrackTimer); scTrackTimer = null; }catch(e){} close0(); };
+})();
+
+/* v-live-status: pull real order progress from the pharmacy system and update the step bars */
+/* scRefreshOrderStatuses: replaced by v-track2 above */
 
 /* v-my-orders: standalone My Orders panel (next to the cart button) */
 function scMyOrdersLabel(){
