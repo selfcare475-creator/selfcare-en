@@ -7422,241 +7422,313 @@ async function loadSharedCurrencyRates(){
 }
 
 const hotels = [
-{name:"Minamark",fee:50,aliases:[]},
-{name:"Le Pacha",fee:50,aliases:[]},
-{name:"Bella Vista",fee:50,aliases:[]},
-{name:"Arabia Azur Resort",fee:50,aliases:["Arabia Azur"]},
-{name:"Bel Air Azur",fee:50,aliases:[]},
-{name:"Seagull",fee:50,aliases:[]},
-{name:"Sunny Days El Palacio",fee:50,aliases:[]},
-{name:"Sea Star Beau Rivage",fee:50,aliases:["Sea Star"]},
-{name:"Regina Swiss Inn",fee:50,aliases:[]},
-{name:"Sunny Days",fee:50,aliases:[]},
-{name:"Sindbad Club",fee:70,aliases:[]},
-{name:"Steigenberger ALDAU Beach Hotel",fee:70,aliases:["Steigenberger ALDAU", "Aldau", "Steigenberger Aldau"]},
-{name:"The Grand Resort Hurghada",fee:70,aliases:["The Grand Resort"]},
-{name:"The Grand Hotel",fee:70,aliases:[]},
-{name:"Grand Palace",fee:70,aliases:["The Grand Palace"]},
-{name:"Pickalbatros White Beach Resort",fee:70,aliases:["Pickalbatros White Beach", "White Beach"]},
-{name:"Sunrise Aqua Joy",fee:70,aliases:[]},
-{name:"Marlin Inn",fee:70,aliases:[]},
-{name:"Swiss Inn",fee:70,aliases:[]},
-{name:"Continental",fee:70,aliases:[]},
-{name:"Mercure",fee:150,aliases:[]},
-{name:"Jaz Casa Del Mar Beach",fee:150,aliases:["Jaz Casa Del Mar", "Jaz Casa Del Mar Resort"]},
-{name:"Desert Rose",fee:150,aliases:[]},
-{name:"Pickalbatros Dana Beach Resort",fee:150,aliases:["Dana Beach", "Dana Beach Resort"]},
-{name:"Titanic Royal Resort",fee:150,aliases:["Titanic Royal"]},
-{name:"Beach Albatros Resort",fee:150,aliases:["Beach Albatros"]},
-{name:"Pickalbatros Aqua Park Resort",fee:150,aliases:["Albatros Aqua Park", "Pickalbatros Aqua Park", "Albatros Aqua Park Resort"]},
-{name:"Ali Baba Palace",fee:150,aliases:["Ali Baba"]},
-{name:"Aladdin Beach Resort",fee:150,aliases:["Aladdin"]},
-{name:"Jasmine Palace Resort",fee:250,aliases:["Jasmine Palace", "Jasmine Village"]},
-{name:"Gravity Hotel & Aqua Park Hurghada",fee:150,aliases:["Gravity Hotel", "Gravity Hurghada"]},
-{name:"Pickalbatros Jungle Aqua Park",fee:250,aliases:["Jungle Aqua Park", "Jungle"]},
-{name:"Titanic Beach",fee:250,aliases:[]},
-{name:"Titanic Palace",fee:250,aliases:[]},
-{name:"Albatros Palace Resort",fee:250,aliases:["Albatros Palace"]},
-{name:"Sunrise Mamlouk Palace Resort",fee:250,aliases:["Sunrise Mamlouk", "Mamlouk Palace", "Sentido Mamlouk Palace"]},
-{name:"Sunrise Garden Beach Resort",fee:250,aliases:["Sunrise Garden Beach"]},
-{name:"Jaz Aquamarine Resort",fee:250,aliases:["Jaz Aquamarine"]},
-{name:"Hurghada Long Beach",fee:250,aliases:[]},
-{name:"Coral Beach",fee:250,aliases:[]},
-{name:"Pharaoh Azur",fee:250,aliases:[]},
-{name:"Hawaii Resorts",fee:200,aliases:[]},
-{name:"Hawaii",fee:200,aliases:[]},
-{name:"AMC Royal",fee:200,aliases:[]},
-{name:"Golden Beach",fee:200,aliases:[]},
-{name:"Palm Beach",fee:200,aliases:[]},
-{name:"Bellagio",fee:200,aliases:[]},
-{name:"Festival Riviera",fee:200,aliases:[]},
-{name:"Nubia",fee:200,aliases:[]},
-{name:"Caves Beach",fee:200,aliases:[]},
-{name:"Three Corners Sunny Beach Resort",fee:200,aliases:["Three Corners Sunny Beach", "Three Corners"]},
-{name:"Sheraton Miramar",fee:300,aliases:[]},
-{name:"Movenpick Resort & Spa El Gouna",fee:300,aliases:["Movenpick"]},
-{name:"Steigenberger Golf",fee:300,aliases:[]},
-{name:"Three Corners Rihana Resort",fee:300,aliases:["Three Corners Rihana", "Rihana"]},
-{name:"Casa Cook El Gouna",fee:300,aliases:["Casa Cook"]},
-{name:"Ali Pasha",fee:300,aliases:[]},
-{name:"Labranda Club Makadi Resort",fee:400,aliases:["Labranda", "Labranda Club Makadi"]},
-{name:"Baron Palace Sahl Hasheesh",fee:300,aliases:["Baron Palace"]},
-{name:"Pyramisa Beach Resort Sahl Hasheesh",fee:300,aliases:["Pyramisa"]},
-{name:"Gravity Sahl Hasheesh Resort",fee:300,aliases:["Gravity Sahl Hasheesh"]},
-{name:"Tropitel Sahl Hasheesh Resort",fee:300,aliases:["Tropitel", "Tropitel Elite Sahl Hasheesh", "Tropitel Sahl Hasheesh"]},
-{name:"Old Palace Resort Sahl Hasheesh",fee:300,aliases:["Old Palace"]},
-{name:"Stella Di Mare Makadi Bay",fee:400,aliases:["Stella Di Mare"]},
-{name:"Sunrise Royal Makadi Resort",fee:400,aliases:["Sunrise Royal Makadi"]},
-{name:"Jaz Makadina Resort",fee:400,aliases:["Jaz Makadina"]},
-{name:"Fort Arabesque Resort",fee:400,aliases:["Fort Arabesque", "Fort Arabesque The West Bay"]},
-{name:"Serenity Makadi Beach",fee:400,aliases:["Serenity", "Serenity Alpha Beach", "Serenity Alpha Beach Makadi Bay", "Serenity Makadi Heights"]},
-{name:"Cleopatra Luxury Resort Makadi Bay",fee:400,aliases:["Cleopatra Makadi", "Cleopatra Luxury Makadi"]},
-{name:"Stella Beach Resort & Spa Makadi Bay",fee:400,aliases:["Stella Makadi", "Stella Beach Resort Makadi Bay", "Stella Beach Makadi"]},
-{name:"Makadi Spa Hotel",fee:400,aliases:["Makadi Spa"]},
-{name:"Xanadu Makadi Bay",fee:400,aliases:[]},
-{name:"Sunrise Holidays Resort",fee:50,aliases:[]},
-{name:"Royal Lagoons Resort",fee:150,aliases:[]},
-{name:"Hilton Hurghada Plaza",fee:70,aliases:["Hilton Plaza"]},
-{name:"Sunny Days Mirette",fee:100,aliases:[]},
-{name:"Flow Spectrum Resort",fee:150,aliases:[]},
-{name:"Blend Club Aqua Resort",fee:150,aliases:[]},
-{name:"Premier Le Reve Hotel & Spa",fee:300,aliases:["Premier Le Reve", "Premier Le Reve Sahl Hasheesh"]},
-{name:"The Oberoi Sahl Hasheesh",fee:300,aliases:[]},
-{name:"Kai Sahl Hasheesh",fee:300,aliases:[]},
-{name:"Iberotel Makadi Beach",fee:400,aliases:["Iberotel Makadi Beach Club"]},
-{name:"Jaz Makadi Oasis Resort",fee:400,aliases:["Jaz Makadi Oasis", "Jaz Makadi Oasis Club"]},
-{name:"Jaz Makadi Star & Spa",fee:400,aliases:["Jaz Makadi Star", "Jaz Makadi Star and Spa"]},
-{name:"Labranda Royal Makadi Resort",fee:400,aliases:["Labranda Royal Makadi"]},
-{name:"Prima Life Makadi Resort & Spa",fee:400,aliases:["Prima Life Makadi", "Prima Life Makadi Resort"]},
-{name:"Imperial Shams Abu Soma",fee:700,aliases:[]},
-{name:"Lotus Bay Resort",fee:700,aliases:[]},
-{name:"Menaville Safaga",fee:700,aliases:[]},
-{name:"Amarina Abu Soma Resort",fee:700,aliases:[]},
-{name:"Caribbean World Soma Bay",fee:700,aliases:[]},
-{name:"Sentido Palm Royale Soma Bay",fee:700,aliases:["Palm Royale Soma Bay"]},
-{name:"Kempinski Soma Bay",fee:700,aliases:[]},
-{name:"Sheraton Soma Bay",fee:700,aliases:[]},
-{name:"Robinson Soma Bay",fee:700,aliases:[]},
-{name:"Movenpick Soma Bay",fee:700,aliases:[]},
-{name:"The Breakers Soma Bay",fee:700,aliases:[]},
-{name:"Solymar Soma Beach",fee:700,aliases:[]},
-{name:"Grand Waterworld Makadi",fee:400,aliases:["Grand Water World Makadi", "Grand Watterword Makadi", "Grand Watterworld Makadi", "Grand Watterword", "Grand Watterworld", "Grand Waterworld Makadi Bay", "Grand Waterworld Resort Makadi", "Grand Waterworld", "Sunwing Waterworld Makadi", "Sunwing Makadi"]},
-{name:"The Grand Makadi",fee:400,aliases:["Grand Makadi"]},
-{name:"Makadi Palace",fee:400,aliases:[]},
-{name:"Makadi Bay Hotel",fee:400,aliases:[]},
-{name:"Serenity Alma Heights / Fun City",fee:400,aliases:["Serenity Alma Heights", "Serenity Fun City"]},
-{name:"Jaz Makadi Saraya Resort",fee:400,aliases:["Jaz Makadi Saraya"]},
-{name:"Jaz Makadi Saraya Palms",fee:400,aliases:[]},
-{name:"Jaz Makadi Blue",fee:400,aliases:[]},
-{name:"Jaz Aquaviva",fee:400,aliases:[]},
-{name:"Jaz Makadi Gardens",fee:400,aliases:[]},
-{name:"Labranda Garden Makadi",fee:400,aliases:[]},
-{name:"Stella Gardens Resort & Spa Makadi Bay",fee:400,aliases:["Stella Gardens Resort Makadi Bay", "Stella Gardens Makadi"]},
-{name:"Sunrise Tucana Resort",fee:400,aliases:["Sunrise Tucana"]},
-{name:"TUI Blue Makadi Gardens",fee:400,aliases:["TUI Blue Makadi"]},
-{name:"Tia Heights Makadi Bay",fee:400,aliases:["Tia Heights"]},
-{name:"Red Sea Taj Mahal Resort",fee:400,aliases:[]},
-{name:"Harmony Makadi Bay",fee:400,aliases:[]},
-{name:"Royal Pharaohs Makadi",fee:400,aliases:[]},
-{name:"Makadi Heights",fee:400,aliases:[]},
-{name:"The V Luxury Resort Sahl Hasheesh",fee:300,aliases:["V Luxury Resort Sahl Hasheesh", "The V Sahl Hasheesh"]},
-{name:"Azzurra Sahl Hasheesh",fee:300,aliases:[]},
-{name:"Zen Resort Sahl Hasheesh",fee:300,aliases:[]},
-{name:"Cook's Club El Gouna",fee:300,aliases:["Coopcs Club El Gouna"]},
-{name:"The Three Corners Ocean View El Gouna",fee:300,aliases:["The Three Corners Ocean View", "Ocean View El Gouna"]},
-{name:"Ancient Sands El Gouna",fee:300,aliases:[]},
-{name:"Steigenberger Golf Resort El Gouna",fee:300,aliases:[]},
-{name:"Sultan Bey El Gouna",fee:300,aliases:[]},
-{name:"Dawar El Omda El Gouna",fee:300,aliases:[]},
-{name:"Mosaique Hotel El Gouna",fee:300,aliases:[]},
-{name:"Fanadir Hotel El Gouna",fee:300,aliases:[]},
-{name:"La Maison Bleue El Gouna",fee:300,aliases:[]},
-{name:"Mangroovy El Gouna",fee:300,aliases:[]},
-{name:"Shams Lodge Water Sports Resort",fee:700,aliases:[]},
-{name:"Shams Safaga Resort",fee:700,aliases:[]},
-{name:"Amwaj Beach Club Abu Soma",fee:700,aliases:[]},
-{name:"Aqua Mondo Abu Soma",fee:700,aliases:[]},
-{name:"The Cascades Soma Bay",fee:700,aliases:["Cascades Soma Bay"]},
-{name:"Orca Village Safaga",fee:700,aliases:[]},
-{name:"Lamar Resort Abu Soma",fee:700,aliases:[]},
-{name:"Eagles Paradise Abu Soma Resort",fee:700,aliases:[]},
-{name:"Lemon & Soul Makadi",fee:400,aliases:["Lemon Soul Makadi", "Lemon and Soul Makadi", "Lemon & Soul"]},
-{name:"Rixos Premium Magawish",fee:150,aliases:["Rixos Magawish"]},
-{name:"Steigenberger Pure Lifestyle",fee:70,aliases:[]},
-{name:"Pickalbatros Blu Spa Resort",fee:70,aliases:["Albatros Blu Spa", "Blu Spa"]},
-{name:"Pickalbatros Aqua Vista Resort",fee:150,aliases:["Pickalbatros Aqua Vista", "Aqua Vista Resort"]},
-{name:"Pickalbatros Aqua Blu Resort",fee:150,aliases:["Pickalbatros Aqua Blu", "Albatros Aqua Blu", "Aqua Blu Resort"]},
-{name:"Pickalbatros Citadel Resort",fee:300,aliases:["Albatros Citadel Resort", "Citadel", "Citadel Resort"]},
-{name:"Kaisol Romance Resort Sahl Hasheesh",fee:300,aliases:["Kaisol Romance"]},
-{name:"Minamark Hotel",fee:50,aliases:["Minamark"]},
-{name:"Le Pacha Resort",fee:50,aliases:["Le Pacha"]},
-{name:"Bella Vista Resort Hurghada",fee:50,aliases:["Bella Vista"]},
-{name:"Regina Swiss Inn Resort",fee:50,aliases:["Regina Swiss Inn", "Regina Resort"]},
-{name:"Seagull Beach Resort",fee:50,aliases:["Seagull"]},
-{name:"Sunny Days El Palacio Resort & Spa",fee:50,aliases:["Sunny Days El Palacio", "El Palacio"]},
-{name:"Sunny Days Palma De Mirette Resort & Spa",fee:50,aliases:["Sunny Days Palma De Mirette", "Sunny Days Mirette", "Palma De Mirette", "Mirette"]},
-{name:"Bel Air Azur Resort",fee:50,aliases:["Bel Air Azur"]},
-{name:"Meraki Resort Hurghada",fee:50,aliases:["Meraki"]},
-{name:"Zahabia Hotel & Beach Resort",fee:50,aliases:["Zahabia", "Eagles Downtown Zahabia Resort & Aqua Park"]},
-{name:"King Tut Aqua Park Beach Resort",fee:50,aliases:["King Tut"]},
-{name:"Sphinx Aqua Park Beach Resort",fee:50,aliases:["Sphinx"]},
-{name:"Empire Beach Resort",fee:50,aliases:["Empire Beach"]},
-{name:"Royal Star Beach Resort",fee:50,aliases:["Royal Star"]},
-{name:"Geisum Village",fee:50,aliases:["Gaisum Village", "Geisum"]},
-{name:"New Gaisum Resort",fee:50,aliases:["New Geisum Resort", "New Gaisum", "New Geisum"]},
-{name:"Jewels Sahara Boutique Resort",fee:50,aliases:["Jewels Sahara", "Sahara Boutique Resort"]},
-{name:"Al Dora Residence",fee:50,aliases:["Al Dora Hotel", "Al Dora"]},
-{name:"Sky View Suites Hotel",fee:50,aliases:["Sky View Suites", "Sky View"]},
-{name:"Diana Hotel Hurghada",fee:50,aliases:["Diana Hotel"]},
-{name:"Four Seasons Hotel Hurghada",fee:50,aliases:["Four Seasons Hotel"]},
-{name:"Tiba Golden Resort",fee:50,aliases:["Tiba Golden"]},
-{name:"Alia Beach Resort",fee:50,aliases:["Alia Beach"]},
-{name:"Eagles Downtown Zahabia Resort & Aqua Park",fee:50,aliases:["Eagles Downtown Zahabia", "Zahabia Eagles"]},
-{name:"Steigenberger Aqua Magic",fee:70,aliases:["Aqua Magic", "Steigenberger Aqua Magic Hurghada"]},
-{name:"Siva Grand Beach",fee:70,aliases:[]},
-{name:"Jaz Neo Ivory",fee:70,aliases:["Jaz Ivory", "Ivory Suites", "Jaz Neo Ivory Hurghada"]},
-{name:"Sunrise Aqua Joy Resort",fee:70,aliases:["Sunrise Aqua Joy", "Aqua Joy"]},
-{name:"Swiss Inn Resort Hurghada",fee:70,aliases:["Swiss Inn"]},
-{name:"Continental Hotel Hurghada",fee:70,aliases:["Continental"]},
-{name:"Giftun Azur Resort",fee:70,aliases:["Giftun Azur"]},
-{name:"Old Vic Resort",fee:70,aliases:["Old Vic"]},
-{name:"Elysees Dream Beach Hotel",fee:70,aliases:["Elysees Dream Beach", "Elysees Hotel", "Elysees"]},
-{name:"Mashrabiya Hotel",fee:70,aliases:["Mashrabiya"]},
-{name:"Royal Lagoons Resort & Aqua Park",fee:70,aliases:["Royal Lagoons Resort", "Royal Lagoons"]},
-{name:"Mercure Hurghada",fee:150,aliases:["Mercure"]},
-{name:"Jaz Casa Del Mar Resort",fee:150,aliases:["Jaz Casa Del Mar"]},
-{name:"Desert Rose Resort",fee:150,aliases:["Desert Rose"]},
-{name:"Mirage Bay Resort & Aqua Park",fee:150,aliases:["Mirage Bay"]},
-{name:"Neverland City Hurghada",fee:250,aliases:["Neverland", "Neverland Hurghada"]},
-{name:"Titanic Aqua Park Resort",fee:250,aliases:["Titanic Aqua Park"]},
-{name:"Titanic Beach Spa & Aqua Park",fee:250,aliases:["Titanic Beach"]},
-{name:"Hurghada Long Beach Resort",fee:250,aliases:["Hurghada Long Beach", "Long Beach"]},
-{name:"Coral Beach Hurghada",fee:250,aliases:["Coral Beach"]},
-{name:"Pharaoh Azur Resort",fee:250,aliases:["Pharaoh Azur"]},
-{name:"Hawaii Caesar Palace Aqua Park",fee:200,aliases:["Hawaii Caesar Palace", "Hawaii Caesar"]},
-{name:"Hawaii Le Jardin Aqua Park",fee:200,aliases:["Hawaii Le Jardin", "Le Jardin"]},
-{name:"Hawaii Riviera Aqua Park",fee:200,aliases:["Hawaii Riviera"]},
-{name:"Hawaii Paradise Aqua Park",fee:200,aliases:["Hawaii Paradise"]},
-{name:"Mirage New Hawaii Resort",fee:200,aliases:["New Hawaii", "Mirage New Hawaii"]},
-{name:"AMC Royal Hotel & Spa",fee:200,aliases:["AMC Royal"]},
-{name:"Golden Beach Resort",fee:200,aliases:["Golden Beach"]},
-{name:"Palm Beach Resort",fee:200,aliases:["Palm Beach"]},
-{name:"Bellagio Beach Resort",fee:200,aliases:["Bellagio"]},
-{name:"Festival Riviera Resort",fee:200,aliases:["Festival Riviera"]},
-{name:"Nubia Aqua Beach Resort",fee:200,aliases:["Nubia"]},
-{name:"Caves Beach Resort",fee:200,aliases:["Caves Beach"]},
-{name:"The Three Corners Sunny Beach Resort",fee:200,aliases:["Three Corners Sunny Beach", "Three Corners"]},
-{name:"Al Kasr Sahl Hasheesh",fee:300,aliases:["Al Kasr", "Al Kasr Sahl"]},
-{name:"Serenity Sahl Hasheesh",fee:300,aliases:["SRNTY Sahl Hasheesh", "Serenity Sky Arc", "SRNTY"]},
-{name:"JAZ Elite Asteria",fee:300,aliases:["Jaz Elite Asteria", "Asteria"]},
-{name:"Jaz Makadi Oasis Club",fee:400,aliases:["Jaz Makadi Oasis"]},
-{name:"Fort Arabesque Resort, Spa & Villas",fee:400,aliases:["Fort Arabesque Resort", "Fort Arabesque", "Fort Arabesque The West Bay"]},
-{name:"Albatros Makadi Resort",fee:400,aliases:["Albatros Makadi"]},
-{name:"Siva Golden Bay Makadi",fee:400,aliases:["Siva Golden Bay", "Siva Golden", "Golden Bay Makadi"]},
-{name:"Shams Prestige Abu Soma",fee:700,aliases:[]},
-{name:"Kempinski Hotel Soma Bay",fee:700,aliases:["Kempinski Soma Bay"]},
-{name:"Sheraton Soma Bay Resort",fee:700,aliases:["Sheraton Soma Bay"]},
-{name:"Movenpick Waterpark Resort & Spa Soma Bay",fee:700,aliases:["Movenpick Soma Bay", "Movenpick Waterpark Soma Bay"]},
-{name:"The Breakers Diving & Surfing Lodge Soma Bay",fee:700,aliases:["The Breakers Soma Bay", "Breakers Soma Bay"]},
-{name:"The Cascades Golf Resort, Spa & Thalasso",fee:700,aliases:["The Cascades Soma Bay", "Cascades Soma Bay"]},
-{name:"Jaz Soma Beach",fee:700,aliases:[]},
-{name:"Steigenberger Resort Ras Soma",fee:700,aliases:["Steigenberger Ras Soma", "Ras Soma"]},
-{name:"Seven Seas Jolie Bay",fee:700,aliases:["Jolie Bay"]},
-{name:"Sentido Naga Bay",fee:700,aliases:["Naga Bay"]},
-{name:"Sun Beach Hotel Abu Soma",fee:700,aliases:["Sun Beach Abu Soma"]}
+  {name:"Minamark",fee:50,aliases:["Minamark Hotel"]},
+  {name:"Le Pacha",fee:50,aliases:["Le Pacha Resort"]},
+  {name:"Bella Vista",fee:50,aliases:["Bella Vista Resort Hurghada"]},
+  {name:"Arabia Azur Resort",fee:50,aliases:["Arabia Azur"]},
+  {name:"Bel Air Azur",fee:50,aliases:["Bel Air Azur Resort"]},
+  {name:"Seagull",fee:50,aliases:["Seagull Beach Resort"]},
+  {name:"Sunny Days El Palacio",fee:50,aliases:["Sunny Days El Palacio Resort & Spa", "El Palacio"]},
+  {name:"Sea Star Beau Rivage",fee:50,aliases:["Sea Star"]},
+  {name:"Regina Swiss Inn",fee:50,aliases:["Regina Swiss Inn Resort", "Regina Resort"]},
+  {name:"Sunny Days",fee:50,aliases:[]},
+  {name:"Sindbad Club",fee:70,aliases:["Sinbad club"]},
+  {name:"Steigenberger ALDAU Beach Hotel",fee:70,aliases:["Steigenberger ALDAU", "Aldau"]},
+  {name:"The Grand Resort Hurghada",fee:70,aliases:["The Grand Resort"]},
+  {name:"The Grand Hotel",fee:70,aliases:[]},
+  {name:"Grand Palace",fee:70,aliases:["The Grand Palace"]},
+  {name:"Pickalbatros White Beach Resort",fee:70,aliases:["Pickalbatros White Beach", "White Beach", "Picaalbatros White Beach resort"]},
+  {name:"Sunrise Aqua Joy",fee:70,aliases:["Sunrise Aqua Joy Resort", "Aqua Joy"]},
+  {name:"Marlin Inn",fee:70,aliases:[]},
+  {name:"Swiss Inn",fee:80,aliases:["Swiss Inn Resort Hurghada"]},
+  {name:"Continental",fee:70,aliases:["Continental Hotel Hurghada"]},
+  {name:"Mercure",fee:150,aliases:["Mercure Hurghada"]},
+  {name:"Jaz Casa Del Mar Beach",fee:150,aliases:["Jaz Casa Del Mar", "Jaz Casa Del Mar Resort", "Jaz elite casa del mar beach", "Jaz elite casa del mar beach hotel", "Jazz Elite Casa Del mar beach"]},
+  {name:"Desert Rose",fee:150,aliases:["Desert Rose Resort"]},
+  {name:"Pickalbatros Dana Beach Resort",fee:150,aliases:["Dana Beach", "Dana Beach Resort"]},
+  {name:"Titanic Royal Resort",fee:150,aliases:["Titanic Royal"]},
+  {name:"Beach Albatros Resort",fee:150,aliases:["Beach Albatros", "Pickalbatros Beach"]},
+  {name:"Pickalbatros Aqua Park Resort",fee:150,aliases:["Albatros Aqua Park", "Pickalbatros Aqua Park", "Albatros Aqua Park Resort"]},
+  {name:"Ali Baba Palace",fee:150,aliases:["Ali Baba", "Alibaba"]},
+  {name:"Aladdin Beach Resort",fee:150,aliases:["Aladdin"]},
+  {name:"Jasmine Palace Resort",fee:200,aliases:["Jasmine Palace", "Jasmine Village"]},
+  {name:"Gravity Hotel & Aqua Park Hurghada",fee:150,aliases:["Gravity Hotel", "Gravity Hurghada"]},
+  {name:"Pickalbatros Jungle Aqua Park",fee:250,aliases:["Jungle Aqua Park", "Jungle"]},
+  {name:"Titanic Beach",fee:200,aliases:["Titanic Beach Spa & Aqua Park"]},
+  {name:"Titanic Palace",fee:200,aliases:["Totanic palace"]},
+  {name:"Albatros Palace Resort",fee:250,aliases:["Albatros Palace"]},
+  {name:"Sunrise Mamlouk Palace Resort",fee:250,aliases:["Sunrise Mamlouk", "Mamlouk Palace", "Sentido Mamlouk Palace", "Santino mamlouk"]},
+  {name:"Sunrise Garden Beach Resort",fee:250,aliases:["Sunrise Garden Beach", "Sun Rice Garden Beach Resort", "Sunrrise garden beach resport"]},
+  {name:"Jaz Aquamarine Resort",fee:250,aliases:["Jaz Aquamarine"]},
+  {name:"Hurghada Long Beach",fee:250,aliases:["Hurghada Long Beach Resort", "Long Beach"]},
+  {name:"Coral Beach",fee:250,aliases:["Coral Beach Hurghada"]},
+  {name:"Pharaoh Azur",fee:250,aliases:["Pharaoh Azur Resort"]},
+  {name:"Hawaii Resorts",fee:200,aliases:[]},
+  {name:"Hawaii",fee:200,aliases:[]},
+  {name:"AMC Royal",fee:200,aliases:["AMC Royal Hotel & Spa"]},
+  {name:"Golden Beach",fee:200,aliases:["Golden Beach Resort"]},
+  {name:"Palm Beach",fee:200,aliases:["Palm Beach Resort"]},
+  {name:"Bellagio",fee:200,aliases:["Bellagio Beach Resort"]},
+  {name:"Festival Riviera",fee:200,aliases:["Festival Riviera Resort"]},
+  {name:"Nubia",fee:200,aliases:["Nubia Aqua Beach Resort"]},
+  {name:"Caves Beach",fee:200,aliases:["Caves Beach Resort"]},
+  {name:"Three Corners Sunny Beach Resort",fee:200,aliases:["Three Corners Sunny Beach", "Three Corners", "The Three Corners Sunny Beach Resort", "Three corner sunny beach"]},
+  {name:"Sheraton Miramar",fee:300,aliases:[]},
+  {name:"Movenpick Resort & Spa El Gouna",fee:300,aliases:["Movenpick"]},
+  {name:"Steigenberger Golf",fee:300,aliases:[]},
+  {name:"Three Corners Rihana Resort",fee:300,aliases:["Three Corners Rihana", "Rihana"]},
+  {name:"Casa Cook El Gouna",fee:300,aliases:["Casa Cook"]},
+  {name:"Ali Pasha",fee:300,aliases:[]},
+  {name:"Labranda Club Makadi Resort",fee:400,aliases:["Labranda", "Labranda Club Makadi"]},
+  {name:"Baron Palace Sahl Hasheesh",fee:300,aliases:["Baron Palace"]},
+  {name:"Pyramisa Beach Resort Sahl Hasheesh",fee:300,aliases:["Pyramisa"]},
+  {name:"Gravity Sahl Hasheesh Resort",fee:300,aliases:["Gravity Sahl Hasheesh"]},
+  {name:"Tropitel Sahl Hasheesh Resort",fee:300,aliases:["Tropitel", "Tropitel Elite Sahl Hasheesh", "Tropitel Sahl Hasheesh"]},
+  {name:"Old Palace Resort Sahl Hasheesh",fee:300,aliases:["Old Palace"]},
+  {name:"Stella Di Mare Makadi Bay",fee:400,aliases:["Stella Di Mare"]},
+  {name:"Sunrise Royal Makadi Resort",fee:400,aliases:["Sunrise Royal Makadi", "Roayl sunrice resOrt and spa makadi bay"]},
+  {name:"Jaz Makadina Resort",fee:400,aliases:["Jaz Makadina"]},
+  {name:"Fort Arabesque Resort",fee:400,aliases:["Fort Arabesque", "Fort Arabesque The West Bay", "Fort Arabesque Resort, Spa & Villas"]},
+  {name:"Serenity Makadi Beach",fee:400,aliases:["Serenity", "Serenity Alpha Beach", "Serenity Alpha Beach Makadi Bay", "Serenity Makadi Heights"]},
+  {name:"Cleopatra Luxury Resort Makadi Bay",fee:400,aliases:["Cleopatra Makadi", "Cleopatra Luxury Makadi"]},
+  {name:"Stella Beach Resort & Spa Makadi Bay",fee:400,aliases:["Stella Makadi", "Stella Beach Resort Makadi Bay", "Stella Beach Makadi"]},
+  {name:"Makadi Spa Hotel",fee:400,aliases:["Makadi Spa"]},
+  {name:"Xanadu Makadi Bay",fee:400,aliases:["Xanadu club", "Xanadu club Makadi bay", "xanado makadi"]},
+  {name:"Sunrise Holidays Resort",fee:50,aliases:["Sunrisu Holidays resort"]},
+  {name:"Royal Lagoons Resort",fee:100,aliases:["Royal Lagoons Resort & Aqua Park", "Royal Lagoons"]},
+  {name:"Hilton Hurghada Plaza",fee:70,aliases:["Hilton Plaza"]},
+  {name:"Sunny Days Mirette",fee:100,aliases:["Mirette"]},
+  {name:"Sunny Days Palma De Mirette Resort & Spa",fee:50,aliases:["Sunny Days Palma De Mirette", "Palma De Mirette"]},
+  {name:"Flow Spectrum Resort",fee:300,aliases:[]},
+  {name:"Blend Club Aqua Resort",fee:200,aliases:[]},
+  {name:"Premier Le Reve Hotel & Spa",fee:300,aliases:["Premier Le Reve", "Premier Le Reve Sahl Hasheesh"]},
+  {name:"The Oberoi Sahl Hasheesh",fee:300,aliases:[]},
+  {name:"Kai Sahl Hasheesh",fee:300,aliases:[]},
+  {name:"Iberotel Makadi Beach",fee:400,aliases:["Iberotel Makadi Beach Club"]},
+  {name:"Jaz Makadi Oasis Resort",fee:400,aliases:["Jaz Makadi Oasis", "Jaz Makadi Oasis Club", "JEZ MAKADI OASIS"]},
+  {name:"Jaz Makadi Star & Spa",fee:400,aliases:["Jaz Makadi Star"]},
+  {name:"Labranda Royal Makadi Resort",fee:400,aliases:["Labranda Royal Makadi"]},
+  {name:"Prima Life Makadi Resort & Spa",fee:400,aliases:["Prima Life Makadi", "Prima Life Makadi Resort", "Prima life makady"]},
+  {name:"Imperial Shams Abu Soma",fee:700,aliases:[]},
+  {name:"Lotus Bay Resort",fee:700,aliases:[]},
+  {name:"Menaville Safaga",fee:700,aliases:["Menaville Resort Safaga"]},
+  {name:"Amarina Abu Soma Resort",fee:700,aliases:[]},
+  {name:"Caribbean World Soma Bay",fee:700,aliases:["Sentido Caribbean Soma bay", "Sentido Caribbean World"]},
+  {name:"Sentido Palm Royale Soma Bay",fee:700,aliases:["Palm Royale Soma Bay", "Palm Royale resort soma bay", "Palm Royale Resort", "Palm Roayal soma bay", "Palm royal soma bay"]},
+  {name:"Kempinski Soma Bay",fee:700,aliases:["Kempinski Hotel Soma Bay"]},
+  {name:"Sheraton Soma Bay",fee:700,aliases:["Sheraton Soma Bay Resort"]},
+  {name:"Robinson Soma Bay",fee:700,aliases:[]},
+  {name:"Movenpick Soma Bay",fee:700,aliases:["Movenpick Waterpark Resort & Spa Soma Bay", "Movenpick Waterpark Soma Bay"]},
+  {name:"The Breakers Soma Bay",fee:700,aliases:["The Breakers Diving & Surfing Lodge Soma Bay", "Breakers Soma Bay"]},
+  {name:"Solymar Soma Beach",fee:700,aliases:[]},
+  {name:"Grand Waterworld Makadi",fee:400,aliases:["Grand Water World Makadi", "Grand Watterword Makadi", "Grand Watterworld Makadi", "Grand Watterword", "Grand Watterworld", "Grand Waterworld Makadi Bay", "Grand Waterworld Resort Makadi", "Grand Waterworld", "Sunwing Waterworld Makadi", "Sunwing Makadi", "Grand water word resort"]},
+  {name:"The Grand Makadi",fee:400,aliases:["Grand Makadi"]},
+  {name:"Makadi Palace",fee:400,aliases:["Makady palace"]},
+  {name:"Makadi Bay Hotel",fee:400,aliases:[]},
+  {name:"Serenity Alma Heights / Fun City",fee:400,aliases:["Serenity Alma Heights", "Serenity Fun City"]},
+  {name:"Jaz Makadi Saraya Resort",fee:400,aliases:["Jaz Makadi Saraya"]},
+  {name:"Jaz Makadi Saraya Palms",fee:400,aliases:["Jaz neo makadi Saraya Palms", "Jaz neo Saraya palm"]},
+  {name:"Jaz Makadi Blue",fee:400,aliases:[]},
+  {name:"Jaz Aquaviva",fee:400,aliases:["Jaz Makadi Aquaviva"]},
+  {name:"Jaz Makadi Gardens",fee:400,aliases:[]},
+  {name:"Labranda Garden Makadi",fee:400,aliases:[]},
+  {name:"Stella Gardens Resort & Spa Makadi Bay",fee:400,aliases:["Stella Gardens Resort Makadi Bay", "Stella Gardens Makadi"]},
+  {name:"Sunrise Tucana Resort",fee:400,aliases:["Sunrise Tucana", "SunriseTucsna"]},
+  {name:"TUI Blue Makadi Gardens",fee:400,aliases:["TUI Blue Makadi"]},
+  {name:"Tia Heights Makadi Bay",fee:400,aliases:["Tia Heights"]},
+  {name:"Red Sea Taj Mahal Resort",fee:400,aliases:[]},
+  {name:"Harmony Makadi Bay",fee:400,aliases:[]},
+  {name:"Royal Pharaohs Makadi",fee:400,aliases:[]},
+  {name:"Makadi Heights",fee:400,aliases:[]},
+  {name:"The V Luxury Resort Sahl Hasheesh",fee:300,aliases:["V Luxury Resort Sahl Hasheesh", "The V Sahl Hasheesh"]},
+  {name:"Azzurra Sahl Hasheesh",fee:300,aliases:[]},
+  {name:"Zen Resort Sahl Hasheesh",fee:300,aliases:[]},
+  {name:"Cook's Club El Gouna",fee:300,aliases:["Coopcs Club El Gouna", "Cooks Club El Gouna"]},
+  {name:"The Three Corners Ocean View El Gouna",fee:300,aliases:["The Three Corners Ocean View", "Ocean View El Gouna"]},
+  {name:"Ancient Sands El Gouna",fee:300,aliases:[]},
+  {name:"Steigenberger Golf Resort El Gouna",fee:300,aliases:[]},
+  {name:"Sultan Bey El Gouna",fee:300,aliases:[]},
+  {name:"Dawar El Omda El Gouna",fee:300,aliases:[]},
+  {name:"Mosaique Hotel El Gouna",fee:300,aliases:[]},
+  {name:"Fanadir Hotel El Gouna",fee:300,aliases:[]},
+  {name:"La Maison Bleue El Gouna",fee:300,aliases:[]},
+  {name:"Mangroovy El Gouna",fee:300,aliases:[]},
+  {name:"Shams Lodge Water Sports Resort",fee:700,aliases:[]},
+  {name:"Shams Safaga Resort",fee:700,aliases:[]},
+  {name:"Amwaj Beach Club Abu Soma",fee:700,aliases:["Amwaj soma bay", "Amway beach club abu soma"]},
+  {name:"Aqua Mondo Abu Soma",fee:700,aliases:[]},
+  {name:"The Cascades Soma Bay",fee:700,aliases:["Cascades Soma Bay", "The Cascades Golf Resort, Spa & Thalasso"]},
+  {name:"Orca Village Safaga",fee:700,aliases:[]},
+  {name:"Lamar Resort Abu Soma",fee:700,aliases:[]},
+  {name:"Eagles Paradise Abu Soma Resort",fee:700,aliases:["Eygles paradise Abu Soma resort"]},
+  {name:"Lemon & Soul Makadi",fee:400,aliases:["Lemon Soul Makadi", "Lemon & Soul"]},
+  {name:"Rixos Premium Magawish",fee:150,aliases:["Rixos Magawish"]},
+  {name:"Steigenberger Pure Lifestyle",fee:70,aliases:[]},
+  {name:"Pickalbatros Blu Spa Resort",fee:70,aliases:["Albatros Blu Spa", "Blu Spa", "Pickalbatro Blue Resort", "Pickalbatros Blue Spa Resort"]},
+  {name:"Pickalbatros Aqua Vista Resort",fee:150,aliases:["Pickalbatros Aqua Vista", "Aqua Vista Resort"]},
+  {name:"Pickalbatros Aqua Blu Resort",fee:150,aliases:["Pickalbatros Aqua Blu", "Albatros Aqua Blu", "Aqua Blu Resort"]},
+  {name:"Pickalbatros Citadel Resort",fee:300,aliases:["Albatros Citadel Resort", "Citadel", "Citadel Resort"]},
+  {name:"Kaisol Romance Resort Sahl Hasheesh",fee:300,aliases:["Kaisol Romance"]},
+  {name:"Meraki Resort Hurghada",fee:50,aliases:["Meraki"]},
+  {name:"Zahabia Hotel & Beach Resort",fee:50,aliases:["Zahabia", "Eagles Downtown Zahabia Resort & Aqua Park", "Eagles Downtown Zahabia", "Zahabia Eagles", "Zahabia Resort", "Zahabia Hotel"]},
+  {name:"King Tut Aqua Park Beach Resort",fee:50,aliases:["King Tut", "King Tut Resort", "King Tut Aqua Park"]},
+  {name:"Sphinx Aqua Park Beach Resort",fee:50,aliases:["Sphinx", "Sphinx Resort", "Sphinx Aqua Park"]},
+  {name:"Empire Beach Resort",fee:50,aliases:["Empire Beach", "Empire Beach Resort Hurghada"]},
+  {name:"Royal Star Beach Resort",fee:50,aliases:["Royal Star"]},
+  {name:"Geisum Village",fee:50,aliases:["Gaisum Village", "Geisum"]},
+  {name:"New Gaisum Resort",fee:50,aliases:["New Geisum Resort", "New Gaisum", "New Geisum"]},
+  {name:"Jewels Sahara Boutique Resort",fee:50,aliases:["Jewels Sahara", "Sahara Boutique Resort"]},
+  {name:"Al Dora Residence",fee:50,aliases:["Al Dora Hotel", "Al Dora", "Aldora residents", "Aldora resort, El Helal Hurghada"]},
+  {name:"Sky View Suites Hotel",fee:50,aliases:["Sky View Suites", "Sky View"]},
+  {name:"Diana Hotel Hurghada",fee:50,aliases:["Diana Hotel"]},
+  {name:"Four Seasons Hotel Hurghada",fee:50,aliases:["Four Seasons Hotel"]},
+  {name:"Tiba Golden Resort",fee:50,aliases:["Tiba Golden"]},
+  {name:"Alia Beach Resort",fee:50,aliases:["Alia Beach"]},
+  {name:"Steigenberger Aqua Magic",fee:70,aliases:["Aqua Magic", "Steigenberger Aqua Magic Hurghada"]},
+  {name:"Siva Grand Beach",fee:70,aliases:["Siva Grand Beach Hotel"]},
+  {name:"Jaz Neo Ivory",fee:70,aliases:["Jaz Ivory", "Ivory Suites", "Jaz Neo Ivory Hurghada"]},
+  {name:"Giftun Azur Resort",fee:70,aliases:["Giftun Azur"]},
+  {name:"Old Vic Resort",fee:70,aliases:["Old Vic"]},
+  {name:"Elysees Dream Beach Hotel",fee:70,aliases:["Elysees Dream Beach", "Elysees Hotel", "Elysees", "Elysees Hurghada", "Elysses Dream beach"]},
+  {name:"Mashrabiya Hotel",fee:70,aliases:["Mashrabiya"]},
+  {name:"Mirage Bay Resort & Aqua Park",fee:150,aliases:["Mirage Bay", "Mirage Bay Resort"]},
+  {name:"Neverland City Hurghada",fee:250,aliases:["Neverland", "Neverland Hurghada", "Pickalbatros Water Valley Resort", "Pickalbatros Neverland", "Water Valley Resort"]},
+  {name:"Titanic Aqua Park Resort",fee:200,aliases:["Titanic Aqua Park", "Titanic resort and aqua park", "Titanic resort & aquapark", "Titanic resort", "Titanic resort and aqua"]},
+  {name:"Hawaii Caesar Palace Aqua Park",fee:200,aliases:["Hawaii Caesar Palace", "Hawaii Caesar"]},
+  {name:"Hawaii Le Jardin Aqua Park",fee:200,aliases:["Hawaii Le Jardin", "Le Jardin"]},
+  {name:"Hawaii Riviera Aqua Park",fee:200,aliases:["Hawaii Riviera"]},
+  {name:"Hawaii Paradise Aqua Park",fee:200,aliases:["Hawaii Paradise"]},
+  {name:"Mirage New Hawaii Resort",fee:200,aliases:["New Hawaii", "Mirage New Hawaii"]},
+  {name:"Al Kasr Sahl Hasheesh",fee:300,aliases:["Al Kasr", "Al Kasr Sahl", "Alkasr Sahl Hasheesh", "Al Kasr Hotel"]},
+  {name:"Serenity Sahl Hasheesh",fee:300,aliases:["SRNTY Sahl Hasheesh", "Serenity Sky Arc", "SRNTY", "SRNTY Resort"]},
+  {name:"JAZ Elite Asteria",fee:300,aliases:["Asteria"]},
+  {name:"Albatros Makadi Resort",fee:400,aliases:["Albatros Makadi", "Pickalbatros Makadi Resort"]},
+  {name:"Siva Golden Bay Makadi",fee:400,aliases:["Siva Golden Bay", "Siva Golden", "Golden Bay Makadi", "Siva Golden Bay Resort", "Siva Golden Bay Hotel", "Seva Golden Bay", "Silva golden makady bay"]},
+  {name:"Shams Prestige Abu Soma",fee:700,aliases:["Shams Prestige Abu Soma Resort", "Shams Prestige"]},
+  {name:"Jaz Soma Beach",fee:700,aliases:[]},
+  {name:"Steigenberger Resort Ras Soma",fee:700,aliases:["Steigenberger Ras Soma", "Ras Soma", "Ras Soma Steigenberger", "Steigenber Ras Soma", "Steigenburger ras soma"]},
+  {name:"Seven Seas Jolie Bay",fee:700,aliases:["Jolie Bay", "Seven Seas Hotel Jolie Bay"]},
+  {name:"Sentido Naga Bay",fee:700,aliases:["Naga Bay", "Santido naga bay"]},
+  {name:"Sun Beach Hotel Abu Soma",fee:700,aliases:["Sun Beach Abu Soma"]},
+  {name:"Calimera Blend Paradise Hurghada",fee:200,aliases:["Calimera Blend Paradise", "Calimera Paradise", "Blend Paradise", "Calimera Hotel", "Calimera"]},
+  {name:"Hurghada Marriott Beach Resort",fee:70,aliases:["Marriott Hurghada", "Marriott Beach Resort"]},
+  {name:"Serry Beach Resort",fee:70,aliases:["Serry Beach Hurghada"]},
+  {name:"Sunrise Crystal Bay Resort",fee:250,aliases:["Sunrise Crystal Bay", "Crystal Bay Resort"]},
+  {name:"Sunrise Alma Bay Resort",fee:150,aliases:["Sunrise Alma Bay", "Alma Bay Resort"]},
+  {name:"Pickalbatros Alf Leila Wa Leila Resort",fee:250,aliases:["Alf Leila Wa Leila", "Albatros Alf Leila Wa Leila"]},
+  {name:"New Eagles Aqua Park Resort",fee:250,aliases:["New Eagles Resort", "New Eagles Aqua Park"]},
+  {name:"Veranda Sahl Hasheesh Resort",fee:300,aliases:["Veranda Sahl Hasheesh", "Veranda Resort"]},
+  {name:"Jaz Asteria",fee:300,aliases:["Jaz Asteria Beach"]},
+  {name:"Steigenberger Makadi",fee:400,aliases:["Steigenberger Makadi Resort", "Steigenburger Makadi"]},
+  {name:"Pickalbatros Makadi Aqua Park",fee:400,aliases:["Makadi Aqua Park", "Albatros Makadi Aqua Park"]},
+  {name:"Jaz Bluemarine",fee:400,aliases:["Jaz Blue Marine", "Jaz bluemarine resort", "Jaz bluemarine Resport", "Jaz blumarine", "Tui jaz blue marine"]},
+  {name:"The Club Azur Resort",fee:400,aliases:["Club Azur Makadi", "Club Azur Resort"]},
+  {name:"Sol Y Mar Makadi Sun",fee:400,aliases:["Solymar Makadi Sun", "Makadi Sun"]},
+  {name:"Ali Baba Safaga Hotel",fee:700,aliases:["Ali Baba Safaga"]},
+  {name:"Sun Beach Hotel Safaga",fee:700,aliases:["Sun Beach Safaga"]},
+  {name:"Sol Y Mar Paradise Beach",fee:700,aliases:["Solymar Paradise Beach", "Paradise Beach Safaga", "Paradise Beach"]},
+  {name:"Coral Sun Beach Safaga",fee:700,aliases:["Coral Sun Beach"]},
+  {name:"Coral Garden Resort Safaga",fee:700,aliases:["Coral Garden Safaga"]},
+  {name:"Paradise Abu Soma Resort",fee:700,aliases:["Paradise Abu Soma"]},
+  {name:"Nemo Dive Club & Hotel",fee:700,aliases:["Nemo Dive Club", "Nemo Hotel Safaga"]},
+  {name:"Amarina Sapphire",fee:50,aliases:["Amarina Saphir", "Amarina sapphire resort", "Amarina sapphire Hurghada Resort"]},
+  {name:"Creek Hotel",fee:350,aliases:["Creek hotel El gouna", "Hotel Creek"]},
+  {name:"El Karma",fee:200,aliases:[]},
+  {name:"Jaz Palmariva Beach",fee:400,aliases:["jaz palmriva beach", "jaz palmavera makadi", "Jaz Palmariva", "Jaz Palmariva Beach Resort", "Jaz palmarive beach", "jaz palmavira beach makadi"]},
+  {name:"Magic Beach",fee:100,aliases:["Magic Beach Hotel Hurgada", "Magick beach by amarina"]},
+  {name:"Merlin Inn",fee:50,aliases:["Merlin inn resort", "Mirlin inn"]},
+  {name:"Moreno Horizon",fee:50,aliases:["Moreno Horizon spa", "Morieno horizon resort"]},
+  {name:"Rewaya Inn",fee:200,aliases:[]},
+  {name:"Rewaya Luxury",fee:200,aliases:["Rewaya Luxol", "Reway Luxory resort", "Reway luxury", "Rewaya luxory resort", "rewaya luxuxry"]},
+  {name:"Rewaya Majestic",fee:200,aliases:["rewaya majeestic"]},
+  {name:"Serry",fee:70,aliases:[]},
+  {name:"Sunrise Alora",fee:200,aliases:["sunrise alora aqua park", "Sunrise alora aqua park resort", "sunrise alora aquapark resort", "sunriise alora"]},
+  {name:"Sunrise Solara",fee:200,aliases:["Sunrise solara aqua park", "Sunrise Solara Aqua Park Resort", "Sunrise solara aquapark"]},
+  {name:"The Caves",fee:200,aliases:[]},
+  {name:"The Caves Resort",fee:200,aliases:[]},
+  {name:"Titanic Pearl",fee:150,aliases:["Titanic Pearl Hurghada"]},
+  {name:"Tui Blue Crystal Bay",fee:150,aliases:["Crystal Bay (Tui blue)"]},
+  {name:"Tui Magic Life Kalawy",fee:1500,aliases:[]},
+  {name:"Dexon Roma",fee:50,aliases:[]},
+  {name:"Alhambra Mamsha",fee:70,aliases:["al hambra", "Al hambra, Mamsha street", "Al-hambra Phase, Mamsha", "Alhambra"]},
+  {name:"Sunrise Azalea Aqua Park",fee:200,aliases:["Sunrise azalea aqua park resort", "Sunrise Azalea", "Sunrise azalea aqua park resort hurghada", "sunrise azalea resort and aqua park"]},
+  {name:"Aqua Infinity Resort",fee:200,aliases:["Aqua Infinity Resort, Al Ahyaa"]},
+  {name:"Arabella Azur Resort",fee:70,aliases:["Arabella azur"]},
+  {name:"Scandic Resort Hurghada",fee:150,aliases:[]},
+  {name:"The View Sheraton Street",fee:50,aliases:["The view, Felfela, Old Sheraton", "The view"]},
+  {name:"Diamond Resort",fee:50,aliases:[]},
+  {name:"Princess Resort Mamsha",fee:50,aliases:["Princess resort"]},
+  {name:"Swiss Touch Resort",fee:70,aliases:["Swiss Touch", "Swiss touch resort spa", "Swissttouch Marsa alam"]}
 ];
+
+/* v-hotels-one-source: one hotel list for both sites. The pharmacy's hotel table is the source of truth
+   (price + alternative spellings); this built-in copy is only the offline fallback. */
+function scApplyHotelRows(rows){
+  try{
+    (rows||[]).forEach(row=>{
+      const name=String((row&&row.hotel_name)||"").trim();
+      if(!name) return;
+      const key=normalizeHotelText(name);
+      const fee=Number(row.fee_egp)||0;
+      const al=Array.isArray(row.aliases)?row.aliases.filter(Boolean).map(String):[];
+      let i=hotels.findIndex(h=>normalizeHotelText(h.name)===key);
+      if(i<0) i=hotels.findIndex(h=>(h.aliases||[]).some(a=>normalizeHotelText(a)===key));
+      if(i>=0){
+        const h=hotels[i];
+        if(fee>0) h.fee=fee;
+        if(!Array.isArray(h.aliases)) h.aliases=[];
+        const have=new Set([h.name].concat(h.aliases).map(normalizeHotelText));
+        al.forEach(a=>{ const k=normalizeHotelText(a); if(k && !have.has(k)){ h.aliases.push(a); have.add(k); } });
+      }else{
+        hotels.push({name:name, fee:fee, aliases:al});
+      }
+    });
+    scSyncHotelDatalist();
+  }catch(e){}
+}
+function scSyncHotelDatalist(){
+  try{
+    const dl=document.getElementById("hotelList");
+    if(!dl) return;
+    dl.innerHTML=hotels.map(h=>'<option value="'+String(h.name).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")+'">').join("");
+  }catch(e){}
+}
+function scHotelSim(a,b){
+  if(a.length<2||b.length<2) return 0;
+  const m=new Map();
+  for(let i=0;i<a.length-1;i++){ const g=a.substr(i,2); m.set(g,(m.get(g)||0)+1); }
+  let hit=0;
+  for(let i=0;i<b.length-1;i++){ const g=b.substr(i,2); const c=m.get(g)||0; if(c>0){ hit++; m.set(g,c-1); } }
+  return 2*hit/(a.length+b.length-2);
+}
+/* suggestions: normal matches first, then the closest names when the guest mistypes */
+function scHotelMatches(query, limit){
+  const q=normalizeHotelText(query);
+  let list=hotels.filter(h=>hotelMatchesQuery(h, query));
+  if(q && q.length>=4 && list.length<limit){
+    const have=new Set(list), scored=[];
+    hotels.forEach(h=>{
+      if(have.has(h)) return;
+      let best=0;
+      [h.name].concat(h.aliases||[]).forEach(n=>{ const s=scHotelSim(q, normalizeHotelText(n)); if(s>best) best=s; });
+      if(best>=0.55) scored.push([best,h]);
+    });
+    scored.sort((x,y)=>y[0]-x[0]);
+    list=list.concat(scored.slice(0, limit-list.length).map(x=>x[1]));
+  }
+  return list.slice(0, limit);
+}
+try{ scApplyHotelRows(JSON.parse(localStorage.getItem("scHotelRowsV1")||"[]")); }catch(e){}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", scSyncHotelDatalist); else scSyncHotelDatalist();
 
 async function loadExtraHotels(){
   try{
-    const r=await fetch(SB_URL+"/rest/v1/hotel_delivery_fees?select=hotel_name,fee_egp,is_active&is_active=eq.true&limit=1000",{headers:SB_HEADERS});
+    const r=await fetch(SB_URL+"/rest/v1/hotel_delivery_fees?select=hotel_name,fee_egp,aliases&is_active=eq.true&order=id.asc&limit=2000",{headers:SB_HEADERS});
     if(!r.ok)return;
     const rows=await r.json();
-    (rows||[]).forEach(row=>{
-      const name=String(row.hotel_name||"").trim();
-      if(!name)return;
-      const exists=hotels.some(h=>normalizeHotelText(h.name)===normalizeHotelText(name));
-      if(!exists){ hotels.push({name:name, fee:Number(row.fee_egp)||0, aliases:[]}); }
-    });
+    if(!Array.isArray(rows)) return;
+    scApplyHotelRows(rows);
+    try{ localStorage.setItem("scHotelRowsV1", JSON.stringify(rows)); }catch(e){}
   }catch(e){}
 }
 
@@ -7680,7 +7752,13 @@ function findHotelByInput(value){
   if(!q) return null;
   let found = hotels.find(h => normalizeHotelText(h.name) === q || (h.aliases || []).some(a => normalizeHotelText(a) === q));
   if(found) return found;
-  found = hotels.find(h => hotelSearchText(h).includes(q) || q.includes(normalizeHotelText(h.name)) || (h.aliases || []).some(a => q.includes(normalizeHotelText(a))));
+  /* the guest wrote more than the hotel name: take the most specific hotel contained in the text */
+  let best=null, bestLen=0;
+  hotels.forEach(h=>{
+    [h.name].concat(h.aliases||[]).forEach(n=>{ const k=normalizeHotelText(n); if(k.length>=5 && k.length>bestLen && q.includes(k)){ best=h; bestLen=k.length; } });
+  });
+  if(best) return best;
+  found = hotels.find(h => hotelSearchText(h).includes(q));
   return found || null;
 }
 
@@ -7715,9 +7793,7 @@ function showHotelSuggestions(){
   const box = document.getElementById("hotelSuggestions");
   if(!input || !box) return;
   const q = input.value.trim();
-  const matches = hotels
-    .filter(h => hotelMatchesQuery(h, q))
-    .slice(0, 6);
+  const matches = scHotelMatches(q, 6);
 
   if(!matches.length){
     box.innerHTML = "";
@@ -10083,9 +10159,7 @@ function showCheckoutHotelSuggestions(){
   if(!input || !box) return;
 
   const q = input.value.trim();
-  const matches = hotels
-    .filter(h => hotelMatchesQuery(h, q))
-    .slice(0, 7);
+  const matches = scHotelMatches(q, 7);
 
   if(!matches.length){
     box.innerHTML = "";
@@ -11084,7 +11158,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.16</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.17</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
