@@ -12659,6 +12659,8 @@ async function start() {
       $('#mpreview').hidden = false;
     }
     DB.tiers.forEach(x => { x.days = Number(x.days); });
+    // One WhatsApp number for the whole storefront: bookings go to the same chat as orders.
+    if (typeof WA === 'string' && WA) DB.settings.whatsapp = WA;
   } catch (e) {
     started = false;
     $('#loading').hidden = true; $('#loadError').hidden = false;
