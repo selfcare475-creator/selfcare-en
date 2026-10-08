@@ -6630,6 +6630,7 @@ body { padding-bottom: 34px !important; }
 
 <div class="filters filters-after-hero" id="filters"></div>
 <section class="kits-section" id="kitsSection"></section>
+<section id="mobSection" hidden></section>
 
 <div class="count" id="countLabel"></div>
 <div class="grid" id="grid"></div>
@@ -11755,6 +11756,902 @@ function scStripDigits(el){
   </div>
   <div id="myOrdersBody" style="flex:1;overflow-y:auto;padding:12px 16px"></div>
 </div>
+
+<!-- MOBILITY RENTAL START -->
+<style>body.mob-on .sub-filter-panel,body.mob-on #countLabel,body.mob-on #grid,body.mob-on #kitsSection{display:none!important}#mobSection{padding:0 12px}</style>
+<script>
+(function () {
+const host = document.getElementById('mobSection');
+if (!host || host.shadowRoot) return;
+const root = host.attachShadow({ mode: 'open' });
+root.innerHTML = "<style>\n  :host{\n    --bg:#F1F7F8; --surface:#FFFFFF; --ink:#0C2A3A; --ink-soft:#4A6472;\n    --sea:#0B7285; --sea-deep:#06495A; --sea-mid:#0A6072; --sea-tint:#DCEEF1; --sea-wash:#F3FAFB;\n    --sun:#FFC53D; --sun-deep:#E59E00; --line:#CFDDE2;\n    --ok:#17734A; --ok-tint:#E2F3EA; --stop:#A93A1C; --stop-tint:#FBE9E3;\n    --display:\"Plus Jakarta Sans\",system-ui,-apple-system,\"Segoe UI\",sans-serif;\n    --body:\"Plus Jakarta Sans\",system-ui,-apple-system,\"Segoe UI\",sans-serif;\n    --r-card:26px; --r-field:14px;\n    --gutter:clamp(16px,4vw,40px);\n    --ease:cubic-bezier(.22,.8,.26,1);\n    --spring:cubic-bezier(.34,1.56,.64,1);\n  }\n  *,*::before,*::after{box-sizing:border-box}\n  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:84px}\n  body{margin:0;background:var(--bg);color:var(--ink);font:400 16.5px/1.6 var(--body);overflow-x:hidden;overflow-x:clip;-webkit-font-smoothing:antialiased}\n  img{max-width:100%;display:block}\n  button,input,select,textarea{font:inherit;color:inherit}\n  button{cursor:pointer;-webkit-tap-highlight-color:transparent}\n  a{color:var(--sea-deep)}\n  h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.03em;line-height:1.06;text-wrap:balance}\n  h2{font-size:clamp(1.8rem,4.6vw,2.6rem);font-weight:800}\n  h3{font-size:1.18rem;font-weight:700;letter-spacing:-.015em;line-height:1.3}\n  p{margin:0}\n  :focus-visible{outline:3px solid var(--sun-deep);outline-offset:2px;border-radius:6px}\n  .wrap{max-width:1160px;margin:0 auto;padding-inline:var(--gutter)}\n  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}\n  [hidden]{display:none!important}\n\n  /* ---------- top bar ---------- */\n  .bar{position:sticky;top:0;z-index:30;background:var(--sea-deep);color:#fff;transition:box-shadow .3s,background .3s}\n  .bar.scrolled{background:rgba(6,73,90,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 8px 24px -14px rgba(3,30,38,.7)}\n  .bar-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px}\n  .mark{font:800 1.18rem/1 var(--display);letter-spacing:-.02em;color:#fff;text-decoration:none;display:flex;flex-direction:column;gap:4px}\n  .mark small{font:400 .8rem/1 var(--body);letter-spacing:0;color:#BFE0E6}\n  .tools{display:flex;align-items:center;gap:8px}\n  .seg{position:relative;display:flex;background:rgba(255,255,255,.14);border-radius:999px;padding:3px}\n  .seg::before{content:\"\";position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:#fff;transition:transform .35s var(--ease)}\n  .seg[data-on=\"de\"]::before{transform:translateX(100%)}\n  .seg button{position:relative;border:0;background:transparent;color:#fff;font-weight:700;font-size:.9rem;width:46px;height:38px;border-radius:999px;transition:color .25s}\n  .seg button[aria-pressed=\"true\"]{color:var(--sea-deep)}\n  .cur{height:44px;border-radius:999px;border:0;background:rgba(255,255,255,.14);color:#fff;font-weight:700;font-size:.9rem;padding:0 30px 0 14px;appearance:none;-webkit-appearance:none;\n    background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E\");\n    background-repeat:no-repeat;background-position:right 12px center;background-size:10px}\n  .cur option{color:var(--ink)}\n  .demo-note{background:var(--sun);color:var(--ink);font-size:.9rem;padding:8px var(--gutter);text-align:center}\n\n  /* ---------- hero ---------- */\n  .hero{position:relative;color:#fff;padding-block:clamp(22px,5vw,60px) clamp(70px,10vw,120px);overflow:hidden;overflow:clip;isolation:isolate;\n    background:linear-gradient(168deg,var(--sea-deep) 0%,var(--sea-mid) 58%,#0E7F92 100%)}\n  /* light moving on water */\n  .hero::before{content:\"\";position:absolute;inset:-30% -20%;z-index:-1;\n    background:radial-gradient(38% 30% at 22% 30%,rgba(120,214,226,.30),transparent 70%),radial-gradient(30% 26% at 78% 64%,rgba(120,214,226,.22),transparent 70%),radial-gradient(22% 18% at 60% 18%,rgba(255,197,61,.20),transparent 70%);\n    animation:drift 22s ease-in-out infinite alternate}\n  @keyframes drift{to{transform:translate3d(4%,3%,0) scale(1.08)}}\n  .wave{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:clamp(40px,7vw,90px);z-index:0;display:block}\n  .wave path{fill:var(--bg)}\n  .wave .w2{fill:rgba(241,247,248,.35)}\n  .hero-grid{position:relative;z-index:1;display:grid;gap:clamp(22px,4vw,56px);align-items:start}\n  .hero h1{font-size:clamp(2.4rem,8.6vw,4.5rem);font-weight:800;max-width:11ch}\n  .hero h1 span{display:block}\n  .hero .lede{font-size:clamp(1.05rem,2.4vw,1.22rem);color:#D9EEF1;max-width:33rem;margin-top:16px}\n  .promises{list-style:none;margin:22px 0 0;padding:0;display:none;gap:10px;max-width:34rem}\n  .promises li{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start}\n  .promises svg{width:22px;height:22px;margin-top:3px;color:var(--sun)}\n  .lede-short{display:none}\n  .hero-cta{display:none}\n  .book-head{display:none}\n  .banner{position:absolute;inset:0 0 auto 0;height:var(--hero-h);z-index:-1}\n  .banner img{width:100%;height:100%;object-fit:cover;object-position:86% 100%}\n  .banner::after{content:\"\";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,73,90,.88) 0%,rgba(6,73,90,.55) 26%,rgba(6,73,90,0) 50%)}\n  .photo{display:none;position:relative;margin:36px 0 0;max-width:36rem}\n  .photo img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:24px;box-shadow:0 30px 60px -30px rgba(2,24,31,.8)}\n  .photo-tag{position:absolute;left:18px;bottom:18px;background:var(--sun);color:var(--ink);font:800 1rem/1.2 var(--display);letter-spacing:-.01em;padding:10px 16px;border-radius:99px;box-shadow:0 12px 22px -12px rgba(2,24,31,.8)}\n  /* Phones: the photo is its own complete screen, and booking starts below it on a clean background. */\n  @media (max-width:959px){\n    .hero{--hero-h:clamp(440px,var(--fold,calc(100svh - 64px)),920px);padding:0;background:var(--bg);color:var(--ink)}\n    .hero::before,.wave{display:none}\n    .hero-grid{gap:0}\n    .hero-copy{min-height:var(--hero-h);padding-top:30px;color:#fff}\n    .hero h1{font-size:clamp(2.2rem,9.6vw,3.2rem);text-shadow:0 2px 18px rgba(3,40,50,.35)}\n    .hero .lede{display:none}\n    .lede-short{display:block;margin-top:12px;max-width:16rem;font-weight:500;font-size:1.05rem;line-height:1.45;color:#EAF6F8;text-shadow:0 1px 12px rgba(3,40,50,.6)}\n    .hero-cta{display:inline-flex;align-self:flex-start;margin-top:20px;padding:0 24px;min-height:52px;flex:none}\n    .book-col{padding-block:30px 44px}\n    .book-head{display:block;margin-bottom:16px}\n    .book-head h2{font-size:1.75rem}\n    .book-head p{color:var(--ink-soft);margin-top:6px}\n    .card.book-card{box-shadow:0 0 0 1.5px var(--line),0 24px 44px -34px rgba(6,73,90,.55)}\n  }\n\n  /* page-load sequence: headline, copy, then the card */\n  .js .hero h1 span,.js .hero .lede,.js .lede-short,.js .promises,.js .photo,.js .book-card{opacity:0;transform:translateY(22px);animation:rise .8s var(--ease) forwards}\n  .js .hero h1 span:nth-child(2){animation-delay:.08s}\n  .js .hero h1 span:nth-child(3){animation-delay:.16s}\n  .js .hero .lede,.js .lede-short{animation-delay:.26s}\n  .js .promises{animation-delay:.34s}\n  .js .photo{animation-delay:.42s}\n  .js .book-card{animation-delay:.3s}\n  @keyframes rise{to{opacity:1;transform:none}}\n\n  /* ---------- booking card ---------- */\n  .card{background:var(--surface);color:var(--ink);border-radius:var(--r-card);box-shadow:0 30px 70px -30px rgba(2,24,31,.7),0 2px 0 rgba(255,255,255,.6) inset;padding:clamp(18px,3.4vw,28px)}\n  .progress{display:flex;align-items:center;gap:12px;margin-bottom:10px}\n  .progress span{font-size:.92rem;color:var(--ink-soft);white-space:nowrap}\n  .rail{flex:1;height:6px;border-radius:99px;background:var(--sea-tint);overflow:hidden}\n  .rail i{display:block;height:100%;width:33.33%;border-radius:99px;background:linear-gradient(90deg,var(--sea),#19A3B8);transition:width .55s var(--ease)}\n  .step-title{font:800 1.6rem/1.12 var(--display);letter-spacing:-.02em;margin:0 0 18px}\n  .stage{transition:height .42s var(--ease)}\n  .stage.moving{overflow:hidden}\n  [data-step].in-next{animation:inNext .42s var(--ease) both}\n  [data-step].in-prev{animation:inPrev .42s var(--ease) both}\n  @keyframes inNext{from{opacity:0;transform:translateX(28px)}}\n  @keyframes inPrev{from{opacity:0;transform:translateX(-28px)}}\n  .group{margin-top:22px}\n  .group:first-child{margin-top:0}\n  .label{display:block;font-weight:700;margin-bottom:10px}\n  .hint{font-size:.92rem;color:var(--ink-soft)}\n  .label .hint{font-weight:400}\n\n  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}\n  .tile{position:relative;display:block}\n  .tile input{position:absolute;opacity:0;inset:0}\n  .tile>span{display:grid;gap:8px;justify-items:center;text-align:center;border:1.5px solid var(--line);border-radius:18px;padding:12px;background:#fff;line-height:1.25;transition:border-color .2s,background .2s,transform .2s var(--ease)}\n  .tile-img{width:100%;aspect-ratio:1/1;max-width:112px;border-radius:14px;background:var(--sea-tint);display:grid;place-items:center;overflow:hidden;color:var(--sea-deep)}\n  .tile-img img{width:100%;height:100%;object-fit:cover}\n  .tile-img svg{width:56%;height:auto}\n  .tile input:checked+span{border-color:var(--sea);background:var(--sea-wash);box-shadow:inset 0 0 0 1px var(--sea)}\n  .tile:active>span{transform:scale(.97)}\n  .tile input:focus-visible+span{outline:3px solid var(--sun-deep);outline-offset:2px}\n\n  /* calendar */\n  .cal{border:1.5px solid var(--line);border-radius:20px;padding:12px 10px 10px;background:#fff;transition:border-color .2s}\n  .cal.bad{border-color:var(--stop)}\n  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;padding-inline:2px}\n  .cal-title{font:800 1.12rem/1 var(--display);letter-spacing:-.01em}\n  .cal-nav{width:44px;height:44px;border-radius:50%;border:0;background:var(--sea-tint);color:var(--sea-deep);display:grid;place-items:center;transition:background .2s,transform .2s var(--ease)}\n  .cal-nav:hover{background:#C9E5EA}\n  .cal-nav:active{transform:scale(.9)}\n  .cal-nav:disabled{opacity:.35;cursor:not-allowed}\n  .cal-nav svg{width:18px;height:18px}\n  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);row-gap:3px}\n  .cal-grid.slide-next{animation:inNext .3s var(--ease)}\n  .cal-grid.slide-prev{animation:inPrev .3s var(--ease)}\n  .dow{text-align:center;font-size:.8rem;color:var(--ink-soft);padding:6px 0 4px}\n  .day{position:relative;height:44px;border:0;background:transparent;padding:0;font-weight:700;font-size:1rem;color:var(--ink);border-radius:0;z-index:0}\n  .day::before{content:\"\";position:absolute;inset:3px 0;z-index:-2;background:transparent;transition:background .25s}\n  .day::after{content:\"\";position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;z-index:-1;transform:scale(.4);opacity:0;transition:transform .3s var(--spring),opacity .2s,background .2s}\n  .day:hover:not(:disabled)::after{opacity:1;transform:none;background:var(--sea-tint)}\n  .day:disabled{color:#A9BAC1;font-weight:400;cursor:not-allowed}\n  .day.busy:disabled{text-decoration:line-through;text-decoration-thickness:2px;color:#C28A7A}\n  .day.today{color:var(--sea)}\n  .day.in::before{background:var(--sea-tint)}\n  .day.start::before{background:linear-gradient(90deg,transparent 50%,var(--sea-tint) 50%)}\n  .day.end::before{background:linear-gradient(90deg,var(--sea-tint) 50%,transparent 50%)}\n  .day.start,.day.start:hover{color:#fff}\n  .day.start::after,.day.start:hover::after{opacity:1;transform:none;background:var(--sea)}\n  .day.end::after,.day.end:hover::after{opacity:1;transform:none;background:#fff;box-shadow:inset 0 0 0 2px var(--sea)}\n  .cal.full .day.in::before{background:var(--stop-tint)}\n  .cal.full .day.start::before{background:linear-gradient(90deg,transparent 50%,var(--stop-tint) 50%)}\n  .cal.full .day.end::before{background:linear-gradient(90deg,var(--stop-tint) 50%,transparent 50%)}\n  .cal.full .day.start::after{background:var(--stop)}\n  .cal.full .day.end::after{box-shadow:inset 0 0 0 2px var(--stop)}\n  .cal-key{display:flex;gap:16px;flex-wrap:wrap;margin:8px 4px 0;font-size:.85rem;color:var(--ink-soft)}\n  .cal-key i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}\n\n  .lengths{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:8px}\n  .len{position:relative;display:block}\n  .len input{position:absolute;opacity:0;inset:0}\n  .len>span{display:grid;gap:4px;justify-items:center;text-align:center;border:1.5px solid var(--line);border-radius:16px;padding:12px 6px;background:#fff;transition:background .25s,border-color .25s,color .25s,transform .25s var(--spring)}\n  .len b{font-size:.98rem;font-weight:400}\n  .len em{font-style:normal;font:800 1.35rem/1 var(--display);white-space:nowrap}\n  .len input:checked+span{background:var(--sea);border-color:var(--sea);color:#fff;transform:translateY(-2px);box-shadow:0 10px 18px -12px rgba(11,114,133,.9)}\n  .len:active>span{transform:scale(.96)}\n  .len input:focus-visible+span{outline:3px solid var(--sun-deep);outline-offset:2px}\n  .collect{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;margin-top:14px;background:var(--sea-wash);border:1px solid var(--sea-tint);border-radius:14px;padding:12px 14px;color:var(--sea-deep);font-weight:700;animation:pop .35s var(--ease)}\n  .collect svg{width:22px;height:22px;margin-top:2px}\n  @keyframes pop{from{opacity:0;transform:translateY(-6px)}}\n\n  .field{width:100%;height:56px;border:1.5px solid var(--line);border-radius:var(--r-field);background:#fff;padding:0 16px;font-size:1.05rem;transition:border-color .2s,box-shadow .2s}\n  .field:focus{outline:none;border-color:var(--sea);box-shadow:0 0 0 4px var(--sea-tint)}\n  .field.bad{border-color:var(--stop);animation:shake .35s}\n  @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}\n\n  .combo{position:relative}\n  .combo .field{padding-left:48px}\n  .combo-ico{position:absolute;left:16px;top:18px;width:20px;height:20px;color:var(--ink-soft);pointer-events:none}\n  .suggest{list-style:none;margin:8px 0 0;padding:6px;border:1.5px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 22px 40px -24px rgba(6,73,90,.55);animation:pop .22s var(--ease)}\n  .suggest li{display:grid;grid-template-columns:1fr auto;gap:0 12px;align-items:center;padding:10px 12px;border-radius:11px;cursor:pointer;line-height:1.3}\n  .suggest li b{font-weight:600}\n  .suggest li b mark{background:none;color:var(--sea);font-weight:800}\n  .suggest li small{grid-column:1;color:var(--ink-soft);font-size:.86rem}\n  .suggest li em{grid-row:span 2;font-style:normal;font-weight:700;white-space:nowrap}\n  .suggest li.on,.suggest li:hover{background:var(--sea-wash)}\n  .suggest li.other{color:var(--sea-deep);font-weight:700;border-top:1px solid var(--line);border-radius:0 0 11px 11px;margin-top:4px;padding-top:12px}\n  .picked{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;margin-top:10px;border-radius:14px;padding:12px 14px;background:var(--ok-tint);color:var(--ok);font-weight:700;line-height:1.35;animation:pop .3s var(--ease)}\n  .picked svg{width:22px;height:22px}\n  .picked.out{background:var(--stop-tint);color:var(--stop);grid-template-columns:1fr}\n  .picked.out a{color:inherit}\n  .zones{display:grid;gap:8px}\n  .zone{position:relative;display:block}\n  .zone input{position:absolute;opacity:0;inset:0}\n  .zone>span{display:grid;grid-template-columns:22px 1fr auto;gap:2px 12px;align-items:center;border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;background:#fff;transition:border-color .2s,background .2s,transform .2s var(--ease)}\n  .zone>span::before{content:\"\";grid-row:span 2;width:22px;height:22px;border-radius:50%;border:2px solid var(--ink-soft);background:#fff;transition:border-color .2s,box-shadow .25s var(--spring)}\n  .zone b{font-weight:700;line-height:1.3}\n  .zone em{font-style:normal;font-weight:700;grid-row:span 2;white-space:nowrap}\n  .zone small{font-size:.9rem;color:var(--ink-soft);grid-column:2;line-height:1.35}\n  .zone input:checked+span{border-color:var(--sea);background:var(--sea-wash)}\n  .zone input:checked+span::before{border-color:var(--sea);box-shadow:inset 0 0 0 5px #fff,inset 0 0 0 12px var(--sea)}\n  .zone:active>span{transform:scale(.985)}\n  .zone input:focus-visible+span{outline:3px solid var(--sun-deep);outline-offset:2px}\n\n  .sumbox{margin-top:22px;border-radius:18px;overflow:hidden;background:var(--sea-wash);border:1px solid var(--sea-tint)}\n  .sumbox p{padding:14px 16px}\n  .sum-what{line-height:1.5;background:#fff;border-bottom:2px dashed var(--sea-tint)}\n  .sum-pay{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:4px!important}\n  .sum-pay b{font:800 1.9rem/1 var(--display);white-space:nowrap}\n  .sum-note{padding-top:0!important;font-size:.92rem;color:var(--ink-soft)}\n\n  .msg{margin-top:14px;border-radius:12px;padding:10px 14px;background:var(--stop-tint);color:var(--stop);font-weight:700;animation:pop .3s var(--ease)}\n  .actions{display:flex;gap:10px;margin-top:18px}\n  .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:58px;border-radius:16px;border:0;padding:0 22px;font-weight:700;font-size:1.08rem;text-decoration:none;text-align:center;line-height:1.2;transition:transform .18s var(--ease),box-shadow .18s,background .2s}\n  .btn:active{transform:translateY(2px) scale(.985)}\n  .btn.go{background:var(--sun);color:var(--ink);flex:1;box-shadow:0 4px 0 var(--sun-deep),0 16px 24px -16px rgba(229,158,0,.9)}\n  .btn.go:hover{background:#FFD05F}\n  .btn.go:active{box-shadow:0 1px 0 var(--sun-deep)}\n  .btn.go svg{width:20px;height:20px;transition:transform .25s var(--ease)}\n  .btn.go:hover svg{transform:translateX(4px)}\n  .btn.go.busy{pointer-events:none;color:transparent}\n  .btn.go.busy::after{content:\"\";position:absolute;width:24px;height:24px;border-radius:50%;border:3px solid rgba(12,42,58,.25);border-top-color:var(--ink);animation:spin .7s linear infinite}\n  @keyframes spin{to{transform:rotate(360deg)}}\n  .btn.back{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}\n  .btn.wa{background:#128C4B;color:#fff;width:100%}\n  .btn.wa svg{width:22px;height:22px}\n  .talk{margin-top:14px;text-align:center;font-size:.95rem;color:var(--ink-soft)}\n  .nothing{margin-top:10px;text-align:center;font-size:.92rem;color:var(--ink-soft)}\n\n  .receipt{border:1.5px solid var(--line);border-radius:18px;overflow:hidden}\n  .receipt dl{margin:0;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:6px 16px}\n  .receipt dt{color:var(--ink-soft)}\n  .receipt dd{margin:0;text-align:right;font-weight:700}\n  .receipt .sum{background:var(--sea-wash);border-top:2px dashed var(--sea-tint)}\n  .receipt .sum dt{color:var(--ink)}\n  .receipt .total dt,.receipt .total dd{font:800 1.3rem/1.2 var(--display);padding-top:6px}\n\n  .done{position:relative;text-align:center}\n  .tick{width:76px;height:76px;margin:0 auto 12px;position:relative}\n  .tick svg{width:76px;height:76px}\n  .tick circle{fill:var(--ok-tint);transform-origin:center;animation:tickIn .5s var(--spring) both}\n  .tick path{fill:none;stroke:var(--ok);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .45s .3s var(--ease) forwards}\n  @keyframes tickIn{from{transform:scale(0)}}\n  @keyframes draw{to{stroke-dashoffset:0}}\n  .code{display:inline-flex;gap:2px;font:800 2rem/1 var(--display);letter-spacing:.04em;background:var(--sea-tint);border-radius:14px;padding:14px 18px;margin:12px 0 4px}\n  .code span{display:inline-block;animation:char .4s var(--spring) both}\n  @keyframes char{from{opacity:0;transform:translateY(12px) scale(.6)}}\n  .confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}\n  .confetti i{position:absolute;top:30px;left:50%;width:9px;height:14px;border-radius:3px;opacity:0;animation:fly 1.5s var(--ease) forwards}\n  @keyframes fly{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r))}}\n  .next{text-align:left;margin:18px 0;padding:0 0 0 22px;display:grid;gap:8px}\n  .linkbtn{background:none;border:0;padding:10px;color:var(--sea-deep);text-decoration:underline;font-weight:700}\n\n  .skeleton{display:grid;gap:10px}\n  .skeleton i{display:block;height:96px;border-radius:16px;background:linear-gradient(90deg,#E6EFF1 25%,#F3F8F9 50%,#E6EFF1 75%);background-size:200% 100%;animation:sh 1.2s linear infinite}\n  @keyframes sh{to{background-position:-200% 0}}\n\n  /* ---------- sections ---------- */\n  section.block{padding-block:clamp(48px,8vw,96px)}\n  .block>.wrap>h2{margin-bottom:clamp(20px,3vw,34px)}\n  .js .rv{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease);transition-delay:var(--d,0s)}\n  .js .rv.in{opacity:1;transform:none}\n\n  .steps{list-style:none;margin:0;padding:0;display:grid;gap:22px;position:relative}\n  .steps li{display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:start;position:relative}\n  .steps .ico{width:64px;height:64px;border-radius:50%;background:#fff;display:grid;place-items:center;color:var(--sea-deep);box-shadow:0 0 0 1px var(--line),0 14px 24px -18px rgba(6,73,90,.6);position:relative;z-index:1}\n  .steps .ico svg{width:30px;height:30px}\n  .steps li:not(:last-child)::after{content:\"\";position:absolute;left:31px;top:64px;bottom:-22px;border-left:2px dashed var(--line)}\n  .steps p{color:var(--ink-soft);margin-top:4px}\n\n  .alt{background:#fff}\n  .models{display:grid;gap:18px}\n  .model{display:grid;grid-template-columns:clamp(112px,24vw,210px) 1fr;align-items:center;gap:clamp(14px,3vw,26px);border-radius:var(--r-card);padding:16px;background:var(--bg);transition:transform .35s var(--ease),box-shadow .35s}\n  .model-img{background:#fff;border-radius:18px;aspect-ratio:1/1;display:grid;place-items:center;overflow:hidden;color:var(--sea)}\n  .model-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}\n  .model-img svg{width:38%;height:auto}\n  .model p{color:var(--ink-soft);margin-top:6px}\n  .model .from{margin-top:12px;color:var(--ink);font-weight:700}\n  @media (hover:hover){\n    .model:hover{transform:translateY(-4px);box-shadow:0 24px 40px -28px rgba(6,73,90,.6)}\n    .model:hover .model-img img{transform:scale(1.04)}\n  }\n  .kit{list-style:none;margin:clamp(24px,4vw,40px) 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:18px 16px}\n  .kit li{display:grid;grid-template-columns:26px 1fr;gap:2px 10px;align-items:start;line-height:1.35}\n  .kit li::before{content:\"\";grid-row:span 2;width:26px;height:26px;border-radius:50%;background:var(--sea-tint) url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306495A' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.500l4 4 8-8.500'/%3E%3C/svg%3E\") center/14px no-repeat}\n  .kit b{display:block;font-size:.98rem}\n  .kit span{color:var(--ink-soft);font-size:.9rem}\n  .gallery{display:flex;gap:12px;margin-top:clamp(20px,3vw,30px);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(var(--gutter) * -1);padding-inline:var(--gutter);scroll-padding-inline:var(--gutter)}\n  .gallery::-webkit-scrollbar{display:none}\n  .gallery img{flex:none;width:min(72vw,300px);aspect-ratio:1/1;object-fit:cover;border-radius:20px;scroll-snap-align:start}\n\n  .plans{display:grid;gap:12px}\n  .plan{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 14px;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:22px;padding:18px 20px;transition:transform .3s var(--ease),border-color .25s,box-shadow .3s}\n  .plan small{font-size:1rem;color:var(--ink-soft)}\n  .plan b{font:800 2.3rem/1 var(--display);letter-spacing:-.02em;grid-column:1}\n  .plan span{grid-row:1/3;grid-column:2;display:inline-flex;align-items:center;gap:6px;background:var(--sea-tint);color:var(--sea-deep);font-weight:700;border-radius:99px;padding:10px 16px;transition:background .25s,color .25s}\n  .plan span svg{width:16px;height:16px;transition:transform .25s var(--ease)}\n  .plan:hover{border-color:var(--sea);transform:translateY(-3px);box-shadow:0 22px 34px -26px rgba(6,73,90,.7)}\n  .plan:hover span{background:var(--sea);color:#fff}\n  .plan:hover span svg{transform:translateX(3px)}\n  .plan:active{transform:scale(.985)}\n  .price-wrap{overflow-x:auto;border-radius:16px;border:1.5px solid var(--line);background:#fff}\n  table.prices{width:100%;border-collapse:collapse}\n  .prices th,.prices td{padding:14px 12px;text-align:right;border-bottom:1px solid var(--line)}\n  .prices td{white-space:nowrap;font-weight:700}\n  .prices th{vertical-align:bottom;line-height:1.25;font-size:.9rem;hyphens:auto;overflow-wrap:anywhere;background:var(--sea-tint)}\n  .prices th:first-child,.prices td:first-child{text-align:left;white-space:normal;font-weight:400}\n  .prices tbody tr:last-child td{border-bottom:0}\n  .note{margin-top:16px;color:var(--ink-soft);max-width:44rem}\n\n  .areas{list-style:none;margin:0;padding:0;display:grid;gap:10px}\n  .areas li{display:grid;grid-template-columns:44px 1fr auto;gap:2px 14px;align-items:center;padding:16px;border-radius:18px;background:var(--bg)}\n  .areas .pin{grid-row:span 2;width:44px;height:44px;border-radius:14px;background:var(--sea-tint);color:var(--sea-deep);display:grid;place-items:center}\n  .areas .pin svg{width:22px;height:22px}\n  .areas b{font-size:1.08rem;line-height:1.3}\n  .areas em{font-style:normal;font:800 1.25rem/1 var(--display);grid-row:span 2;white-space:nowrap}\n  .areas small{color:var(--ink-soft);font-size:.95rem;grid-column:2;line-height:1.35}\n\n  .faq{display:grid;gap:10px;max-width:46rem}\n  .qa{background:#fff;border:1.5px solid var(--line);border-radius:16px;transition:border-color .25s}\n  .qa.open{border-color:var(--sea)}\n  .qa button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:14px;text-align:left;background:none;border:0;padding:16px;font-weight:700}\n  .qa button i{flex:none;width:30px;height:30px;border-radius:50%;background:var(--sea-tint);position:relative;transition:transform .4s var(--ease),background .25s}\n  .qa button i::before,.qa button i::after{content:\"\";position:absolute;left:8px;right:8px;top:14px;height:2px;border-radius:2px;background:var(--sea-deep)}\n  .qa button i::after{transform:rotate(90deg);transition:transform .4s var(--ease)}\n  .qa.open button i{transform:rotate(180deg);background:var(--sun)}\n  .qa.open button i::after{transform:rotate(0)}\n  .qa .ans{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--ease)}\n  .qa.open .ans{grid-template-rows:1fr}\n  .qa .ans>div{overflow:hidden}\n  .qa .ans p{padding:0 16px 16px;color:var(--ink-soft)}\n\n  footer{position:relative;background:var(--ink);color:#fff;padding-block:clamp(40px,7vw,76px) 28px}\n  .foot{display:grid;gap:28px}\n  footer h2{font-size:clamp(1.8rem,4.6vw,2.6rem)}\n  footer p{color:#B9CDD5;margin-top:8px;max-width:30rem}\n  .foot-actions{display:grid;gap:10px;max-width:24rem}\n  .btn.call{background:transparent;box-shadow:inset 0 0 0 2px rgba(255,255,255,.4);color:#fff}\n  .legal{margin-top:32px;padding-top:18px;border-top:1px solid rgba(255,255,255,.18);font-size:.9rem;color:#9FB8C1}\n\n  @media (min-width:640px){\n    .models{grid-template-columns:repeat(2,1fr)}\n    .models.three{grid-template-columns:repeat(3,1fr)}\n    .models.three .model{grid-template-columns:1fr}\n    .kit{grid-template-columns:repeat(4,1fr)}\n    .gallery{margin-inline:0;padding-inline:0;display:grid;grid-template-columns:repeat(4,1fr);overflow:visible}\n    .gallery img{width:100%}\n    .steps{grid-template-columns:repeat(3,1fr);gap:28px}\n    .steps li{grid-template-columns:1fr}\n    .steps li:not(:last-child)::after{left:64px;right:-28px;top:31px;bottom:auto;border-left:0;border-top:2px dashed var(--line)}\n    .plans{grid-template-columns:repeat(3,1fr)}\n    .plan{grid-template-columns:1fr;gap:10px;padding:24px}\n    .plan b{font-size:3rem}\n    .plan span{grid-row:auto;grid-column:1;justify-self:start;margin-top:8px}\n    .areas{grid-template-columns:repeat(3,1fr)}\n    .areas li{grid-template-columns:1fr;gap:8px;padding:20px;align-items:start}\n    .areas .pin,.areas em{grid-row:auto}\n    .areas small{grid-column:1}\n    .areas em{font-size:1.6rem}\n  }\n  @media (min-width:960px){\n    .hero-grid{grid-template-columns:1fr minmax(430px,480px)}\n    .photo{display:block}\n    .promises{display:grid}\n    .banner{display:none}\n  }\n  @media (max-width:520px){\n    .mark small{display:none}\n    .demo-note{font-size:.82rem;padding:6px var(--gutter)}\n  }\n  @media (max-width:380px){\n    .day{height:40px;font-size:.95rem}\n    .day::after{width:36px;height:36px;margin:-18px 0 0 -18px}\n  }\n  @media (prefers-reduced-motion:reduce){\n    html{scroll-behavior:auto}\n    *,*::before,*::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001s!important}\n    .js .rv{opacity:1;transform:none}\n  }\n\n  /* ---------- sizing pass: calmer type, and a booking card that fits one phone screen (COMPACT) ---------- */\n  body{font-size:15.5px}\n  h2{font-size:clamp(1.5rem,3.8vw,2.2rem)}\n  h3{font-size:1.08rem}\n  .hero h1{font-size:clamp(2.2rem,5.6vw,3.7rem)}\n  .hero .lede{font-size:clamp(1rem,1.9vw,1.12rem)}\n  footer h2{font-size:clamp(1.5rem,3.8vw,2.2rem)}\n  .card{padding:clamp(16px,2.6vw,24px)}\n  .progress{margin-bottom:6px}\n  .step-title{font-size:1.32rem;margin-bottom:12px}\n  .group{margin-top:14px}\n  .label{font-size:.95rem;margin-bottom:6px}\n  .len>span{padding:8px 6px;border-radius:14px;gap:2px}\n  .len b{font-size:.88rem}\n  .len em{font-size:1.14rem}\n  .cal{padding:8px 8px 6px;border-radius:16px}\n  .cal-head{margin-bottom:2px}\n  .cal-title{font-size:1rem}\n  .cal-nav{width:36px;height:36px}\n  .cal-nav svg{width:16px;height:16px}\n  .dow{font-size:.74rem;padding:2px 0}\n  .cal-grid{row-gap:2px}\n  .day{height:34px;font-size:.92rem}\n  .day::after{width:32px;height:32px;margin:-16px 0 0 -16px}\n  .cal-key{margin-top:4px;font-size:.78rem}\n  .collect{margin-top:8px;padding:7px 10px;font-size:.84rem;line-height:1.35;border-radius:10px;grid-template-columns:18px 1fr;gap:8px;align-items:center}\n  .collect svg{margin-top:0}\n  .collect svg{width:18px;height:18px}\n  .field{height:48px;font-size:1rem;border-radius:12px}\n  .combo-ico{top:14px}\n  .zone>span{padding:9px 12px;border-radius:14px}\n  .suggest li{padding:8px 10px}\n  .picked{padding:9px 12px;font-size:.92rem}\n  .sumbox{margin-top:14px}\n  .sumbox p{padding:10px 14px}\n  .sum-pay b{font-size:1.55rem}\n  .sum-note{font-size:.84rem}\n  .actions{margin-top:12px}\n  .btn{min-height:50px;font-size:1rem;border-radius:14px}\n  .talk,.nothing{margin-top:10px;font-size:.88rem}\n  .plan b{font-size:1.9rem}\n  .areas b{font-size:1rem}\n  .areas em{font-size:1.1rem}\n  @media (max-width:959px){\n    .hero h1{font-size:clamp(1.9rem,8.2vw,2.7rem)}\n    .lede-short{font-size:.98rem}\n    .book-col{padding-block:22px 36px}\n    .book-head{margin-bottom:12px}\n    .book-head h2{font-size:1.4rem}\n  }\n  @media (max-width:380px),(max-height:660px){\n    .card{padding:14px}\n    .step-title{font-size:1.22rem;margin-bottom:8px}\n    .group{margin-top:10px}\n    .len>span{padding:6px 4px}\n    .cal-nav{width:32px;height:32px}\n    .day{height:31px}\n    .day::after{width:30px;height:30px;margin:-15px 0 0 -15px}\n    .btn{min-height:48px}\n    .actions{margin-top:10px}\n    .sumbox p{padding:8px 12px}\n  }\n  .hero-grid>*{min-width:0}\n  /* tighter still: the whole booking card a notch smaller */\n  .book-card{font-size:.94rem}\n  .step-title{font-size:1.2rem;margin-bottom:10px}\n  .progress span{font-size:.82rem}\n  .group{margin-top:12px}\n  .label{font-size:.9rem;margin-bottom:5px}\n  .len>span{padding:6px 4px;border-radius:12px}\n  .len b{font-size:.82rem}\n  .len em{font-size:1.05rem}\n  .cal{padding:6px 8px 4px}\n  .cal-title{font-size:.95rem}\n  .cal-nav{width:32px;height:32px}\n  .day{height:31px;font-size:.88rem}\n  .day::after{width:29px;height:29px;margin:-14.5px 0 0 -14.5px}\n  .collect{font-size:.8rem;padding:6px 10px}\n  .field{height:44px;font-size:.98rem}\n  .combo .field{padding-left:42px}\n  .combo-ico{top:12px;left:14px}\n  .btn{min-height:46px;font-size:.98rem}\n  .hint{font-size:.82rem}\n  .suggest{max-height:236px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}\n  .suggest li{padding:9px 10px;touch-action:pan-y}\n  .suggest li.other{position:sticky;bottom:-6px;background:#fff}\n  /* the money, spelled out */\n  .sumbox{margin-top:12px;border-radius:16px;background:#fff;border:1.5px solid var(--line)}\n  .sumbox p{padding:0}\n  .sum-what{padding:8px 14px!important;border-bottom:1px solid var(--line);background:var(--sea-wash);font-size:.84rem;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n  .sum-what b{color:var(--ink)}\n  .sum-rows{margin:0;padding:7px 14px 0;display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:.9rem}\n  .sum-rows dt{color:var(--ink-soft)}\n  .sum-rows dd{margin:0;font-weight:700;text-align:right}\n  .sum-rows .tag{display:inline-block;margin-left:6px;font-size:.72rem;font-weight:700;color:var(--ok);background:var(--ok-tint);border-radius:99px;padding:1px 8px;vertical-align:1px}\n  .sum-pay{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:6px 14px 0;padding:8px 0 10px!important;border-top:1.5px dashed var(--line);font-weight:700}\n  .sum-pay b{font:800 1.5rem/1 var(--display);white-space:nowrap}\n  .sum-back{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;padding:9px 14px!important;background:var(--ok-tint);color:var(--ok);font-weight:700;font-size:.9rem;line-height:1.35}\n  .sum-back svg{width:22px;height:22px}\n  .sum-back span span{display:block;font-weight:500;font-size:.82rem}\n  .sum-back b{font:800 1.25rem/1 var(--display);white-space:nowrap}\n  @media (max-width:380px),(max-height:660px){\n    .day{height:29px}\n    .sum-rows{font-size:.86rem;gap:1px 12px}\n    .sum-pay{padding:6px 0 7px!important}\n    .sum-pay b{font-size:1.35rem}\n    .sum-back{padding:7px 14px!important}\n    .day::after{width:27px;height:27px;margin:-13.5px 0 0 -13.5px}\n    .field{height:42px}\n    .btn{min-height:44px}\n  }\n  .len em,.plan b,.sum-pay b{display:inline-flex;align-items:baseline;gap:.25em;max-width:100%}\n  .unit{font:700 .55em/1 var(--body);letter-spacing:.02em;color:inherit;opacity:.75}\n  .len em.long{font-size:.98rem}\n  .plan b .unit,.plan:hover b .unit{grid-row:auto;grid-column:auto;display:inline;background:none;padding:0;border-radius:0;color:inherit;margin:0}\n  .len>span{min-width:0;overflow:hidden}\n  .kit{grid-template-columns:1fr;gap:0;border-top:1px solid var(--line)}\n  .kit li{grid-template-columns:26px 1fr;gap:0 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}\n  .kit li::before{grid-row:span 2}\n  .kit b{font-size:.98rem}\n  .kit span{font-size:.9rem}\n  @media (min-width:640px){\n    .kit{grid-template-columns:1fr 1fr;column-gap:32px}\n    .plan b{font-size:2.4rem}\n    .areas em{font-size:1.35rem}\n  }\n\n  /* ---- inside the Self Care Pharmacy storefront: its typeface and colours ---- */\n  :host{display:block;font:400 15.5px/1.6 \"Nunito\",system-ui,-apple-system,\"Segoe UI\",sans-serif;color:#182534;text-align:left;\n    --display:\"Nunito\",system-ui,sans-serif; --body:\"Nunito\",system-ui,sans-serif;\n    --ink:#182534; --ink-soft:#6e7d90; --line:#e4dde6; --bg:#f6f3f7;\n    --sea:#5B295A; --sea-deep:#5B295A; --sea-mid:#5B295A; --sea-tint:#EFE6EF; --sea-wash:#FAF6FA;\n    --sun:#D6501B; --sun-deep:#A93D12; --ok:#2E7D6B; --ok-tint:#E2F2EE}\n  :host([hidden]){display:none}\n  .mwrap{max-width:520px;margin:6px auto 26px;padding:0 2px}\n  .mpreview{background:#FFF1CC;color:#6B4A00;border-radius:12px;padding:8px 12px;font-size:.86rem;margin:0 0 10px}\n  .mtitle{font:900 1.35rem/1.2 var(--display);letter-spacing:-.01em;margin:0 0 4px;color:var(--ink)}\n  .msub{color:var(--ink-soft);margin:0 0 12px;font-size:.95rem}\n  .card.book-card{box-shadow:0 0 0 1.5px var(--line),0 22px 40px -30px rgba(91,41,90,.5);opacity:1!important;transform:none!important;animation:none!important}\n  .step-title,.cal-title,.len em,.sum-pay b,.sum-back b,.code{font-family:var(--display);font-weight:900;letter-spacing:0}\n  .rail i{background:linear-gradient(90deg,#5B295A,#4AA995)}\n  .btn.go{color:#fff;box-shadow:0 4px 0 var(--sun-deep),0 16px 24px -16px rgba(214,80,27,.8)}\n  .btn.go:hover{background:#E05E2A}\n  .btn.go.busy::after{border-color:rgba(255,255,255,.35);border-top-color:#fff}\n  .day.today{color:#4AA995}\n  .mhead{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}\n  .mhead-img{width:84px;height:84px;border-radius:16px;background:#fff;box-shadow:0 0 0 1.5px var(--line);overflow:hidden;display:grid;place-items:center;color:var(--sea)}\n  .mhead-img img{width:100%;height:100%;object-fit:cover}\n  .mhead-img svg{width:54%}\n  .mhead b{display:block;font:900 1.05rem/1.25 var(--display)}\n  .mhead p{color:var(--ink-soft);font-size:.86rem;line-height:1.35;margin:2px 0 4px}\n  .mhead span{display:inline-block;font-weight:800;font-size:.86rem;color:#2E7D6B;background:#E2F2EE;border-radius:99px;padding:2px 10px}\n  .curs{display:flex;gap:4px;margin:0 0 10px}\n  .curs span{font-size:.82rem;color:var(--ink-soft);align-self:center;margin-right:4px}\n  .curs button{border:1.5px solid var(--line);background:#fff;border-radius:99px;min-width:46px;height:32px;padding:0 10px;font:800 .8rem/1 var(--body);color:var(--ink)}\n  .curs button[aria-pressed=\"true\"]{background:var(--sea);border-color:var(--sea);color:#fff}\n<\/style><div class=\"mwrap\"><h2 class=\"mtitle\" data-i18n=\"mTitle\"><\/h2><p class=\"msub\" data-i18n=\"mSub\"><\/p><p class=\"mpreview\" id=\"mpreview\" hidden>Preview: the booking database is not connected yet, so bookings made here are not saved.<\/p><section class=\"card book-card\" id=\"book\" aria-labelledby=\"stepTitle\">\n          <div id=\"loading\">\n            <p class=\"step-title\" data-i18n=\"loading\"><\/p>\n            <div class=\"skeleton\"><i><\/i><i><\/i><\/div>\n          <\/div>\n          <div id=\"loadError\" hidden>\n            <p class=\"step-title\" data-i18n=\"loadErrTitle\"><\/p>\n            <p class=\"hint\" data-i18n=\"loadErrBody\"><\/p>\n            <div class=\"actions\"><a class=\"btn wa\" data-wa=\"hello\" target=\"_blank\" rel=\"noopener\"><\/a><\/div>\n          <\/div>\n\n          <form id=\"wizard\" novalidate hidden>\n            <div class=\"mhead\" id=\"mhead\"><div class=\"mhead-img\" id=\"mheadImg\"><\/div><div><b id=\"mheadName\"><\/b><p id=\"mheadDesc\"><\/p><span id=\"mheadFrom\"><\/span><\/div><\/div>\n            <div class=\"curs\" id=\"curs\"><span data-i18n=\"pricesIn\"><\/span><button type=\"button\" data-cur=\"GBP\">£<\/button><button type=\"button\" data-cur=\"EUR\">€<\/button><button type=\"button\" data-cur=\"USD\">$<\/button><button type=\"button\" data-cur=\"EGP\">EGP<\/button><\/div>\n            <div class=\"progress\">\n              <span id=\"stepCount\"><\/span>\n              <div class=\"rail\" aria-hidden=\"true\"><i id=\"railFill\"><\/i><\/div>\n            <\/div>\n            <h2 class=\"step-title\" id=\"stepTitle\" tabindex=\"-1\"><\/h2>\n\n            <div class=\"stage\" id=\"stage\">\n              <!-- step 1: what and when -->\n              <div data-step=\"1\">\n                <div class=\"group\" id=\"whatGroup\" hidden>\n                  <span class=\"label\" id=\"whatLabel\" data-i18n=\"whatLabel\"><\/span>\n                  <div class=\"tiles\" id=\"products\" role=\"radiogroup\" aria-labelledby=\"whatLabel\"><\/div>\n                <\/div>\n                <div class=\"group\">\n                  <span class=\"label\" id=\"daysLabel\" data-i18n=\"daysLabel\"><\/span>\n                  <div class=\"lengths\" id=\"days\" role=\"radiogroup\" aria-labelledby=\"daysLabel\"><\/div>\n                <\/div>\n                <div class=\"group\">\n                  <span class=\"label\" id=\"startLabel\" data-i18n=\"startLabel\"><\/span>\n                  <div class=\"cal\" id=\"cal\" role=\"group\" aria-labelledby=\"startLabel\">\n                    <div class=\"cal-head\">\n                      <button type=\"button\" class=\"cal-nav\" id=\"calPrev\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 5l-7 7 7 7\"/><\/svg><\/button>\n                      <div class=\"cal-title\" id=\"calTitle\" aria-live=\"polite\"><\/div>\n                      <button type=\"button\" class=\"cal-nav\" id=\"calNext\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 5l7 7-7 7\"/><\/svg><\/button>\n                    <\/div>\n                    <div class=\"cal-grid\" id=\"calGrid\"><\/div>\n                    <div class=\"cal-key\" id=\"calKey\"><\/div>\n                  <\/div>\n                <\/div>\n                <p class=\"collect\" id=\"collect\" hidden><\/p>\n              <\/div>\n\n              <!-- step 2: the hotel -->\n              <div data-step=\"2\" hidden>\n                <div class=\"group\">\n                  <label class=\"label\" for=\"hotel\" data-i18n=\"hotelLabel\"><\/label>\n                  <div class=\"combo\">\n                    <svg class=\"combo-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.500\"/><path d=\"M16 16l4.500 4.500\"/><\/svg>\n                    <input class=\"field\" id=\"hotel\" name=\"hotel\" autocomplete=\"off\" autocapitalize=\"words\" spellcheck=\"false\" maxlength=\"120\"\n                           role=\"combobox\" aria-expanded=\"false\" aria-controls=\"hotelList\" aria-autocomplete=\"list\">\n                    <ul class=\"suggest\" id=\"hotelList\" role=\"listbox\" hidden><\/ul>\n                  <\/div>\n                  <div class=\"picked\" id=\"hotelPicked\" hidden><\/div>\n                <\/div>\n                <div class=\"group\" id=\"zoneGroup\" hidden>\n                  <span class=\"label\" id=\"zoneLabel\" data-i18n=\"zoneLabel\"><\/span>\n                  <div class=\"zones\" id=\"zones\" role=\"radiogroup\" aria-labelledby=\"zoneLabel\"><\/div>\n                <\/div>\n                <div class=\"group\">\n                  <label class=\"label\" for=\"room\"><span data-i18n=\"roomLabel\"><\/span> <span class=\"hint\" data-i18n=\"optional\"><\/span><\/label>\n                  <input class=\"field\" id=\"room\" name=\"room\" autocomplete=\"off\" maxlength=\"20\">\n                <\/div>\n              <\/div>\n\n              <!-- step 3: who, and the total -->\n              <div data-step=\"3\" hidden>\n                <div class=\"group\">\n                  <label class=\"label\" for=\"name\" data-i18n=\"nameLabel\"><\/label>\n                  <input class=\"field\" id=\"name\" name=\"name\" autocomplete=\"name\" maxlength=\"80\">\n                <\/div>\n                <div class=\"group\">\n                  <label class=\"label\" for=\"phone\" data-i18n=\"phoneLabel\"><\/label>\n                  <input class=\"field\" id=\"phone\" name=\"phone\" type=\"tel\" inputmode=\"tel\" autocomplete=\"tel\" maxlength=\"24\" placeholder=\"+44 7700 900123\">\n                <\/div>\n                <div class=\"sumbox\" id=\"sumBox\"><\/div>\n              <\/div>\n            <\/div>\n\n            <p class=\"msg\" id=\"msg\" role=\"alert\" hidden><\/p>\n            <div class=\"actions\">\n              <button type=\"button\" class=\"btn back\" id=\"backBtn\" hidden><\/button>\n              <button type=\"submit\" class=\"btn go\" id=\"nextBtn\"><\/button>\n            <\/div>\n            <p class=\"nothing\" id=\"nothing\" data-i18n=\"nothingNow\" hidden><\/p>\n            <p class=\"talk\" id=\"talk\"><\/p>\n          <\/form>\n\n          <div class=\"done\" id=\"done\" hidden tabindex=\"-1\">\n            <div class=\"confetti\" id=\"confetti\" aria-hidden=\"true\"><\/div>\n            <div class=\"tick\"><svg viewBox=\"0 0 76 76\" aria-hidden=\"true\"><circle cx=\"38\" cy=\"38\" r=\"38\"/><path d=\"M24 39.5l9.5 9.5L53 29\"/><\/svg><\/div>\n            <h2 class=\"step-title\" data-i18n=\"doneTitle\" style=\"margin-bottom:4px\"><\/h2>\n            <p class=\"hint\" data-i18n=\"doneCodeLabel\"><\/p>\n            <div class=\"code\" id=\"doneCode\"><\/div>\n            <div class=\"receipt\" style=\"text-align:left;margin-top:14px\">\n              <dl id=\"doneWhat\"><\/dl>\n              <dl class=\"sum\" id=\"doneSum\"><\/dl>\n            <\/div>\n            <ol class=\"next\" id=\"doneNext\"><\/ol>\n            <a class=\"btn wa\" id=\"doneWa\" target=\"_blank\" rel=\"noopener\"><\/a>\n            <button type=\"button\" class=\"linkbtn\" id=\"againBtn\" data-i18n=\"again\"><\/button>\n          <\/div>\n        <\/section><div id=\"bar\" hidden><\/div><select id=\"cur\" hidden><\/select><\/div>";
+/* ============================================================================
+   CONNECTION
+   Paste your Supabase project URL and the publishable (anon) key here.
+   Never put the service_role / secret key in this file.
+   While both are empty the page runs in preview mode with the built-in data.
+   ========================================================================== */
+const SUPABASE_URL = SB_URL;
+const SUPABASE_ANON_KEY = SB_KEY;
+
+/* ============================================================================
+   BUILT-IN DATA (preview mode only; live data comes from the database)
+   ========================================================================== */
+const IMG = 'https://res.cloudinary.com/de4boyel3/image/upload/f_auto,q_auto,w_900/';
+/* Hotel list imported from the pharmacy's delivery table, sorted into the three delivery areas. */
+const HOTELS = { downtown: '', villages: '', makadi: '', none: '' };
+const SEED = {
+  settings: { deposit_pct: 20, min_days: 7, lead_days: 1, turnaround_days: 0,
+    official_gbp: 69.19, official_eur: 58.47, official_usd: 52.25, rate_discount: 5, whatsapp: '201040797464',
+    phone_1: '+20 104 079 7464', phone_2: '+20 150 140 1776',
+    hours_en: 'Every day, 9 am to 11 pm', hours_de: 'Täglich von 9 bis 23 Uhr' },
+  products: [
+    { id: 'p-scooter', slug: 'scooter', category: 'scooter', name_en: 'Mobility scooter', name_de: 'Elektroscooter', name_ar: 'سكوتر كهربائي',
+      desc_en: 'Four wheels, a padded seat and a front basket. Goes about 15 to 20 km on a full charge.',
+      desc_de: 'Vier Räder, gepolsterter Sitz und Korb vorne. Fährt mit einer vollen Ladung etwa 15 bis 20 km.',
+      image_url: IMG + 'v1783504784/ChatGPT_Image_Jul_8_2026_12_58_24_PM_1_px842a.png', stock_qty: 2, active: true, sort_order: 10 },
+    { id: 'p-chair', slug: 'wheelchair', category: 'wheelchair', name_en: 'Wheelchair', name_de: 'Rollstuhl', name_ar: 'كرسي متحرك',
+      desc_en: 'A folding wheelchair for the days when walking the whole resort is too much.',
+      desc_de: 'Ein faltbarer Rollstuhl für Tage, an denen die Wege in der Anlage zu weit sind.',
+      image_url: '', stock_qty: 1, active: true, sort_order: 20 }
+  ],
+  tiers: [
+    { product_id: 'p-scooter', days: 7, price_gbp: 80, price_eur: 95 }, { product_id: 'p-scooter', days: 10, price_gbp: 110, price_eur: 130 }, { product_id: 'p-scooter', days: 14, price_gbp: 155, price_eur: 180 }
+  ],
+  zones: [
+    { id: 'z-downtown', slug: 'downtown', name_en: 'Hurghada centre', name_de: 'Hurghada Zentrum', name_ar: 'وسط البلد', hint_en: 'Hotels in central Hurghada', hint_de: 'Hotels im Zentrum von Hurghada', fee_egp: 200, active: true, sort_order: 10 },
+    { id: 'z-villages', slug: 'villages', name_en: 'Resort strip and outer districts', name_de: 'Hotelzone und Außenbezirke', name_ar: 'القرى والأحياء', hint_en: 'The tourist villages and districts outside the centre', hint_de: 'Die Feriendörfer und Viertel außerhalb des Zentrums', fee_egp: 800, active: true, sort_order: 20 },
+    { id: 'z-makadi', slug: 'makadi', name_en: 'Makadi Bay', name_de: 'Makadi Bay', name_ar: 'مكادي', hint_en: 'All Makadi Bay resorts', hint_de: 'Alle Resorts in Makadi Bay', fee_egp: 1500, active: true, sort_order: 30 }
+  ],
+  bookings: [],
+  hotels: Object.entries(HOTELS).flatMap(([z, list]) => list.split('|').map((name, i) => ({ id: 'h-' + z + '-' + i, name, zone_id: z === 'none' ? null : 'z-' + z, active: true })))
+};
+const DEMO_KEY = 'scm_embed_preview_v1';
+
+/* ============================================================================
+   WORDS
+   ========================================================================== */
+const T = {
+  en: {
+    tagline: 'Scooter and wheelchair rental, Hurghada', currency: 'Currency',
+    h1: 'Your scooter, waiting at your hotel.',
+    lede: 'Rent a four-wheel mobility scooter or a wheelchair for your holiday in Hurghada. We bring it to your hotel fully charged and collect it when you leave.',
+    p1: 'Nothing to pay online. You pay in cash when we deliver.',
+    p2: 'The {pct}% deposit comes back to you when we collect.',
+    p3: 'From {price} for {days} days.',
+    loading: 'Loading the booking form', loadErrTitle: 'The booking form did not load',
+    loadErrBody: 'Check your connection and reload the page, or message us and we will reserve it for you.',
+    stepOf: 'Step {n} of 3', s1: 'Choose and pick your dates', s2: 'Where should we bring it?', s3: 'Check and reserve',
+    whatLabel: 'What do you need?', add: 'Add', remove: 'Remove one', more: 'Add one more',
+    perDays: '{price} for {days} days', free: 'Available', freeN: '{n} available', taken: 'Booked for these dates',
+    askPrice: 'Price on request', askWa: 'Ask on WhatsApp',
+    startLabel: 'Delivery day', daysLabel: 'How long?', daysN: '{n} days',
+    weDeliver: 'We deliver', weCollect: 'We collect', rental: 'Rental',
+    zoneLabel: 'Choose the area of your hotel', zoneElse: 'Staying in El Gouna, Sahl Hasheesh or Soma Bay?', askUs: 'Ask us on WhatsApp',
+    delivery: 'Delivery {fee}',
+    hotelLabel: 'Hotel name', roomLabel: 'Room number', optional: '(optional)',
+    slotLabel: 'Best time to deliver', slot_morning: 'Morning, 9 am to 12 noon', slot_afternoon: 'Afternoon, 12 noon to 5 pm', slot_evening: 'Evening, 5 pm to 11 pm',
+    nameLabel: 'Your full name', phoneLabel: 'WhatsApp number', phoneHint: 'Include the country code. We confirm your delivery time on WhatsApp.',
+    notesLabel: 'Anything we should know?',
+    next: 'Continue', back: 'Back', reserve: 'Reserve now, pay {total} on delivery', sending: 'Reserving…',
+    talk: 'Rather talk to someone?', talkLink: 'Message us on WhatsApp',
+    rcDelivery: 'Delivery', rcCollection: 'Collection', rcHotel: 'Hotel', rcRoom: 'room {room}', rcName: 'Name', rcPhone: 'WhatsApp',
+    rcRental: 'Rental, {n} days', rcFee: 'Delivery to {zone}', rcDeposit: 'Deposit ({pct}%), refundable', rcTotal: 'Cash on delivery',
+    rcAfter: 'You get {deposit} back when we collect, so the rental costs you {net} in total.',
+    doneTitle: 'Reserved', doneCodeLabel: 'Your booking code',
+    n1: 'We message you on WhatsApp to confirm the delivery time.', n2: 'On {date} we bring it to {hotel}.', n3: 'Have {total} ready in cash. {deposit} of it is your deposit.',
+    doneWa: 'Send this booking to us on WhatsApp', again: 'Make another booking',
+    eNothing: 'Add a scooter or wheelchair to continue.', eDate: 'Choose your delivery day.', eSoon: 'The earliest delivery day is {date}.',
+    eTaken: 'That one is booked for these dates. Try other dates or the other model.',
+    eZone: 'Choose where your hotel is.', eHotel: 'Enter your hotel name.', eName: 'Enter your full name.', ePhone: 'Enter your WhatsApp number with the country code.',
+    eJustTaken: 'Someone has just booked that for these dates. Pick other dates or the other model.',
+    eServer: 'The reservation did not go through. Try again, or message us on WhatsApp.',
+    howTitle: 'How it works',
+    how1: 'Reserve online', how1b: 'Pick your dates and your hotel. It takes about two minutes and you pay nothing now.',
+    how2: 'We deliver to your hotel', how2b: 'It arrives fully charged on the day you chose. You pay in cash on delivery.',
+    how3: 'We collect when you leave', how3b: 'We pick it up from your hotel on the last day and hand your deposit back.',
+    modelsTitle: 'What you can rent', from: 'From {price} for {days} days',
+    k1: 'Padded seat', k1b: 'Easy to get on and off.', k2: 'Front basket', k2b: 'Room for your bag and towel.',
+    k3: 'Four wheels', k3b: 'Stable on resort paths.', k4: '15 to 20 km per charge', k4b: 'Delivered fully charged.',
+    pricesTitle: 'Prices', thDays: 'Rental length',
+    priceNote: 'Prices are per item. The shortest rental is {min} days. Delivery to your hotel is added by area, and a refundable {pct}% deposit is paid on delivery.',
+    areasTitle: 'Where we deliver',
+    faqTitle: 'Questions',
+    q1: 'How do I pay?', a1: 'In cash when we deliver to your hotel. There is no online payment and you do not need a card.',
+    q2: 'How does the deposit work?', a2: 'You pay a deposit of {pct}% of the rental price together with the rental on delivery day. We hand it back when we collect.',
+    q3: 'Which currencies do you take?', a3: 'British pounds, euros, US dollars and Egyptian pounds. Choose yours at the top of the page to see every price in it.',
+    q4: 'What is the shortest rental?', a4: '{min} days. You can book {list} days online.',
+    q5: 'How far does a scooter go?', a5: 'About 15 to 20 km on a full charge, and it arrives fully charged.',
+    q6: 'I need to change or cancel my booking', a6: 'Message us on WhatsApp with your booking code and we will sort it out.',
+    footTitle: 'Questions before you book?', footBody: 'Message or call us. We answer in English and German.',
+    legal: 'Self Care Mobility is run by Self Care Pharmacy, Hurghada, Egypt.',
+    waBtn: 'Message us on WhatsApp', dockBook: 'Book your scooter',
+    waHello: 'Hello Self Care Mobility, I have a question about renting a scooter.',
+    waArea: 'Hello Self Care Mobility, do you deliver to my hotel? I am staying at: ',
+    waProduct: 'Hello Self Care Mobility, I would like to rent a {name}. What is the price?',
+    waBooking: 'Hello Self Care Mobility, I have just reserved online.'
+  },
+  de: {
+    tagline: 'Scooter- und Rollstuhlverleih, Hurghada', currency: 'Währung',
+    h1: 'Ihr Scooter wartet schon im Hotel.',
+    lede: 'Mieten Sie für Ihren Urlaub in Hurghada einen vierrädrigen Elektroscooter oder einen Rollstuhl. Wir bringen ihn voll geladen in Ihr Hotel und holen ihn bei der Abreise wieder ab.',
+    p1: 'Keine Online-Zahlung. Sie zahlen bar bei der Lieferung.',
+    p2: 'Die Kaution von {pct} % erhalten Sie bei der Abholung zurück.',
+    p3: 'Ab {price} für {days} Tage.',
+    loading: 'Buchungsformular wird geladen', loadErrTitle: 'Das Buchungsformular wurde nicht geladen',
+    loadErrBody: 'Prüfen Sie Ihre Verbindung und laden Sie die Seite neu, oder schreiben Sie uns und wir reservieren für Sie.',
+    stepOf: 'Schritt {n} von 3', s1: 'Auswählen und Termin festlegen', s2: 'Wohin sollen wir liefern?', s3: 'Prüfen und reservieren',
+    whatLabel: 'Was brauchen Sie?', add: 'Wählen', remove: 'Einen entfernen', more: 'Einen mehr',
+    perDays: '{price} für {days} Tage', free: 'Verfügbar', freeN: '{n} verfügbar', taken: 'In diesem Zeitraum vergeben',
+    askPrice: 'Preis auf Anfrage', askWa: 'Per WhatsApp anfragen',
+    startLabel: 'Liefertag', daysLabel: 'Wie lange?', daysN: '{n} Tage',
+    weDeliver: 'Wir liefern', weCollect: 'Wir holen ab', rental: 'Miete',
+    zoneLabel: 'Wählen Sie das Gebiet Ihres Hotels', zoneElse: 'Sie wohnen in El Gouna, Sahl Hasheesh oder Soma Bay?', askUs: 'Fragen Sie uns per WhatsApp',
+    delivery: 'Lieferung {fee}',
+    hotelLabel: 'Name des Hotels', roomLabel: 'Zimmernummer', optional: '(optional)',
+    slotLabel: 'Beste Lieferzeit', slot_morning: 'Vormittag, 9 bis 12 Uhr', slot_afternoon: 'Nachmittag, 12 bis 17 Uhr', slot_evening: 'Abend, 17 bis 23 Uhr',
+    nameLabel: 'Ihr vollständiger Name', phoneLabel: 'WhatsApp-Nummer', phoneHint: 'Bitte mit Ländervorwahl. Wir bestätigen die Lieferzeit per WhatsApp.',
+    notesLabel: 'Sollen wir etwas wissen?',
+    next: 'Weiter', back: 'Zurück', reserve: 'Jetzt reservieren, {total} bei Lieferung zahlen', sending: 'Wird reserviert…',
+    talk: 'Lieber persönlich klären?', talkLink: 'Schreiben Sie uns per WhatsApp',
+    rcDelivery: 'Lieferung', rcCollection: 'Abholung', rcHotel: 'Hotel', rcRoom: 'Zimmer {room}', rcName: 'Name', rcPhone: 'WhatsApp',
+    rcRental: 'Miete, {n} Tage', rcFee: 'Lieferung nach {zone}', rcDeposit: 'Kaution ({pct} %), wird erstattet', rcTotal: 'Bar bei Lieferung',
+    rcAfter: 'Bei der Abholung erhalten Sie {deposit} zurück. Die Miete kostet Sie also insgesamt {net}.',
+    doneTitle: 'Reserviert', doneCodeLabel: 'Ihr Buchungscode',
+    n1: 'Wir schreiben Ihnen per WhatsApp und bestätigen die Lieferzeit.', n2: 'Am {date} bringen wir alles ins {hotel}.', n3: 'Bitte halten Sie {total} in bar bereit. Davon sind {deposit} Ihre Kaution.',
+    doneWa: 'Buchung per WhatsApp an uns senden', again: 'Weitere Buchung',
+    eNothing: 'Bitte wählen Sie einen Scooter oder Rollstuhl.', eDate: 'Bitte wählen Sie den Liefertag.', eSoon: 'Der früheste Liefertag ist {date}.',
+    eTaken: 'In diesem Zeitraum ist das Modell vergeben. Wählen Sie andere Tage oder das andere Modell.',
+    eZone: 'Bitte wählen Sie, wo Ihr Hotel liegt.', eHotel: 'Bitte geben Sie den Namen des Hotels ein.', eName: 'Bitte geben Sie Ihren vollständigen Namen ein.', ePhone: 'Bitte geben Sie Ihre WhatsApp-Nummer mit Ländervorwahl ein.',
+    eJustTaken: 'Das Modell wurde soeben für diesen Zeitraum gebucht. Wählen Sie andere Tage oder das andere Modell.',
+    eServer: 'Die Reservierung hat nicht geklappt. Versuchen Sie es erneut oder schreiben Sie uns per WhatsApp.',
+    howTitle: 'So funktioniert es',
+    how1: 'Online reservieren', how1b: 'Termin und Hotel auswählen. Das dauert etwa zwei Minuten, und Sie zahlen jetzt nichts.',
+    how2: 'Wir liefern ins Hotel', how2b: 'Am gewählten Tag kommt alles voll geladen an. Sie zahlen bar bei der Lieferung.',
+    how3: 'Wir holen bei der Abreise ab', how3b: 'Am letzten Tag holen wir alles im Hotel ab und geben Ihnen die Kaution zurück.',
+    modelsTitle: 'Das können Sie mieten', from: 'Ab {price} für {days} Tage',
+    k1: 'Gepolsterter Sitz', k1b: 'Bequem beim Auf- und Absteigen.', k2: 'Korb vorne', k2b: 'Platz für Tasche und Handtuch.',
+    k3: 'Vier Räder', k3b: 'Stabil auf den Wegen der Anlage.', k4: '15 bis 20 km pro Ladung', k4b: 'Wird voll geladen geliefert.',
+    pricesTitle: 'Preise', thDays: 'Mietdauer',
+    priceNote: 'Die Preise gelten pro Stück. Die kürzeste Mietdauer beträgt {min} Tage. Hinzu kommt die Lieferung je nach Gebiet. Bei der Lieferung zahlen Sie eine Kaution von {pct} %, die erstattet wird.',
+    areasTitle: 'Hierhin liefern wir',
+    faqTitle: 'Fragen',
+    q1: 'Wie bezahle ich?', a1: 'Bar, wenn wir in Ihr Hotel liefern. Es gibt keine Online-Zahlung, und Sie brauchen keine Karte.',
+    q2: 'Wie funktioniert die Kaution?', a2: 'Am Liefertag zahlen Sie zusammen mit der Miete eine Kaution von {pct} % des Mietpreises. Bei der Abholung geben wir sie Ihnen zurück.',
+    q3: 'Welche Währungen nehmen Sie an?', a3: 'Britische Pfund, Euro, US-Dollar und ägyptische Pfund. Wählen Sie oben auf der Seite Ihre Währung, dann sehen Sie alle Preise darin.',
+    q4: 'Wie lange muss ich mindestens mieten?', a4: '{min} Tage. Online können Sie {list} Tage buchen.',
+    q5: 'Wie weit fährt ein Scooter?', a5: 'Etwa 15 bis 20 km mit einer vollen Ladung. Er wird voll geladen geliefert.',
+    q6: 'Ich möchte meine Buchung ändern oder stornieren', a6: 'Schreiben Sie uns per WhatsApp mit Ihrem Buchungscode, und wir kümmern uns darum.',
+    footTitle: 'Noch Fragen vor der Buchung?', footBody: 'Schreiben Sie uns oder rufen Sie an. Wir antworten auf Deutsch und Englisch.',
+    legal: 'Self Care Mobility wird von der Self Care Pharmacy in Hurghada, Ägypten, betrieben.',
+    waBtn: 'Per WhatsApp schreiben', dockBook: 'Scooter buchen',
+    waHello: 'Hallo Self Care Mobility, ich habe eine Frage zur Scooter-Miete.',
+    waArea: 'Hallo Self Care Mobility, liefern Sie auch in mein Hotel? Ich wohne im: ',
+    waProduct: 'Hallo Self Care Mobility, ich möchte gern mieten: {name}. Was kostet das?',
+    waBooking: 'Hallo Self Care Mobility, ich habe gerade online reserviert.'
+  }
+};
+
+/* ============================================================================
+   STATE AND HELPERS
+   ========================================================================== */
+const $ = (s, r = root) => r.querySelector(s);
+const $$ = (s, r = root) => [...r.querySelectorAll(s)];
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+let LIVE = true;
+const prefs = store.get('scm_prefs') || {};
+const browserDe = (navigator.language || '').toLowerCase().startsWith('de');
+const S = {
+  lang: prefs.lang || (browserDe ? 'de' : 'en'),
+  cur: prefs.cur || (browserDe ? 'EUR' : 'GBP'),
+  step: 1, cat: null, pick: null, manual: false, qty: {}, start: '', days: null, zone: '', avail: null, availKey: '', busy: false, booking: null
+};
+
+const t = (k, v = {}) => String((T[S.lang][k] ?? T.en[k] ?? k)).replace(/\{(\w+)\}/g, (_, n) => v[n] ?? '');
+const L = (o, f) => o[f + '_' + S.lang] || o[f + '_en'] || '';
+const SYM = { GBP: '£', EUR: '€', USD: '$', EGP: 'EGP' };
+function money(n, cur = S.cur) {
+  const s = Number(n).toLocaleString(S.lang === 'de' ? 'de-DE' : 'en-GB', { maximumFractionDigits: 0 });
+  if (S.lang === 'de') return s + ' ' + SYM[cur];
+  return cur === 'EGP' ? 'EGP ' + s : SYM[cur] + s;
+}
+const toDate = iso => new Date(iso + 'T00:00:00Z');
+const addDays = (iso, n) => { const d = toDate(iso); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const cairoToday = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo' }).format(new Date());
+const fmtDate = (iso, long) => new Intl.DateTimeFormat(S.lang === 'de' ? 'de-DE' : 'en-GB',
+  long ? { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }
+       : { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(toDate(iso));
+
+const ICON = {
+  scooter: '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="14" cy="48" r="8"/><circle cx="50" cy="48" r="8"/><path d="M22 48h20M44 44l-6-28h-7M20 42V30h14l3 12M18 30v-9h9"/></svg>',
+  wheelchair: '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="26" cy="42" r="14"/><circle cx="52" cy="52" r="4"/><path d="M22 12v26h20l8 12M22 20h-8M22 28h16"/></svg>',
+  wa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 20.5l1.3-4.6A8.5 8.5 0 1 1 8.2 19.3z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5"/></svg>'
+};
+
+/* ---------- prices: same rules as mob_unit_price / mob_convert_egp in the database ---------- */
+let DB = null;
+// Official rate (EGP per 1 unit) and the value we give foreign cash: official minus the discount.
+const official = c => Number(DB.settings['official_' + c.toLowerCase()] || 0);
+const rate = c => official(c) - Number(DB.settings.rate_discount || 0);
+const tiersOf = pid => DB.tiers.filter(x => x.product_id === pid).sort((a, b) => a.days - b.days);
+function unitPrice(pid, days, cur = S.cur) {
+  const tier = DB.tiers.find(x => x.product_id === pid && x.days === days);
+  if (!tier) return null;
+  const gbp = Number(tier.price_gbp);
+  if (cur === 'GBP') return gbp;
+  if (cur === 'EUR') return Number(tier.price_eur);
+  if (official('GBP') <= 0) return null;
+  if (cur === 'EGP') return Math.round(gbp * official('GBP') / 10) * 10;
+  if (cur === 'USD') return rate('USD') > 0 ? Math.round(gbp * official('GBP') / rate('USD')) : null;
+  return null;
+}
+function convertEgp(egp, cur = S.cur) {
+  egp = Number(egp);
+  if (cur === 'EGP') return Math.round(egp);
+  if (rate(cur) <= 0) return null;
+  return egp <= 0 ? 0 : Math.max(1, Math.round(egp / rate(cur)));
+}
+const picked = () => DB.products.filter(p => (S.qty[p.id] || 0) > 0);
+function quote() {
+  const items = picked().map(p => {
+    const unit = unitPrice(p.id, S.days);
+    return { product_id: p.id, product_name: L(p, 'name'), qty: S.qty[p.id], unit_price: unit, line_total: unit == null ? null : unit * S.qty[p.id] };
+  });
+  const rental = items.reduce((a, i) => a + (i.line_total || 0), 0);
+  const zone = DB.zones.find(z => z.id === S.zone);
+  const delivery = zone ? convertEgp(zone.fee_egp) : 0;
+  const deposit = Math.round(rental * Number(DB.settings.deposit_pct) / 100);
+  return { items, rental, delivery, deposit, total: rental + delivery + deposit, zone };
+}
+
+/* ============================================================================
+   DATA: live (Supabase REST) or preview (this device only)
+   ========================================================================== */
+async function rest(path, opts = {}) {
+  const r = await fetch(SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/' + path, {
+    ...opts,
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', ...(opts.headers || {}) }
+  });
+  const body = await r.json().catch(() => null);
+  if (!r.ok) throw new Error((body && (body.message || body.hint)) || ('HTTP ' + r.status));
+  return body;
+}
+const demoDb = () => store.get(DEMO_KEY) || JSON.parse(JSON.stringify(SEED));
+function demoAvailability(db, start, days) {
+  const gap = Number(db.settings.turnaround_days || 0), end = addDays(start, days);
+  return db.products.filter(p => p.active).map(p => {
+    const used = db.bookings.filter(b => ['pending', 'confirmed', 'delivered'].includes(b.status)
+        && b.start_date < addDays(end, gap) && start < addDays(b.end_date, gap))
+      .reduce((a, b) => a + b.items.filter(i => i.product_id === p.id).reduce((x, i) => x + i.qty, 0), 0);
+    return { product_id: p.id, available: Math.max(0, p.stock_qty - used) };
+  });
+}
+const api = {
+  async catalog() {
+    if (!LIVE) { const d = demoDb(); return { settings: d.settings, products: d.products.filter(p => p.active), tiers: d.tiers, zones: d.zones.filter(z => z.active), hotels: (d.hotels || []).filter(h => h.active) }; }
+    const [products, tiers, zones, rows, hotels] = await Promise.all([
+      rest('mob_products?select=*&active=eq.true&order=sort_order'),
+      rest('mob_price_tiers?select=product_id,days,price_gbp,price_eur'),
+      rest('mob_zones?select=*&active=eq.true&order=sort_order'),
+      rest('mob_settings?select=key,value'),
+      rest('mob_hotels?select=name,zone_id,aliases&active=eq.true&order=name&limit=2000')]);
+    const settings = {}; rows.forEach(r => settings[r.key] = r.value);
+    return { settings, products, tiers, zones, hotels };
+  },
+  async availability(start, days) {
+    if (!LIVE) return demoAvailability(demoDb(), start, days);
+    return rest('rpc/mob_availability', { method: 'POST', body: JSON.stringify({ p_start: start, p_days: days }) });
+  },
+  async createBooking(p) {
+    if (LIVE) return rest('rpc/mob_create_booking', { method: 'POST', body: JSON.stringify({ p }) });
+    const d = demoDb(), free = demoAvailability(d, p.start_date, p.days);
+    for (const it of p.items) if ((free.find(f => f.product_id === it.product_id)?.available || 0) < it.qty) throw new Error('MOB_UNAVAILABLE');
+    const q = quote(), A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const code = 'SC-' + Array.from({ length: 5 }, () => A[Math.floor(Math.random() * A.length)]).join('');
+    const b = { id: 'b-' + Date.now(), code, status: 'pending', source: 'web', customer_name: p.name, phone: p.phone, hotel: p.hotel, room: p.room,
+      zone_id: p.zone_id, zone_name: q.zone.name_en, start_date: p.start_date, end_date: addDays(p.start_date, p.days), days: p.days,
+      delivery_slot: p.slot, notes: p.notes, lang: p.lang, currency: p.currency, rental_amount: q.rental, delivery_amount: q.delivery,
+      delivery_fee_egp: q.zone.fee_egp, deposit_amount: q.deposit, total_due: q.total, deposit_refunded: false, admin_notes: '',
+      items: q.items, created_at: new Date().toISOString() };
+    d.bookings.push(b); store.set(DEMO_KEY, d);
+    return b;
+  }
+};
+
+/* ============================================================================
+   RENDER
+   ========================================================================== */
+Object.assign(T.en, {
+  h1a: 'Your scooter,', h1b: 'waiting at', h1c: 'your hotel.',
+  s1: 'When do you need it?', s2: 'Where are you staying?', s3: 'Your details',
+  whatLabel: 'What would you like?', daysLabel: 'For how long?', startLabel: 'Which day should we deliver?',
+  collect: 'Delivery {from}, collection {to}',
+  eFull: 'Fully booked for these dates. Please try another day or a different length.',
+  askFor: 'Need a {name}?', nothingNow: 'You pay nothing now.',
+  reserveBtn: 'Reserve now', calPrev: 'Previous month', calNext: 'Next month', keyBooked: 'Booked', keyYours: 'Your rental',
+  planChoose: 'Choose', footBook: 'Book your scooter',
+  sumLine: '{name}, {n} days', sumDates: '{from} to {to}', sumPay: 'You pay in cash on delivery',
+  sumRental: 'Rental, {n} days', sumFee: 'Delivery to your hotel', sumDep: 'Deposit', sumDepTag: 'refundable',
+  sumBack: 'You get back at collection', sumNet: 'Your rental then costs {net} in total.',
+  phoneLabel: 'WhatsApp number, with country code',
+  zoneLabel: 'Which area is your hotel in?',
+  short: 'Delivered to your hotel in Hurghada. Pay in cash when it arrives.',
+  heroCta: 'Book now',
+  bookTitle: 'Book your scooter', bookSub: 'It takes about two minutes, and you pay nothing now.',
+  hotelLabel: 'Your hotel', hotelPh: 'Start typing the hotel name', notListed: 'My hotel is not in the list',
+  pickedLine: 'Delivery to {zone}', outside: 'We do not take online bookings for this hotel yet.', outsideAsk: 'Ask us on WhatsApp',
+  eHotelPick: 'Choose your hotel from the list, or tap "My hotel is not in the list".'
+});
+Object.assign(T.de, {
+  h1a: 'Ihr Scooter', h1b: 'wartet schon', h1c: 'im Hotel.',
+  s1: 'Wann brauchen Sie ihn?', s2: 'Wo wohnen Sie?', s3: 'Ihre Angaben',
+  whatLabel: 'Was möchten Sie mieten?', daysLabel: 'Für wie lange?', startLabel: 'An welchem Tag sollen wir liefern?',
+  collect: 'Lieferung {from}, Abholung {to}',
+  eFull: 'In diesem Zeitraum ausgebucht. Bitte wählen Sie einen anderen Tag oder eine andere Dauer.',
+  askFor: 'Sie brauchen: {name}?', nothingNow: 'Sie zahlen jetzt nichts.',
+  reserveBtn: 'Jetzt reservieren', calPrev: 'Vorheriger Monat', calNext: 'Nächster Monat', keyBooked: 'Ausgebucht', keyYours: 'Ihre Mietzeit',
+  planChoose: 'Wählen', footBook: 'Scooter buchen',
+  sumLine: '{name}, {n} Tage', sumDates: '{from} bis {to}', sumPay: 'Sie zahlen bar bei Lieferung',
+  sumRental: 'Miete, {n} Tage', sumFee: 'Lieferung ins Hotel', sumDep: 'Kaution', sumDepTag: 'wird erstattet',
+  sumBack: 'Bei der Abholung zurück', sumNet: 'Ihre Miete kostet dann insgesamt {net}.',
+  phoneLabel: 'WhatsApp-Nummer mit Ländervorwahl',
+  zoneLabel: 'In welchem Gebiet liegt Ihr Hotel?',
+  short: 'Lieferung in Ihr Hotel in Hurghada. Sie zahlen bar bei der Übergabe.',
+  heroCta: 'Jetzt buchen',
+  bookTitle: 'Scooter buchen', bookSub: 'Das dauert etwa zwei Minuten, und Sie zahlen jetzt nichts.',
+  hotelLabel: 'Ihr Hotel', hotelPh: 'Hotelnamen eingeben', notListed: 'Mein Hotel ist nicht in der Liste',
+  pickedLine: 'Lieferung nach {zone}', outside: 'Für dieses Hotel nehmen wir noch keine Online-Buchungen an.', outsideAsk: 'Fragen Sie uns per WhatsApp',
+  eHotelPick: 'Wählen Sie Ihr Hotel aus der Liste oder tippen Sie auf „Mein Hotel ist nicht in der Liste“.'
+});
+const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.200 7-11.500a7 7 0 1 0-14 0C5 14.800 12 21 12 21z"/><circle cx="12" cy="9.500" r="2.500"/></svg>';
+const TRUCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7.500" cy="17.500" r="1.800"/><circle cx="17.500" cy="17.500" r="1.800"/></svg>';
+
+const waLink = text => 'https://wa.me/' + String(DB?.settings.whatsapp || SEED.settings.whatsapp).replace(/\D/g, '') + '?text=' + encodeURIComponent(text);
+
+/* Which days have no unit free (drawn struck through in the calendar). */
+const BUSY = new Set(), busyLoaded = new Set();
+api.busyDays = async (from, to) => {
+  if (LIVE) return rest('rpc/mob_busy_days', { method: 'POST', body: JSON.stringify({ p_from: from, p_to: to }) });
+  const d = demoDb(), gap = Number(d.settings.turnaround_days || 0), out = [];
+  d.products.filter(p => p.active).forEach(p => {
+    for (let day = from; day <= to; day = addDays(day, 1)) {
+      const used = d.bookings.filter(b => ['pending', 'confirmed', 'delivered'].includes(b.status) && b.start_date <= day && day < addDays(b.end_date, gap))
+        .reduce((a, b) => a + b.items.filter(i => i.product_id === p.id).reduce((x, i) => x + i.qty, 0), 0);
+      if (used >= p.stock_qty) out.push({ product_id: p.id, day });
+    }
+  });
+  return out;
+};
+async function loadBusy(month) {
+  if (busyLoaded.has(month)) return;
+  busyLoaded.add(month);
+  const from = month + '-01', to = addDays(addDays(from, 31).slice(0, 8) + '01', -1);
+  try { (await api.busyDays(from, to)).forEach(r => BUSY.add(r.product_id + '|' + String(r.day).slice(0, 10))); if (S.month === month) renderCalendar(); }
+  catch (e) { busyLoaded.delete(month); }
+}
+
+function renderStatic() {
+  document.documentElement.lang = S.lang;
+  $$('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n, DB ? { pct: DB.settings.deposit_pct } : {}));
+  $('#h1').innerHTML = ['h1a', 'h1b', 'h1c'].map(k => `<span>${esc(t(k))}</span>`).join('');
+  $$('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === S.lang));
+  $('#seg').dataset.on = S.lang;
+  $('#cur').value = S.cur;
+  $$('[data-wa]').forEach(a => {
+    a.href = waLink(t(a.dataset.wa === 'area' ? 'waArea' : 'waHello'));
+    if (a.classList.contains('btn')) a.innerHTML = ICON.wa + '<span>' + esc(t('waBtn')) + '</span>';
+  });
+  $('#footBook').innerHTML = '<span>' + esc(t('footBook')) + '</span>' + ARROW;
+  $('#heroCta').innerHTML = '<span>' + esc(t('heroCta')) + '</span>' + ARROW;
+  $('#hotel').placeholder = t('hotelPh');
+  $('#calPrev').setAttribute('aria-label', t('calPrev')); $('#calNext').setAttribute('aria-label', t('calNext'));
+  $('#year').textContent = new Date().getFullYear();
+  const hi = $('#heroImg'); if (hi) hi.alt = S.lang === 'de' ? 'Vierrädriger Elektroscooter' : 'Four-wheel mobility scooter';
+}
+
+const bookable = () => DB.products.filter(p => tiersOf(p.id).length > 0);
+const onRequest = () => DB.products.filter(p => tiersOf(p.id).length === 0);
+const chosen = () => DB.products.find(p => S.qty[p.id] > 0) || null;
+const availOf = pid => S.avail ? (S.avail.find(a => a.product_id === pid)?.available ?? 0) : null;
+const isFull = p => p && availOf(p.id) != null && availOf(p.id) < 1;
+const minStart = () => addDays(cairoToday(), Number(DB.settings.lead_days ?? 1));
+const maxStart = () => addDays(cairoToday(), 365);
+
+function cheapest() {
+  let best = null;
+  DB.products.forEach(p => tiersOf(p.id).forEach(tr => {
+    const price = unitPrice(p.id, tr.days);
+    if (price != null && (!best || price < best.price)) best = { price, days: tr.days };
+  }));
+  return best;
+}
+function imgOrIcon(p) {
+  return p.image_url
+    ? `<img src="${esc(p.image_url)}" alt="" loading="lazy" onerror="this.remove()">`
+    : ICON[p.category] || ICON.scooter;
+}
+/* For tight boxes: the figure, with a long currency code set small beside it so it always fits. */
+function moneyHtml(n, cur = S.cur) {
+  if (cur !== 'EGP') return esc(money(n, cur));
+  const num = Number(n).toLocaleString(S.lang === 'de' ? 'de-DE' : 'en-GB', { maximumFractionDigits: 0 });
+  return `${esc(num)}<span class="unit">EGP</span>`;
+}
+/* Count a money figure up or down to its new value. */
+function tween(el, to, cur) {
+  const from = Number(el.dataset.v ?? to), t0 = performance.now(), ms = 480;
+  el.dataset.v = to;
+  if (from === to || matchMedia('(prefers-reduced-motion: reduce)').matches) return void (el.innerHTML = moneyHtml(to, cur));
+  const tick = now => { const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+    el.innerHTML = moneyHtml(Math.round(from + (to - from) * e), cur); if (k < 1 && Number(el.dataset.v) === to) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+
+/* Step 1. With one bookable product there is nothing to choose, so the question is not asked. */
+function renderProducts() {
+  const list = bookable();
+  if (!chosen() && list.length) S.qty = { [list[0].id]: 1 };
+  $('#whatGroup').hidden = list.length < 2;
+  $('#products').innerHTML = list.map(p => `<label class="tile"><input type="radio" name="product" value="${esc(p.id)}" ${S.qty[p.id] ? 'checked' : ''}>
+    <span><span class="tile-img">${imgOrIcon(p)}</span><b>${esc(L(p, 'name'))}</b></span></label>`).join('');
+  $('#talk').innerHTML = onRequest().map(p => `${esc(t('askFor', { name: S.lang === 'en' ? L(p, 'name').toLowerCase() : L(p, 'name') }))} <a target="_blank" rel="noopener" href="${esc(waLink(t('waProduct', { name: L(p, 'name') })))}">${esc(t('askWa'))}</a>`).join('<br>')
+    || `${esc(t('talk'))} <a target="_blank" rel="noopener" href="${esc(waLink(t('waHello')))}">${esc(t('talkLink'))}</a>`;
+}
+function renderDays() {
+  const p = chosen(), tiers = p ? tiersOf(p.id) : [];
+  if (!tiers.some(x => x.days === S.days)) S.days = tiers[0]?.days ?? null;
+  $('#days').innerHTML = tiers.map(x => `<label class="len"><input type="radio" name="days" value="${x.days}" ${x.days === S.days ? 'checked' : ''}>
+    <span><b>${esc(t('daysN', { n: x.days }))}</b><em class="${S.cur === 'EGP' ? 'long' : ''}">${moneyHtml(unitPrice(p.id, x.days))}</em></span></label>`).join('');
+}
+function renderCalendar(slide) {
+  if (!S.month) S.month = minStart().slice(0, 7);
+  const [y, m] = S.month.split('-').map(Number), first = S.month + '-01';
+  const count = new Date(Date.UTC(y, m, 0)).getUTCDate(), lead = (toDate(first).getUTCDay() + 6) % 7;
+  const loc = S.lang === 'de' ? 'de-DE' : 'en-GB', p = chosen(), end = S.start && S.days ? addDays(S.start, S.days) : null;
+  const lo = minStart(), hi = maxStart(), td = cairoToday();
+  $('#calTitle').textContent = new Intl.DateTimeFormat(loc, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(toDate(first));
+  $('#calPrev').disabled = S.month <= lo.slice(0, 7); $('#calNext').disabled = S.month >= hi.slice(0, 7);
+  let html = Array.from({ length: 7 }, (_, i) => `<div class="dow" aria-hidden="true">${new Intl.DateTimeFormat(loc, { weekday: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(2024, 0, 1 + i)))}</div>`).join('');
+  html += '<span></span>'.repeat(lead);
+  let anyBusy = false;
+  for (let d = 1; d <= count; d++) {
+    const iso = S.month + '-' + String(d).padStart(2, '0'), busy = p && BUSY.has(p.id + '|' + iso) && iso >= lo;
+    if (busy) anyBusy = true;
+    const cls = ['day', busy ? 'busy' : '', iso === td ? 'today' : '', iso === S.start ? 'start' : '', end && iso > S.start && iso < end ? 'in' : '', iso === end ? 'end' : ''].join(' ');
+    const off = iso < lo || iso > hi || (busy && iso !== end);
+    html += `<button type="button" class="${cls}" data-day="${iso}" ${off ? 'disabled' : ''} aria-pressed="${iso === S.start}" aria-label="${esc(fmtDate(iso, true))}${busy ? ', ' + esc(t('keyBooked')) : ''}">${d}</button>`;
+  }
+  const g = $('#calGrid'); g.innerHTML = html;
+  if (slide) { g.classList.remove('slide-next', 'slide-prev'); void g.offsetWidth; g.classList.add(slide); }
+  $('#cal').classList.toggle('full', !!isFull(p));
+  $('#calKey').innerHTML = anyBusy ? `<span><i style="background:#C28A7A"></i>${esc(t('keyBooked'))}</span>` : '';
+  $('#calKey').hidden = !anyBusy;
+  loadBusy(S.month);
+}
+function renderHandover() {
+  const c = $('#collect'), show = !!(S.start && S.days);
+  const text = show ? t('collect', { from: fmtDate(S.start), to: fmtDate(addDays(S.start, S.days)) }) : '';
+  if (c.dataset.text !== text) { c.dataset.text = text; c.hidden = true; void c.offsetWidth; c.innerHTML = TRUCK + '<span>' + esc(text) + '</span>'; }
+  c.hidden = !show;
+  if (S.step === 1) isFull(chosen()) ? say('eFull') : ($('#msg').dataset.key === 'eFull' && say(null));
+}
+function renderZones() {
+  $('#zones').innerHTML = DB.zones.map(z => `<label class="zone"><input type="radio" name="zone" value="${esc(z.id)}" ${z.id === S.zone ? 'checked' : ''}>
+    <span><b>${esc(L(z, 'name'))}</b><em>${esc(money(convertEgp(z.fee_egp)))}</em><small>${esc(L(z, 'hint'))}</small></span></label>`).join('');
+}
+
+/* Step 2. The guest types a few letters, picks the hotel, and the hotel sets the delivery area. */
+const norm = v => String(v).toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, ' ').trim();
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.500l5 5L20 6.500"/></svg>';
+function suggestions(text) {
+  const q = norm(text); if (!q) return [];
+  const hit = (DB.hotels || []).map(h => { const n = h._n || (h._n = norm(h.name));
+    return { h, n, rank: n.startsWith(q) ? 0 : (' ' + n).includes(' ' + q) ? 1 : n.includes(q) ? 2 : (h._a || (h._a = norm((h.aliases || []).join(' ')))).includes(q) ? 3 : 9 }; }).filter(x => x.rank < 9);
+  // The pharmacy list holds short and long spellings of one hotel ("Aqua Magic",
+  // "Steigenberger Aqua Magic Hurghada"): show only the fullest one.
+  const full = hit.filter(a => !hit.some(b => b !== a && b.h.zone_id === a.h.zone_id && b.n.length > a.n.length && (' ' + b.n + ' ').includes(' ' + a.n + ' ')));
+  return full.sort((a, b) => a.rank - b.rank || a.n.localeCompare(b.n)).slice(0, 12).map(x => x.h);
+}
+const zoneOf = id => DB.zones.find(z => z.id === id);
+let hotelOpen = false, hotelIdx = -1, hotelRows = [];
+function renderHotel() {
+  const inp = $('#hotel'), list = $('#hotelList'), text = inp.value.trim();
+  hotelRows = hotelOpen && !S.pick ? suggestions(text) : [];
+  const show = hotelOpen && !S.pick && norm(text).length >= 1;
+  const mark = name => { const i = norm(name).indexOf(norm(text)); return i === 0 ? `<mark>${esc(name.slice(0, text.length))}</mark>${esc(name.slice(text.length))}` : esc(name); };
+  list.innerHTML = hotelRows.map((h, i) => { const z = zoneOf(h.zone_id);
+    return `<li role="option" id="hopt${i}" data-i="${i}" class="${i === hotelIdx ? 'on' : ''}" aria-selected="${i === hotelIdx}"><b>${mark(h.name)}</b><em>${z ? esc(money(convertEgp(z.fee_egp))) : ''}</em><small>${z ? esc(L(z, 'name')) : esc(t('outsideAsk'))}</small></li>`; }).join('')
+    + `<li role="option" id="hoptx" data-i="x" class="other ${hotelIdx === hotelRows.length ? 'on' : ''}">${esc(t('notListed'))}</li>`;
+  list.hidden = !show; inp.setAttribute('aria-expanded', show);
+  inp.setAttribute('aria-activedescendant', show && hotelIdx >= 0 ? (hotelIdx === hotelRows.length ? 'hoptx' : 'hopt' + hotelIdx) : '');
+  const box = $('#hotelPicked'), z = S.pick && zoneOf(S.pick.zone_id);
+  box.hidden = !S.pick;
+  if (S.pick && z) { box.className = 'picked'; box.innerHTML = CHECK + `<span>${esc(t('pickedLine', { zone: L(z, 'name') }))}</span><span>${esc(money(convertEgp(z.fee_egp)))}</span>`; }
+  else if (S.pick) { box.className = 'picked out'; box.innerHTML = `<span>${esc(t('outside'))} <a target="_blank" rel="noopener" href="${esc(waLink(t('waArea') + S.pick.name))}">${esc(t('outsideAsk'))}</a></span>`; }
+  $('#zoneGroup').hidden = !(S.manual && !S.pick);
+}
+function pickHotel(h) {
+  S.pick = h; S.manual = false; S.zone = h.zone_id || ''; hotelOpen = false; hotelIdx = -1;
+  $('#hotel').value = h.name; $('#hotel').classList.remove('bad'); say(null); renderHotel();
+}
+function hotelNotListed() {
+  S.pick = null; S.manual = true; S.zone = ''; hotelOpen = false; hotelIdx = -1; say(null); renderZones(); renderHotel();
+}
+
+function receiptHtml(b) {
+  const what = b.items.map(i => `<dt>${esc(i.product_name)}</dt><dd>${esc(t('daysN', { n: b.days }))}</dd>`).join('') +
+    `<dt>${esc(t('rcDelivery'))}</dt><dd>${esc(fmtDate(b.start_date))}</dd>
+     <dt>${esc(t('rcCollection'))}</dt><dd>${esc(fmtDate(b.end_date))}</dd>
+     <dt>${esc(t('rcHotel'))}</dt><dd>${esc(b.hotel)}${b.room ? '<br><span class="hint" style="font-weight:400">' + esc(t('rcRoom', { room: b.room })) + '</span>' : ''}</dd>`;
+  const sum = `<dt>${esc(t('rcRental', { n: b.days }))}</dt><dd>${esc(money(b.rental_amount, b.currency))}</dd>
+     <dt>${esc(t('rcFee', { zone: b.zone_label }))}</dt><dd>${esc(money(b.delivery_amount, b.currency))}</dd>
+     <dt>${esc(t('rcDeposit', { pct: DB.settings.deposit_pct }))}</dt><dd>${esc(money(b.deposit_amount, b.currency))}</dd>
+     <div class="total" style="display:contents"><dt>${esc(t('rcTotal'))}</dt><dd>${esc(money(b.total_due, b.currency))}</dd></div>`;
+  return { what, sum };
+}
+function draft() {
+  const q = quote();
+  return { items: q.items, currency: S.cur, days: S.days, start_date: S.start, end_date: addDays(S.start, S.days),
+    hotel: $('#hotel').value.trim(), room: $('#room').value.trim(),
+    customer_name: $('#name').value.trim(), phone: $('#phone').value.trim(), zone_label: q.zone ? L(q.zone, 'name') : '',
+    rental_amount: q.rental, delivery_amount: q.delivery, deposit_amount: q.deposit, total_due: q.total };
+}
+function renderSummary(animate) {
+  const b = draft(), p = chosen();
+  const BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
+  $('#sumBox').innerHTML = `<p class="sum-what"><b>${esc(L(p, 'name'))}</b>, ${esc(t('sumDates', { from: fmtDate(b.start_date), to: fmtDate(b.end_date) }))}, ${esc(b.hotel)}</p>
+    <dl class="sum-rows">
+      <dt>${esc(t('sumRental', { n: b.days }))}</dt><dd>${esc(money(b.rental_amount))}</dd>
+      <dt>${esc(t('sumFee'))}</dt><dd>${esc(money(b.delivery_amount))}</dd>
+      <dt>${esc(t('sumDep'))}<span class="tag">${esc(t('sumDepTag'))}</span></dt><dd>${esc(money(b.deposit_amount))}</dd>
+    </dl>
+    <p class="sum-pay"><span>${esc(t('sumPay'))}</span><b id="sumTotal" ${animate ? 'data-v="0"' : ''}></b></p>
+    <p class="sum-back">${BACK}<span>${esc(t('sumBack'))}<span>${esc(t('sumNet', { net: money(b.total_due - b.deposit_amount) }))}</span></span><b>+${esc(money(b.deposit_amount))}</b></p>`;
+  tween($('#sumTotal'), b.total_due, S.cur);
+}
+
+function renderStep(animate) {
+  $$('[data-step]').forEach(el => el.hidden = Number(el.dataset.step) !== S.step);
+  $('#stepCount').textContent = t('stepOf', { n: S.step });
+  $('#stepTitle').textContent = t('s' + S.step);
+  $('#railFill').style.width = (S.step / 3 * 100) + '%';
+  $('#backBtn').hidden = S.step === 1; $('#backBtn').textContent = t('back');
+  $('#talk').hidden = S.step !== 1; $('#nothing').hidden = S.step !== 3;
+  const btn = $('#nextBtn');
+  btn.classList.toggle('busy', S.busy); btn.disabled = S.busy;
+  btn.innerHTML = '<span>' + esc(S.step < 3 ? t('next') : t('reserveBtn')) + '</span>' + (S.step < 3 ? ARROW : '');
+  if (S.step === 3) renderSummary(animate);
+}
+
+function renderInfo() {
+  const best = cheapest();
+  $('#p3').textContent = best ? t('p3', { price: money(best.price), days: best.days }) : '';
+  $('#p3').hidden = !best;
+  const pct = DB.settings.deposit_pct, min = DB.settings.min_days, priced = bookable();
+  const opts = [...new Set(DB.tiers.filter(x => DB.products.some(p => p.id === x.product_id)).map(x => x.days))].sort((a, b) => a - b);
+  $('#modelCards').className = 'models rv in' + (DB.products.length === 3 ? ' three' : '');
+  $('#modelCards').innerHTML = DB.products.map(p => {
+    const tr = tiersOf(p.id)[0];
+    const from = tr ? esc(t('from', { price: money(unitPrice(p.id, tr.days)), days: tr.days }))
+      : `<a target="_blank" rel="noopener" href="${esc(waLink(t('waProduct', { name: L(p, 'name') })))}">${esc(t('askWa'))}</a>`;
+    return `<article class="model"><div class="model-img">${imgOrIcon(p)}</div>
+      <div><h3>${esc(L(p, 'name'))}</h3><p>${esc(L(p, 'desc'))}</p><p class="from">${from}</p></div></article>`;
+  }).join('');
+  // One product: price cards you can tap. Several: a comparison table.
+  $('#priceArea').innerHTML = priced.length === 1
+    ? `<div class="plans">${tiersOf(priced[0].id).map(x => `<button type="button" class="plan" data-plan="${x.days}"><small>${esc(t('daysN', { n: x.days }))}</small><b>${moneyHtml(unitPrice(priced[0].id, x.days))}</b><span>${esc(t('planChoose'))}${ARROW}</span></button>`).join('')}</div>`
+    : `<div class="price-wrap"><table class="prices"><thead><tr><th>${esc(t('thDays'))}</th>${priced.map(p => `<th>${esc(L(p, 'name'))}</th>`).join('')}</tr></thead><tbody>` +
+      opts.map(d => `<tr><td>${esc(t('daysN', { n: d }))}</td>${priced.map(p => { const v = unitPrice(p.id, d); return `<td>${v == null ? '–' : esc(money(v))}</td>`; }).join('')}</tr>`).join('') + '</tbody></table></div>';
+  $('#priceNote').textContent = t('priceNote', { min, pct });
+  $('#areaList').innerHTML = DB.zones.map(z => `<li><span class="pin">${PIN}</span><b>${esc(L(z, 'name'))}</b><em>${esc(money(convertEgp(z.fee_egp)))}</em><small>${esc(L(z, 'hint'))}</small></li>`).join('');
+  const list = opts.length > 1 ? opts.slice(0, -1).join(', ') + (S.lang === 'de' ? ' oder ' : ' or ') + opts[opts.length - 1] : opts.join('');
+  const open = $$('#faqList .qa').map(q => q.classList.contains('open'));
+  $('#faqList').innerHTML = [1, 2, 3, 4, 5, 6].map((i, n) => `<div class="qa ${open[n] ? 'open' : ''}"><button type="button" aria-expanded="${!!open[n]}" aria-controls="ans${i}">${esc(t('q' + i))}<i aria-hidden="true"></i></button>
+    <div class="ans" id="ans${i}"><div><p>${esc(t('a' + i, { pct, min, list }))}</p></div></div></div>`).join('');
+  $('#footHours').textContent = DB.settings['hours_' + S.lang] || DB.settings.hours_en || '';
+  [['#call1', 'phone_1'], ['#call2', 'phone_2']].forEach(([sel, key]) => {
+    const el = $(sel), v = DB.settings[key];
+    el.hidden = !v; if (v) { el.href = 'tel:' + String(v).replace(/[^\d+]/g, ''); el.textContent = v; }
+  });
+}
+
+function renderDone(celebrate) {
+  const b = S.booking, r = receiptHtml(b);
+  $('#doneCode').innerHTML = [...b.code].map((ch, i) => `<span style="animation-delay:${.5 + i * .06}s">${esc(ch)}</span>`).join('');
+  $('#doneCode').setAttribute('aria-label', b.code);
+  $('#doneWhat').innerHTML = r.what; $('#doneSum').innerHTML = r.sum;
+  $('#doneNext').innerHTML = ['n1', 'n2', 'n3'].map(k => `<li>${esc(t(k, { date: fmtDate(b.start_date, true), hotel: b.hotel, total: money(b.total_due, b.currency), deposit: money(b.deposit_amount, b.currency) }))}</li>`).join('');
+  const lines = [t('waBooking'), '', b.code,
+    ...b.items.map(i => `${i.product_name}, ${t('daysN', { n: b.days })}`),
+    `${t('rcDelivery')}: ${fmtDate(b.start_date, true)}`,
+    `${t('rcCollection')}: ${fmtDate(b.end_date, true)}`,
+    `${t('rcHotel')}: ${b.hotel}${b.room ? ', ' + t('rcRoom', { room: b.room }) : ''}`,
+    `${t('rcName')}: ${b.customer_name}`,
+    `${t('rcTotal')}: ${money(b.total_due, b.currency).replace(' ', ' ')}`];
+  $('#doneWa').href = waLink(lines.join('\n'));
+  $('#doneWa').innerHTML = ICON.wa + '<span>' + esc(t('doneWa')) + '</span>';
+  if (celebrate) {
+    const colors = ['#FFC53D', '#0B7285', '#19A3B8', '#E59E00', '#17734A'];
+    $('#confetti').innerHTML = Array.from({ length: 22 }, (_, i) => `<i style="background:${colors[i % 5]};--x:${Math.round((Math.random() - .5) * 340)}px;--y:${Math.round(60 + Math.random() * 260)}px;--r:${Math.round((Math.random() - .5) * 900)}deg;animation-delay:${(.25 + Math.random() * .25).toFixed(2)}s"></i>`).join('');
+    setTimeout(() => $('#confetti').innerHTML = '', 2400);
+  }
+}
+
+function renderAll() {
+  renderStatic();
+  if (!DB) return;
+  renderProducts(); renderDays(); renderCalendar(); renderHandover(); renderZones(); renderHotel(); renderStep(); renderInfo();
+  if (S.booking) renderDone();
+}
+
+/* ============================================================================
+   BEHAVIOUR
+   ========================================================================== */
+function toCard() {
+  // Land with the top of the card just under the header, so one step fits one screen.
+  const y = $('#book').getBoundingClientRect().top + scrollY - ($('#bar').offsetHeight + 8);
+  scrollTo({ top: Math.max(0, y), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+function say(key, vars) {
+  const m = $('#msg');
+  m.hidden = !key; m.dataset.key = key || ''; m.textContent = key ? t(key, vars) : '';
+}
+
+async function refreshAvailability() {
+  if (!S.start || !S.days) { S.avail = null; S.availKey = ''; renderCalendar(); renderHandover(); return; }
+  const key = S.start + '|' + S.days;
+  S.availKey = key;
+  try {
+    const rows = await api.availability(S.start, S.days);
+    if (S.availKey !== key) return;
+    S.avail = rows;
+  } catch (e) { S.avail = null; }
+  renderCalendar(); renderHandover();
+}
+
+const bad = (sel, key, vars) => { const el = $(sel); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); if (el.focus && el.matches('input')) el.focus(); say(key, vars); return false; };
+function checkStep1() {
+  if (!chosen()) return say('eNothing'), false;
+  if (!S.start) return bad('#cal', 'eDate');
+  if (isFull(chosen()) || unitPrice(chosen().id, S.days) == null) return say('eFull'), false;
+  return true;
+}
+function checkStep2() {
+  const text = $('#hotel').value.trim();
+  if (text.length < 2) return bad('#hotel', 'eHotel');
+  if (S.pick) return S.pick.zone_id ? true : (say('outside'), false);
+  if (!S.manual) {
+    const exact = (DB.hotels || []).find(h => norm(h.name) === norm(text));
+    if (exact) { pickHotel(exact); return exact.zone_id ? true : (say('outside'), false); }
+    if (suggestions(text).length) { hotelOpen = true; renderHotel(); return bad('#hotel', 'eHotelPick'); }
+    hotelNotListed();
+  }
+  if (!S.zone) return say('eZone'), $('#zones input')?.focus({ preventScroll: true }), false;
+  return true;
+}
+function checkStep3() {
+  if ($('#name').value.trim().length < 2) return bad('#name', 'eName');
+  if ($('#phone').value.replace(/\D/g, '').length < 8) return bad('#phone', 'ePhone');
+  return true;
+}
+/* Move between steps: the card glides to its new height while the new step slides in. */
+function go(step) {
+  const stage = $('#stage'), h0 = stage.offsetHeight, dir = step > S.step ? 'in-next' : 'in-prev';
+  S.step = step; say(null); renderStep(true);
+  const el = $(`[data-step="${step}"]`);
+  el.classList.remove('in-next', 'in-prev'); void el.offsetWidth; el.classList.add(dir);
+  const h1 = stage.offsetHeight;
+  stage.classList.add('moving'); stage.style.height = h0 + 'px'; void stage.offsetHeight; stage.style.height = h1 + 'px';
+  clearTimeout(go.t); go.t = setTimeout(() => { stage.style.height = ''; stage.classList.remove('moving'); }, 460);
+  if ($('#book').getBoundingClientRect().top < $('#bar').offsetHeight) toCard();
+  $('#stepTitle').focus({ preventScroll: true });
+}
+
+async function submit() {
+  S.busy = true; renderStep(); say(null);
+  const p = chosen();
+  const payload = { items: [{ product_id: p.id, qty: 1 }], start_date: S.start, days: S.days, zone_id: S.zone,
+    currency: S.cur, lang: S.lang, name: $('#name').value.trim(), phone: $('#phone').value.trim(), hotel: $('#hotel').value.trim(),
+    room: $('#room').value.trim(), slot: '', notes: '' };
+  const shown = draft();
+  try {
+    const res = await api.createBooking(payload);
+    // The database is the source of truth for the money; keep our own labels for display.
+    S.booking = { ...shown, code: res.code, rental_amount: res.rental_amount, delivery_amount: res.delivery_amount,
+      deposit_amount: res.deposit_amount, total_due: res.total_due, start_date: res.start_date, end_date: res.end_date };
+    S.busy = false;
+    busyLoaded.clear();
+    $('#wizard').hidden = true; $('#done').hidden = false;
+    renderDone(true);
+    toCard();
+    $('#done').focus({ preventScroll: true });
+  } catch (e) {
+    S.busy = false;
+    if (/MOB_UNAVAILABLE/.test(e.message)) { busyLoaded.clear(); S.step = 1; renderStep(); await refreshAvailability(); say('eJustTaken'); }
+    else { renderStep(); say('eServer'); }
+  }
+}
+
+/* Phones: the photo fills exactly the first screen (measured once, so the browser's own bars do not make it jump). */
+function setFold() {
+  const top = $('.hero').getBoundingClientRect().top + scrollY;
+  document.documentElement.style.setProperty('--fold', Math.round(innerHeight - top) + 'px');
+}
+async function start() {
+  $('#demoNote').hidden = LIVE;
+  setFold(); addEventListener('orientationchange', () => setTimeout(setFold, 300));
+  renderStatic();
+  try {
+    DB = await api.catalog();
+    DB.tiers.forEach(x => { x.days = Number(x.days); });
+  } catch (e) {
+    $('#loading').hidden = true; $('#loadError').hidden = false;
+    return;
+  }
+  $('#loading').hidden = true; $('#wizard').hidden = false;
+  bind();
+  renderAll();
+}
+
+/* ============================================================================
+   INSIDE THE STOREFRONT: the pieces that differ from the standalone booking site
+   ========================================================================== */
+S.lang = 'en'; S.cur = 'GBP';
+Object.assign(T.en, { mTitle: 'Mobility scooter rental', mSub: 'Delivered to your hotel in Hurghada. You pay in cash when it arrives.', pricesIn: 'Prices in' });
+
+// Exchange rates: the storefront's own (settings.rate_gbp / rate_eur / rate_usd).
+const baseCatalog = api.catalog;
+api.catalog = async () => {
+  const d = await baseCatalog();
+  const rows = await rest('settings?select=key,value&key=in.(rate_gbp,rate_eur,rate_usd)');
+  rows.forEach(r => { d.settings['official_' + String(r.key).slice(5)] = Number(r.value); });
+  d.settings.rate_discount = 0;
+  return d;
+};
+
+function renderStatic() {
+  $$('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n, DB ? { pct: DB.settings.deposit_pct } : {}));
+  $('#hotel').placeholder = t('hotelPh');
+  $('#calPrev').setAttribute('aria-label', t('calPrev')); $('#calNext').setAttribute('aria-label', t('calNext'));
+  $$('#curs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.cur === S.cur));
+  const wa = $('#loadError a'); if (wa) { wa.href = waLink(t('waHello')); wa.innerHTML = ICON.wa + '<span>' + esc(t('waBtn')) + '</span>'; }
+}
+function renderInfo() {
+  const p = chosen(), tr = p && tiersOf(p.id)[0];
+  $('#mhead').hidden = !p || S.step !== 1;
+  if (!p) return;
+  $('#mheadImg').innerHTML = imgOrIcon(p);
+  $('#mheadName').textContent = L(p, 'name');
+  $('#mheadDesc').textContent = L(p, 'desc');
+  $('#mheadFrom').textContent = tr ? t('from', { price: money(unitPrice(p.id, tr.days)), days: tr.days }) : '';
+  $('#curs').hidden = S.step !== 1;
+}
+const baseRenderStep = renderStep;
+renderStep = function (animate) { baseRenderStep(animate); if (DB) renderInfo(); };
+
+function toCard() {
+  const head = document.querySelector('header'), sticky = head && /sticky|fixed/.test(getComputedStyle(head).position) ? head.offsetHeight : 0;
+  const y = host.getBoundingClientRect().top + scrollY - sticky - 8;
+  scrollTo({ top: Math.max(0, y), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+function bind() {
+  $$('#curs button').forEach(b => b.addEventListener('click', () => { S.cur = b.dataset.cur; renderAll(); }));
+  const savePrefs = () => store.set('scm_prefs', { lang: S.lang, cur: S.cur });
+  $$('[data-lang]').forEach(b => b.addEventListener('click', () => { S.lang = b.dataset.lang; savePrefs(); say(null); renderAll(); }));
+  $('#cur').addEventListener('change', e => { S.cur = e.target.value; savePrefs(); renderAll(); });
+
+  $('#products').addEventListener('change', e => { S.qty = { [e.target.value]: 1 }; say(null); renderDays(); renderCalendar(); renderHandover(); refreshAvailability(); });
+  $('#days').addEventListener('change', e => { S.days = Number(e.target.value); say(null); renderCalendar(); renderHandover(); refreshAvailability(); });
+  $('#calGrid').addEventListener('click', e => {
+    const b = e.target.closest('[data-day]'); if (!b || b.disabled) return;
+    S.start = b.dataset.day; S.avail = null; $('#cal').classList.remove('bad'); say(null);
+    renderCalendar(); renderHandover(); refreshAvailability();
+    $(`[data-day="${S.start}"]`)?.focus({ preventScroll: true });
+    // Once a day is picked, bring the Continue button into view if it is below the screen.
+    if ($('#nextBtn').getBoundingClientRect().bottom > innerHeight) toCard();
+  });
+  const turn = n => { const [y, m] = S.month.split('-').map(Number), d = new Date(Date.UTC(y, m - 1 + n, 1)); S.month = d.toISOString().slice(0, 7); renderCalendar(n > 0 ? 'slide-next' : 'slide-prev'); };
+  $('#calPrev').addEventListener('click', () => turn(-1));
+  $('#calNext').addEventListener('click', () => turn(1));
+  $('#zones').addEventListener('change', e => { S.zone = e.target.value; say(null); });
+  ['#name', '#phone'].forEach(s => $(s).addEventListener('input', e => { e.target.classList.remove('bad'); say(null); }));
+  const hotel = $('#hotel');
+  hotel.addEventListener('input', () => { hotel.classList.remove('bad'); say(null); S.pick = null; if (!S.manual) S.zone = ''; hotelOpen = true; hotelIdx = -1; renderHotel(); });
+  hotel.addEventListener('focus', () => { if (!S.pick && hotel.value.trim()) { hotelOpen = true; renderHotel(); } });
+  hotel.addEventListener('keydown', e => {
+    if (!hotelOpen || S.pick) return;
+    const last = hotelRows.length;
+    if (e.key === 'ArrowDown') { e.preventDefault(); hotelIdx = Math.min(last, hotelIdx + 1); renderHotel(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); hotelIdx = Math.max(0, hotelIdx - 1); renderHotel(); }
+    else if (e.key === 'Escape') { hotelOpen = false; renderHotel(); }
+    else if (e.key === 'Enter' && hotelIdx >= 0) { e.preventDefault(); hotelIdx === last ? hotelNotListed() : pickHotel(hotelRows[hotelIdx]); }
+  });
+  // A hotel is chosen on a full tap (click), never on touch-down, so a finger can scroll the list first.
+  $('#hotelList').addEventListener('click', e => {
+    const li = e.target.closest('li'); if (!li) return;
+    li.dataset.i === 'x' ? hotelNotListed() : pickHotel(hotelRows[Number(li.dataset.i)]);
+  });
+  // The list closes after a tap anywhere outside the search box. On click, not touch-down:
+  // closing earlier would move the Continue button from under the finger.
+  document.addEventListener('click', e => { if (hotelOpen && !e.composedPath().some(n => n.classList && n.classList.contains('combo'))) { hotelOpen = false; renderHotel(); } });
+  hotel.addEventListener('keydown', e => { if (e.key === 'Tab' && hotelOpen) { hotelOpen = false; renderHotel(); } });
+
+  $('#backBtn').addEventListener('click', () => go(S.step - 1));
+  $('#wizard').addEventListener('submit', e => {
+    e.preventDefault();
+    if (S.busy) return;
+    if (S.step === 1) { if (checkStep1()) go(2); }
+    else if (S.step === 2) { if (checkStep2()) go(3); }
+    else if (checkStep3()) submit();
+  });
+  $('#againBtn').addEventListener('click', () => {
+    S.booking = null; S.step = 1; S.avail = null; S.start = ''; S.pick = null; S.manual = false; S.zone = '';
+    $('#hotel').value = ''; $('#room').value = '';
+    $('#done').hidden = true; $('#wizard').hidden = false;
+    renderAll();
+    toCard();
+  });
+}
+
+let started = false;
+async function start() {
+  if (started) return; started = true;
+  renderStatic();
+  $('#loading').hidden = false; $('#loadError').hidden = true;
+  try {
+    try { DB = await api.catalog(); }
+    catch (e) {
+      // Until the mob_ tables exist in the database, show the card in preview mode with the
+      // built-in price list and the storefront's own hotel list (same fee → area rule as the database).
+      LIVE = false; api.catalog = baseCatalog;
+      const d = JSON.parse(JSON.stringify(SEED));
+      d.settings.official_gbp = typeof GBP_RATE === 'number' ? GBP_RATE : 65; d.settings.official_eur = typeof EUR_RATE_EN === 'number' ? EUR_RATE_EN : 55;
+      d.settings.official_usd = typeof USD_RATE_EN === 'number' ? USD_RATE_EN : 45; d.settings.rate_discount = 0;
+      d.hotels = (typeof hotels !== 'undefined' && Array.isArray(hotels) ? hotels : []).map((h, i) => ({ id: 'h' + i, name: h.name, aliases: h.aliases || [], active: true,
+        zone_id: h.fee <= 100 ? 'z-downtown' : h.fee <= 250 ? 'z-villages' : h.fee === 400 ? 'z-makadi' : null }));
+      const kept = store.get(DEMO_KEY); if (kept && kept.bookings) d.bookings = kept.bookings;
+      store.set(DEMO_KEY, d);
+      DB = await api.catalog();
+      $('#mpreview').hidden = false;
+    }
+    DB.tiers.forEach(x => { x.days = Number(x.days); });
+  } catch (e) {
+    started = false;
+    $('#loading').hidden = true; $('#loadError').hidden = false;
+    return;
+  }
+  $('#loading').hidden = true; $('#wizard').hidden = false;
+  bind();
+  renderAll();
+}
+window.scMobility = { open() { host.hidden = false; start(); }, close() { host.hidden = true; } };
+
+})();
+
+/* Mobility rental as a main category of the storefront: its tile opens the booking card
+   in place of the product grid. Bookings go to the mob_ tables, not to pharmacy orders. */
+(function () {
+  if (typeof categoryGroups === 'undefined' || typeof renderGrid !== 'function') return;
+  categoryGroups.mobility = { label: '🛵 Mobility rental', subs: ['Mobility rental'] };
+  if (typeof mainCategoryImages !== 'undefined')
+    mainCategoryImages.mobility = 'https://res.cloudinary.com/de4boyel3/image/upload/f_auto,q_auto,w_120,h_120,c_fill,g_auto/v1783504784/ChatGPT_Image_Jul_8_2026_12_58_24_PM_1_px842a.png';
+  const baseRenderGrid = renderGrid;
+  renderGrid = function () {
+    const box = document.getElementById('searchInput'), searching = box && box.value.trim().length > 0;
+    const on = typeof activeMain !== 'undefined' && activeMain === 'mobility' && !searching;
+    document.body.classList.toggle('mob-on', on);
+    if (on) { window.scMobility.open(); return; }
+    window.scMobility.close();
+    return baseRenderGrid.apply(this, arguments);
+  };
+  try { if (typeof buildFilters === 'function') buildFilters(); } catch (e) {}
+})();
+</script>
+<!-- MOBILITY RENTAL END -->
 </body>
 </html>
 
