@@ -12652,7 +12652,7 @@ async function start() {
       d.settings.official_gbp = typeof GBP_RATE === 'number' ? GBP_RATE : 65; d.settings.official_eur = typeof EUR_RATE_EN === 'number' ? EUR_RATE_EN : 55;
       d.settings.official_usd = typeof USD_RATE_EN === 'number' ? USD_RATE_EN : 45; d.settings.rate_discount = 0;
       d.hotels = (typeof hotels !== 'undefined' && Array.isArray(hotels) ? hotels : []).map((h, i) => ({ id: 'h' + i, name: h.name, aliases: h.aliases || [], active: true,
-        zone_id: h.fee <= 100 ? 'z-downtown' : h.fee <= 250 ? 'z-villages' : h.fee === 400 ? 'z-makadi' : null }));
+        zone_id: !(h.fee > 0) ? null : h.fee <= 100 ? 'z-downtown' : h.fee <= 250 ? 'z-villages' : h.fee < 400 ? 'z-sahl' : h.fee === 400 ? 'z-makadi' : 'z-soma' }));
       const kept = store.get(DEMO_KEY); if (kept && kept.bookings) d.bookings = kept.bookings;
       store.set(DEMO_KEY, d);
       DB = await api.catalog();
