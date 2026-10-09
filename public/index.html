@@ -11213,7 +11213,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.24</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.25</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
@@ -11531,6 +11531,18 @@ async function scCancelOrder(idx){
     scTrackRerender();
   }catch(e){ alert(scTrackT("err")); }
 }
+/* v-track-fold: order details fold away under one tap so the card stays short */
+var scTrackOpen = {};
+function scTrackToggle(btn){
+  try{
+    var card=btn.closest(".sc-track"); if(!card) return;
+    var id=card.getAttribute("data-oid"), body=card.querySelector(".sc-det"), ar=btn.querySelector(".sc-det-arrow");
+    var open=!(body && body.style.display==="block");
+    scTrackOpen[id]=open;
+    if(body) body.style.display=open?"block":"none";
+    if(ar) ar.style.transform="rotate("+(open?180:0)+"deg)";
+  }catch(e){}
+}
 function scTrackCardHtml(o, r, nowMs, idx){
   var now = nowMs || Date.now();
   var S = scTrackState(o, r, now);
@@ -11583,7 +11595,12 @@ function scTrackCardHtml(o, r, nowMs, idx){
   var subT=(r && r.product_total!=null)?Number(r.product_total):(sub0||null);
   var tot=(r && r.total!=null)?Number(r.total):(Number(o.total)||0);
   h+='<div style="margin:8px 16px 0;border-top:1px solid #e8f0ee;padding-top:10px">';
-  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:12px;font-weight:900;color:'+navy+';letter-spacing:.2px">'+scTrackT("details")+'</span><span style="font-size:11.5px;font-weight:700;color:#8aa5a1">'+cnt+' '+((cnt===1&&scTrackLang()==="en")?"item":scTrackT("items"))+'</span></div>';
+  var detOpen=!!scTrackOpen[String(o.id)];
+  h+='<button type="button" onclick="scTrackToggle(this)" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;border:none;background:#f6faf9;border-radius:12px;padding:10px 12px;cursor:pointer;font-family:inherit">'
+    +'<span style="text-align:left"><span style="display:block;font-size:12.5px;font-weight:900;color:'+navy+'">'+scTrackT("details")+'</span><span style="display:block;font-size:11px;font-weight:700;color:#8aa5a1;margin-top:1px">'+cnt+' '+((cnt===1&&scTrackLang()==="en")?"item":scTrackT("items"))+'</span></span>'
+    +'<span style="display:flex;align-items:center;gap:8px"><span style="font-size:14px;font-weight:900;color:'+teal+';white-space:nowrap">'+tot+' EGP</span><span class="sc-det-arrow" style="display:inline-block;font-size:12px;color:'+teal+';transition:transform .2s;transform:rotate('+(detOpen?'180':'0')+'deg)">▼</span></span>'
+    +'</button>';
+  h+='<div class="sc-det" style="display:'+(detOpen?'block':'none')+';padding-top:6px">';
   its.forEach(function(it){
     var q=Number(it.qty)||1, pr=(Number(it.price)||0)*q;
     h+='<div style="display:flex;align-items:center;gap:10px;padding:6px 0">'
@@ -11601,6 +11618,7 @@ function scTrackCardHtml(o, r, nowMs, idx){
   h+='</div>';
   var place=[]; if(r && r.hotel) place.push("📍 "+scTrackEsc(r.hotel)+(r.room?(" · "+scTrackT("room")+" "+scTrackEsc(r.room)):"")); if(r && r.payment) place.push("💳 "+scTrackEsc(r.payment));
   if(place.length) h+='<div style="font-size:11.5px;font-weight:700;color:#7a9590;margin-top:8px;line-height:1.6">'+place.join(' &nbsp;•&nbsp; ')+'</div>';
+  h+='</div>';
   h+='</div>';
   h+='<div style="display:flex;gap:8px;padding:12px 16px 14px">';
   if(!S.cancelled && S.stage<5) h+='<a href="https://wa.me/201501401776" target="_blank" rel="noopener" style="flex:1;text-align:center;text-decoration:none;border:1.5px solid #25D366;color:#128C7E;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px">💬 '+scTrackT("help")+'</a>';
