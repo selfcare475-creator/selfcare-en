@@ -7282,7 +7282,7 @@ async function loadDynamicProducts(){
       if(p.price_egp){ addStockKey(livePriceByName,displayName,Number(p.price_egp)); if(code)addStockKey(livePriceByName,code,Number(p.price_egp)); }
     });
     products.forEach((p, idx) => { p._idx = idx; });
-    dynOutOfStockNames = __dynOOS;
+    dynOutOfStockNames = __dynOOS; try{ scCartResolvePending(true); }catch(e){}
     /* v-instant-img: cache admin overlays so returning visitors see new images/prices/locks INSTANTLY on next load */
     try{
       var __ov = (rows||[]).filter(function(p){return p.is_active!==false;}).map(function(p){
@@ -7873,22 +7873,74 @@ const products = [];
 
 let cart = {};
 const CART_STORAGE_KEY = "selfCarePharmacyCartV1";
+/* v-cart-by-code: the basket is saved by product code/name, not by list position, so products the
+   pharmacy added from the admin (they load a moment later) never drop out of a guest's basket. */
+let scCartPending = [];
+let scCartSettled = false;
+let scCartLoaded = false; /* nothing is written before the saved basket has been read */
+function scCartKeyOf(p){ return { c: String((p && (p.pharmacy_code || p.code)) || "").trim(), n: String((p && p.name) || "").trim() }; }
+function scFindCartProductIdx(e){
+  const c = String(e.c || "").trim().toLowerCase(), n = String(e.n || "").trim().toLowerCase();
+  if(c){ const i = products.findIndex(p => String(p.pharmacy_code || p.code || "").trim().toLowerCase() === c); if(i >= 0) return i; }
+  if(n){ const i = products.findIndex(p => [p.name, p.name_en, p.name_cz].some(x => String(x || "").trim().toLowerCase() === n)); if(i >= 0) return i; }
+  return -1;
+}
+function scCartEntryIdx(e){
+  if(e && (e.c || e.n)) return scFindCartProductIdx(e);
+  return (e && Number.isInteger(e.i) && products[e.i]) ? e.i : -1;
+}
 function loadCart(){
   try{
     const saved = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "{}");
-    cart = {};
-    Object.keys(saved).forEach(k => {
-      const idx = parseInt(k);
-      const qty = parseInt(saved[k]);
-      if(Number.isInteger(idx) && products[idx] && Number.isInteger(qty) && qty > 0){
-        cart[idx] = Math.min(productStock(idx), qty);
-      }
+    scCartLoaded = true;
+    cart = {}; scCartPending = [];
+    let entries = [];
+    if(saved && Array.isArray(saved.items)) entries = saved.items;
+    else if(saved && typeof saved === "object"){
+      /* older baskets were saved by list position */
+      Object.keys(saved).forEach(k => { const idx = parseInt(k), q = parseInt(saved[k]); if(Number.isInteger(idx) && q > 0) entries.push({ i: idx, q: q }); });
+    }
+    entries.forEach(e => {
+      const q = parseInt(e && e.q); if(!(q > 0)) return;
+      const idx = scCartEntryIdx(e);
+      if(idx >= 0) cart[idx] = Math.min(productStock(idx), (cart[idx] || 0) + q);
+      else scCartPending.push(e);
     });
   }catch(e){ cart = {}; }
 }
 function saveCart(){
-  try{ localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); }catch(e){}
+  if(!scCartLoaded) return;
+  try{
+    const items = [];
+    Object.keys(cart).forEach(k => {
+      const p = products[k], q = cart[k];
+      if(p && q > 0){ const key = scCartKeyOf(p); items.push({ c: key.c, n: key.n, q: q }); }
+    });
+    if(!scCartSettled) scCartPending.forEach(e => items.push(e));
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ v: 2, items: items }));
+  }catch(e){}
 }
+/* called again once the admin products are on the page; final=true when the full list has loaded */
+function scCartResolvePending(final){
+  try{
+    if(!scCartPending.length){ if(final) scCartSettled = true; return; }
+    const left = []; let added = false;
+    scCartPending.forEach(e => {
+      const idx = scCartEntryIdx(e);
+      if(idx >= 0){ cart[idx] = Math.min(productStock(idx), (cart[idx] || 0) + (parseInt(e.q) || 1)); added = true; }
+      else left.push(e);
+    });
+    scCartPending = final ? [] : left;
+    if(final) scCartSettled = true;
+    if(added || final){
+      try{ updateCartBadge(); }catch(e){}
+      try{ if(typeof window.scPruneLockedCart === "function") window.scPruneLockedCart(); }catch(e){}
+      try{ if(typeof updateVisibleCardQtyUI === "function") updateVisibleCardQtyUI(); }catch(e){}
+      try{ const ov = document.getElementById("cartOverlay"); if(ov && ov.classList.contains("open")) renderCart(); }catch(e){}
+    }
+  }catch(e){}
+}
+(function(){ let n = 0; const t = setInterval(function(){ n++; if(scCartSettled || n > 60){ clearInterval(t); return; } if(products.length) scCartResolvePending(false); }, 1500); })();
 let currentModalIdx = -1;
 
 const categoryGroups = {
@@ -11159,7 +11211,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.18</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.19</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
