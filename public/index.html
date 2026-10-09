@@ -11213,7 +11213,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.25</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.26</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
@@ -11620,12 +11620,14 @@ function scTrackCardHtml(o, r, nowMs, idx){
   if(place.length) h+='<div style="font-size:11.5px;font-weight:700;color:#7a9590;margin-top:8px;line-height:1.6">'+place.join(' &nbsp;•&nbsp; ')+'</div>';
   h+='</div>';
   h+='</div>';
-  h+='<div style="display:flex;gap:8px;padding:12px 16px 14px">';
-  if(!S.cancelled && S.stage<5) h+='<a href="https://wa.me/201501401776" target="_blank" rel="noopener" style="flex:1;text-align:center;text-decoration:none;border:1.5px solid #25D366;color:#128C7E;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px">💬 '+scTrackT("help")+'</a>';
-  h+='<button type="button" onclick="scReorderFromHistory('+(idx||0)+')" style="flex:1;border:none;background:'+((S.stage===5||S.cancelled)?'linear-gradient(135deg,#0f766e,#14a08f)':'#eef6f4')+';color:'+((S.stage===5||S.cancelled)?'#fff':teal)+';font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px;cursor:pointer">'+scTrackT("reorder")+'</button>';
+  /* actions: one style for all buttons (help · receipt · cancel) */
+  var BTN='display:flex;align-items:center;justify-content:center;gap:6px;width:100%;box-sizing:border-box;min-height:42px;border:none;border-radius:12px;background:linear-gradient(135deg,#0f766e,#14a08f);color:#fff;font-weight:800;font-size:13.5px;padding:10px 12px;cursor:pointer;text-decoration:none;font-family:inherit;margin-top:8px';
+  h+='<div style="padding:4px 16px 16px">';
+  if(!S.cancelled && S.stage<5) h+='<a href="https://wa.me/201501401776" target="_blank" rel="noopener" style="'+BTN+'">💬 '+scTrackT("help")+'</a>';
+  if(!S.cancelled) h+='<button type="button" onclick="scDownloadReceipt('+(idx||0)+')" style="'+BTN+'">'+scTrackT("receipt")+'</button>';
+  if(scCanCancel(o, r, now)) h+='<button type="button" onclick="scCancelOrder('+(idx||0)+')" style="'+BTN+'">'+scTrackT("cancel")+'</button>'
+    +'<div style="text-align:center;font-size:11px;font-weight:700;color:#8aa29e;margin-top:5px">'+scTrackT("until").replace("{t}", scTrackTime(S.due-3*3600000))+'</div>';
   h+='</div>';
-  if(scCanCancel(o, r, now)) h+='<div style="padding:0 16px 10px;margin-top:-4px"><button type="button" onclick="scCancelOrder('+(idx||0)+')" style="width:100%;border:1.5px solid #f1c4c0;background:#fff7f6;color:#b4382e;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px;cursor:pointer">'+scTrackT("cancel")+'</button><div style="text-align:center;font-size:11px;font-weight:700;color:#8aa29e;margin-top:5px">'+scTrackT("until").replace("{t}", scTrackTime(S.due-3*3600000))+'</div></div>';
-  if(!S.cancelled) h+='<div style="padding:0 16px 14px;margin-top:-4px"><button type="button" onclick="scDownloadReceipt('+(idx||0)+')" style="width:100%;border:1.5px dashed #b9d3ce;background:#fff;color:#17324d;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px;cursor:pointer">'+scTrackT("receipt")+'</button></div>';
   h+='</div>';
   return h;
 }
