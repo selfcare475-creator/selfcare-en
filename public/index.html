@@ -11226,7 +11226,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.37</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.38</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
@@ -12135,6 +12135,8 @@ const T = {
 /* ============================================================================
    STATE AND HELPERS
    ========================================================================== */
+Object.assign(T.en, { qtyLabel: 'How many scooters?', qtyHint: 'Price is per scooter. Delivery is charged once.', qtyOnly: 'Only {n} available for these dates.', eFewer: 'Only {n} available for these dates. Please choose fewer or another day.', qtyN: '{n} scooters', minus: 'Fewer', plus: 'More' });
+Object.assign(T.de, { qtyLabel: 'Wie viele Scooter?', qtyHint: 'Preis pro Scooter. Die Lieferung wird nur einmal berechnet.', qtyOnly: 'Für diese Tage nur {n} verfügbar.', eFewer: 'Für diese Tage nur {n} verfügbar. Bitte weniger wählen oder einen anderen Tag.', qtyN: '{n} Scooter', minus: 'Weniger', plus: 'Mehr' });
 const $ = (s, r = root) => r.querySelector(s);
 const $$ = (s, r = root) => [...r.querySelectorAll(s)];
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -12372,7 +12374,26 @@ const bookable = () => DB.products.filter(p => tiersOf(p.id).length > 0);
 const onRequest = () => DB.products.filter(p => tiersOf(p.id).length === 0);
 const chosen = () => DB.products.find(p => S.qty[p.id] > 0) || null;
 const availOf = pid => S.avail ? (S.avail.find(a => a.product_id === pid)?.available ?? 0) : null;
-const isFull = p => p && availOf(p.id) != null && availOf(p.id) < 1;
+const qtyOf = p => p ? Math.max(1, S.qty[p.id] || 1) : 1;
+const isFull = p => p && availOf(p.id) != null && availOf(p.id) < qtyOf(p);
+const fewer = p => p && availOf(p.id) != null && availOf(p.id) >= 1 && availOf(p.id) < qtyOf(p);
+const fullKey = p => fewer(p) ? 'eFewer' : 'eFull';
+function renderQty() {
+  const p = chosen(), days = $('#days');
+  let g = $('#qtyGroup');
+  if (!g && days) { g = document.createElement('div'); g.className = 'group'; g.id = 'qtyGroup'; const host = days.closest('.group'); host.parentNode.insertBefore(g, host); }
+  if (!g) return;
+  const stock = p ? Number(p.stock_qty || 1) : 1;
+  g.hidden = !p || stock < 2;
+  if (g.hidden) return;
+  const n = qtyOf(p), av = availOf(p.id);
+  g.innerHTML = `<span class="label" id="qtyLabel">${esc(t('qtyLabel'))}</span>
+    <div class="qty-row"><div class="qty-step" role="group" aria-labelledby="qtyLabel">
+      <button type="button" class="qty-btn" data-q="-1" aria-label="${esc(t('minus'))}" ${n <= 1 ? 'disabled' : ''}>−</button>
+      <b class="qty-n" aria-live="polite">${n}</b>
+      <button type="button" class="qty-btn" data-q="1" aria-label="${esc(t('plus'))}" ${n >= stock ? 'disabled' : ''}>+</button>
+    </div><span class="qty-hint">${esc(av != null && av >= 1 && av < n ? t('qtyOnly', { n: av }) : t('qtyHint'))}</span></div>`;
+}
 const minStart = () => addDays(cairoToday(), Number(DB.settings.lead_days ?? 1));
 const maxStart = () => addDays(cairoToday(), 365);
 
@@ -12410,6 +12431,7 @@ function renderProducts() {
   const list = bookable();
   if (!chosen() && list.length) S.qty = { [list[0].id]: 1 };
   $('#whatGroup').hidden = list.length < 2;
+  setTimeout(renderQty, 0);
   $('#products').innerHTML = list.map(p => `<label class="tile"><input type="radio" name="product" value="${esc(p.id)}" ${S.qty[p.id] ? 'checked' : ''}>
     <span><span class="tile-img">${imgOrIcon(p)}</span><b>${esc(L(p, 'name'))}</b></span></label>`).join('');
   $('#talk').innerHTML = onRequest().map(p => `${esc(t('askFor', { name: S.lang === 'en' ? L(p, 'name').toLowerCase() : L(p, 'name') }))} <a target="_blank" rel="noopener" href="${esc(waLink(t('waProduct', { name: L(p, 'name') })))}">${esc(t('askWa'))}</a>`).join('<br>')
@@ -12478,7 +12500,8 @@ function renderHandover() {
     : show ? t('collect', { from: fmtDate(S.start), to: fmtDate(endDay()) }) : '';
   if (c.dataset.text !== text) { c.dataset.text = text; c.hidden = true; void c.offsetWidth; c.innerHTML = TRUCK + '<span>' + esc(text) + '</span>'; }
   c.hidden = !show;
-  if (S.step === 1) isFull(chosen()) ? say('eFull') : ($('#msg').dataset.key === 'eFull' && say(null));
+  if (S.step === 1) isFull(chosen()) ? say(fullKey(chosen()), { n: availOf(chosen().id) }) : (['eFull', 'eFewer'].includes($('#msg').dataset.key) && say(null));
+  renderQty();
 }
 function renderZones() {
   $('#zones').innerHTML = DB.zones.map(z => `<label class="zone"><input type="radio" name="zone" value="${esc(z.id)}" ${z.id === S.zone ? 'checked' : ''}>
@@ -12525,7 +12548,7 @@ function hotelNotListed() {
 }
 
 function receiptHtml(b) {
-  const what = b.items.map(i => `<dt>${esc(i.product_name)}</dt><dd>${esc(t('daysN', { n: b.days }))}</dd>`).join('') +
+  const what = b.items.map(i => `<dt>${esc(i.product_name)}${i.qty > 1 ? ' × ' + i.qty : ''}</dt><dd>${esc(t('daysN', { n: b.days }))}</dd>`).join('') +
     `<dt>${esc(t('rcDelivery'))}</dt><dd>${esc(fmtDate(b.start_date))}</dd>
      <dt>${esc(t('rcCollection'))}</dt><dd>${esc(fmtDate(b.end_date))}</dd>
      <dt>${esc(t('rcHotel'))}</dt><dd>${esc(b.hotel)}${b.room ? '<br><span class="hint" style="font-weight:400">' + esc(t('rcRoom', { room: b.room })) + '</span>' : ''}</dd>`;
@@ -12549,7 +12572,7 @@ function renderSummary(animate) {
   const BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
   $('#sumBox').innerHTML = `<p class="sum-what"><b>${esc(t('sumDates', { from: fmtDate(b.start_date), to: fmtDate(b.end_date) }))}</b></p>
     <dl class="sum-rows">
-      <dt>${esc(t('sumRental', { n: b.days }))}</dt><dd>${esc(money(b.rental_amount))}</dd>
+      <dt>${esc(t('sumRental', { n: b.days }))}${p && qtyOf(p) > 1 ? ' · ' + esc(t('qtyN', { n: qtyOf(p) })) : ''}</dt><dd>${esc(money(b.rental_amount))}</dd>
       <dt>${esc(t('sumFee'))}</dt><dd>${esc(money(b.delivery_amount))}</dd>
       <dt>${esc(t('sumDep'))}<span class="tag">${esc(t('sumDepTag'))}</span></dt><dd>${esc(money(b.deposit_amount))}</dd>
     </dl>
@@ -12611,7 +12634,7 @@ function renderDone(celebrate) {
   $('#doneWhat').innerHTML = r.what; $('#doneSum').innerHTML = r.sum;
   $('#doneNext').innerHTML = ['n1', 'n2', 'n3'].map(k => `<li>${esc(t(k, { date: fmtDate(b.start_date, true), time: timeText(b.delivery_slot), hotel: b.hotel, total: money(b.total_due, b.currency), deposit: money(b.deposit_amount, b.currency) }))}</li>`).join('');
   const lines = [t('waBooking'), '', b.code,
-    ...b.items.map(i => `${i.product_name}, ${t('daysN', { n: b.days })}`),
+    ...b.items.map(i => `${i.product_name}${i.qty > 1 ? ' × ' + i.qty : ''}, ${t('daysN', { n: b.days })}`),
     `${t('rcDelivery')}: ${b.delivery_slot ? t('at', { date: fmtDate(b.start_date, true), time: timeText(b.delivery_slot) }) : fmtDate(b.start_date, true)}`,
     `${t('rcCollection')}: ${fmtDate(b.end_date, true)}`,
     `${t('rcHotel')}: ${b.hotel}${b.room ? ', ' + t('rcRoom', { room: b.room }) : ''}`,
@@ -12664,7 +12687,7 @@ function checkStep1() {
   if (!chosen()) return say('eNothing'), false;
   if (!S.start) return bad('#cal', 'eDate');
   if (S.custom && !S.end) return bad('#cal', 'ePickEnd');
-  if (isFull(chosen()) || unitPrice(chosen().id, S.days) == null) return say('eFull'), false;
+  if (isFull(chosen()) || unitPrice(chosen().id, S.days) == null) return say(isFull(chosen()) ? fullKey(chosen()) : 'eFull', { n: availOf(chosen().id) }), false;
   return true;
 }
 function checkStep2() {
@@ -12701,7 +12724,7 @@ function go(step) {
 async function submit(win) {
   S.busy = true; renderStep(); say(null);
   const p = chosen();
-  const payload = { items: [{ product_id: p.id, qty: 1 }], start_date: S.start, days: S.days, zone_id: S.zone,
+  const payload = { items: [{ product_id: p.id, qty: qtyOf(p) }], start_date: S.start, days: S.days, zone_id: S.zone,
     currency: S.cur, lang: S.lang, name: '', phone: '', hotel: $('#hotel').value.trim(),
     room: '', slot: $('#dtime').value, notes: '' };
   const shown = draft();
@@ -12791,6 +12814,13 @@ function bind() {
   $$('[data-lang]').forEach(b => b.addEventListener('click', () => { S.lang = b.dataset.lang; savePrefs(); say(null); renderAll(); }));
   $('#cur').addEventListener('change', e => { S.cur = e.target.value; savePrefs(); renderAll(); });
 
+  root.addEventListener('click', e => {
+    const q = e.target.closest && e.target.closest('.qty-btn'); if (!q || q.disabled) return;
+    const p = chosen(); if (!p) return;
+    const stock = Number(p.stock_qty || 1);
+    S.qty[p.id] = Math.min(stock, Math.max(1, qtyOf(p) + Number(q.dataset.q)));
+    say(null); renderQty(); renderCalendar(); renderHandover(); renderSummary();
+  });
   $('#products').addEventListener('change', e => { S.qty = { [e.target.value]: 1 }; say(null); renderDays(); renderCalendar(); renderHandover(); refreshAvailability(); });
   $('#days').addEventListener('change', e => {
     if (e.target.value === 'custom') { S.custom = true; S.end = ''; S.days = null; }
@@ -12913,7 +12943,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   try { if (typeof buildFilters === 'function') buildFilters(); } catch (e) {}
 })();
 </script>
-<script id="mob-compact-v1">(function(){try{var h=document.getElementById('mobSection');if(!h||!h.shadowRoot)return;var st=document.createElement('style');st.textContent=".card{padding:10px 12px 8px!important;border-radius:20px}.mhead{gap:10px;padding-bottom:6px!important;margin-bottom:6px!important}.mhead-img{width:40px!important;height:40px!important;min-width:40px;border-radius:10px}.mhead-txt b{font-size:.95rem}#mcur{height:28px;font-size:.8rem;padding-block:0}.progress{margin-bottom:2px;font-size:.8rem}.group{margin-top:6px!important}.label{font-size:.84rem;margin-bottom:3px!important}.lengths{gap:5px}.len>span{padding:4px 3px!important;border-radius:11px;gap:0!important}.len b{font-size:.74rem}.len em{font-size:.92rem}.len em.pick svg{width:16px;height:16px}.cal{padding:4px 5px 3px!important;border-radius:13px}.cal-head{margin-bottom:0!important}.cal-title{font-size:.9rem}.cal-nav{width:24px!important;height:24px!important}.cal-nav svg{width:12px;height:12px}.dow{font-size:.68rem;padding:1px 0 0!important}.cal-grid{row-gap:0!important}.day{height:26px!important;font-size:.8rem!important}.day::after{width:24px!important;height:24px!important;margin:-12px 0 0 -12px!important}.actions{margin-top:8px!important}.btn{min-height:40px!important;font-size:.92rem;border-radius:12px;padding:0 14px}.talk{font-size:.78rem;margin-top:4px!important}";h.shadowRoot.appendChild(st);}catch(e){}})();</script>
+<script id="mob-compact-v1">(function(){try{var h=document.getElementById('mobSection');if(!h||!h.shadowRoot)return;var st=document.createElement('style');st.textContent=".card{padding:10px 12px 8px!important;border-radius:20px}.mhead{gap:10px;padding-bottom:6px!important;margin-bottom:6px!important}.mhead-img{width:40px!important;height:40px!important;min-width:40px;border-radius:10px}.mhead-txt b{font-size:.95rem}#mcur{height:28px;font-size:.8rem;padding-block:0}.progress{margin-bottom:2px;font-size:.8rem}.group{margin-top:6px!important}.label{font-size:.84rem;margin-bottom:3px!important}.lengths{gap:5px}.len>span{padding:4px 3px!important;border-radius:11px;gap:0!important}.len b{font-size:.74rem}.len em{font-size:.92rem}.len em.pick svg{width:16px;height:16px}.cal{padding:4px 5px 3px!important;border-radius:13px}.cal-head{margin-bottom:0!important}.cal-title{font-size:.9rem}.cal-nav{width:24px!important;height:24px!important}.cal-nav svg{width:12px;height:12px}.dow{font-size:.68rem;padding:1px 0 0!important}.cal-grid{row-gap:0!important}.day{height:26px!important;font-size:.8rem!important}.day::after{width:24px!important;height:24px!important;margin:-12px 0 0 -12px!important}.actions{margin-top:8px!important}.btn{min-height:40px!important;font-size:.92rem;border-radius:12px;padding:0 14px}.talk{font-size:.78rem;margin-top:4px!important}.qty-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.qty-step{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}.qty-btn{width:38px;height:34px;border:0;background:var(--sea-tint);color:var(--sea-deep);font:800 1.2rem/1 var(--display);cursor:pointer}.qty-btn:disabled{opacity:.35;cursor:default}.qty-n{min-width:34px;text-align:center;font:800 1.05rem/1 var(--display)}.qty-hint{font-size:.74rem;color:var(--ink-soft);flex:1;min-width:150px}";h.shadowRoot.appendChild(st);}catch(e){}})();</script>
 <!-- MOBILITY RENTAL END -->
 </body>
 </html>
