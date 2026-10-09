@@ -7376,6 +7376,8 @@ async function confirmDraftOrder(id){
 async function createConfirmedOrder(order){
   const headers={...SB_HEADERS,"Prefer":"return=representation"};
   const payload={...order,status:"New"};
+  window.__scLastCancelToken="";
+  try{ const __ct=scNewCancelToken(); payload.cancel_hash=await scSha256Hex(__ct); window.__scLastCancelToken=__ct; }catch(e){ delete payload.cancel_hash; }
   const res=await fetch(SB_URL+"/rest/v1/orders",{method:"POST",headers,body:JSON.stringify(payload)});
   const data=await res.json().catch(()=>[]);
   if(!res.ok) throw new Error("order create failed");
@@ -11211,7 +11213,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.22</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.23</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
@@ -11365,6 +11367,7 @@ function scSaveOrderToHistory(orderId, order){
     var hist = scGetOrderHistory();
     hist.unshift({
       id: orderId || "",
+      tk: (orderId && window.__scLastCancelToken) || "",
       ts: Date.now(),
       items: order.items.map(function(it){ return { name: String(it.name||""), qty: Number(it.qty)||1, price: Number(it.price)||0 }; }),
       total: Number(order.total) || 0
@@ -11448,12 +11451,12 @@ function scOrderStepsHtml(oid, doneCount, cancelled){
 }
 /* v-track2: order tracking card (5 real stages; two of them move by the delivery time) */
 var SC_TRACK_TXT = {
-  en:{receipt:"⬇ Download receipt (PDF)",s1:"Order received",s2:"Being prepared",s3:"Picked up by courier",s4:"On the way to you",s5:"Delivered",h1:"We got your order",h2:"Your order is being prepared",h3:"Your courier has your order",h4:"On the way to you",h5:"Delivered — enjoy!",hx:"Order cancelled",eta:"Arriving",today:"today",tomorrow:"tomorrow",around:"around",items:"items",help:"Need help? WhatsApp us",reorder:"↻ Order again",deliveredAt:"Delivered",details:"Order details",subtotal:"Products",delivery:"Delivery",free:"Free",total:"Total",room:"Room"},
-  cs:{receipt:"⬇ Stáhnout účtenku (PDF)",s1:"Objednávka přijata",s2:"Připravujeme",s3:"Kurýr převzal objednávku",s4:"Na cestě k vám",s5:"Doručeno",h1:"Objednávku jsme přijali",h2:"Vaši objednávku připravujeme",h3:"Kurýr má vaši objednávku",h4:"Na cestě k vám",h5:"Doručeno — ať slouží!",hx:"Objednávka zrušena",eta:"Doručení",today:"dnes",tomorrow:"zítra",around:"kolem",items:"ks",help:"Potřebujete pomoc? WhatsApp",reorder:"↻ Objednat znovu",deliveredAt:"Doručeno",details:"Detail objednávky",subtotal:"Produkty",delivery:"Doprava",free:"Zdarma",total:"Celkem",room:"Pokoj"},
-  de:{receipt:"⬇ Beleg herunterladen (PDF)",s1:"Bestellung eingegangen",s2:"Wird vorbereitet",s3:"Vom Kurier abgeholt",s4:"Auf dem Weg zu Ihnen",s5:"Zugestellt",h1:"Wir haben Ihre Bestellung erhalten",h2:"Ihre Bestellung wird vorbereitet",h3:"Der Kurier hat Ihre Bestellung",h4:"Auf dem Weg zu Ihnen",h5:"Zugestellt – alles Gute!",hx:"Bestellung storniert",eta:"Ankunft",today:"heute",tomorrow:"morgen",around:"gegen",items:"Artikel",help:"Hilfe? WhatsApp",reorder:"↻ Erneut bestellen",deliveredAt:"Zugestellt",details:"Bestelldetails",subtotal:"Produkte",delivery:"Lieferung",free:"Kostenlos",total:"Gesamt",room:"Zimmer"},
-  ru:{receipt:"⬇ Скачать чек (PDF)",s1:"Заказ принят",s2:"Готовим",s3:"Курьер забрал заказ",s4:"В пути к вам",s5:"Доставлен",h1:"Мы получили ваш заказ",h2:"Ваш заказ готовится",h3:"Заказ у курьера",h4:"В пути к вам",h5:"Доставлен — будьте здоровы!",hx:"Заказ отменён",eta:"Доставка",today:"сегодня",tomorrow:"завтра",around:"около",items:"шт.",help:"Нужна помощь? WhatsApp",reorder:"↻ Заказать снова",deliveredAt:"Доставлен",details:"Детали заказа",subtotal:"Товары",delivery:"Доставка",free:"Бесплатно",total:"Итого",room:"Номер"},
-  uk:{receipt:"⬇ Завантажити чек (PDF)",s1:"Замовлення прийнято",s2:"Готуємо",s3:"Кур’єр забрав замовлення",s4:"В дорозі до вас",s5:"Доставлено",h1:"Ми отримали ваше замовлення",h2:"Ваше замовлення готується",h3:"Замовлення у кур’єра",h4:"В дорозі до вас",h5:"Доставлено — будьте здорові!",hx:"Замовлення скасовано",eta:"Доставка",today:"сьогодні",tomorrow:"завтра",around:"близько",items:"шт.",help:"Потрібна допомога? WhatsApp",reorder:"↻ Замовити знову",deliveredAt:"Доставлено",details:"Деталі замовлення",subtotal:"Товари",delivery:"Доставка",free:"Безкоштовно",total:"Разом",room:"Номер"},
-  pl:{receipt:"⬇ Pobierz paragon (PDF)",s1:"Zamówienie przyjęte",s2:"Przygotowujemy",s3:"Kurier odebrał zamówienie",s4:"W drodze do Ciebie",s5:"Dostarczono",h1:"Otrzymaliśmy Twoje zamówienie",h2:"Twoje zamówienie jest przygotowywane",h3:"Kurier ma Twoje zamówienie",h4:"W drodze do Ciebie",h5:"Dostarczono — na zdrowie!",hx:"Zamówienie anulowane",eta:"Dostawa",today:"dziś",tomorrow:"jutro",around:"około",items:"szt.",help:"Potrzebujesz pomocy? WhatsApp",reorder:"↻ Zamów ponownie",deliveredAt:"Dostarczono",details:"Szczegóły zamówienia",subtotal:"Produkty",delivery:"Dostawa",free:"Gratis",total:"Razem",room:"Pokój"}
+  en:{cancel:"✕ Cancel order",cancelQ:"Cancel order #{id}?",until:"You can cancel until {t}",late:"It's too late to cancel online — please message us on WhatsApp.",err:"Something went wrong — please try again or message us on WhatsApp.",receipt:"⬇ Download receipt (PDF)",s1:"Order received",s2:"Being prepared",s3:"Picked up by courier",s4:"On the way to you",s5:"Delivered",h1:"We got your order",h2:"Your order is being prepared",h3:"Your courier has your order",h4:"On the way to you",h5:"Delivered — enjoy!",hx:"Order cancelled",eta:"Arriving",today:"today",tomorrow:"tomorrow",around:"around",items:"items",help:"Need help? WhatsApp us",reorder:"↻ Order again",deliveredAt:"Delivered",details:"Order details",subtotal:"Products",delivery:"Delivery",free:"Free",total:"Total",room:"Room"},
+  cs:{cancel:"✕ Zrušit objednávku",cancelQ:"Zrušit objednávku #{id}?",until:"Zrušit můžete do {t}",late:"Online zrušení už není možné — napište nám prosím na WhatsApp.",err:"Něco se nepovedlo — zkuste to znovu nebo nám napište na WhatsApp.",receipt:"⬇ Stáhnout účtenku (PDF)",s1:"Objednávka přijata",s2:"Připravujeme",s3:"Kurýr převzal objednávku",s4:"Na cestě k vám",s5:"Doručeno",h1:"Objednávku jsme přijali",h2:"Vaši objednávku připravujeme",h3:"Kurýr má vaši objednávku",h4:"Na cestě k vám",h5:"Doručeno — ať slouží!",hx:"Objednávka zrušena",eta:"Doručení",today:"dnes",tomorrow:"zítra",around:"kolem",items:"ks",help:"Potřebujete pomoc? WhatsApp",reorder:"↻ Objednat znovu",deliveredAt:"Doručeno",details:"Detail objednávky",subtotal:"Produkty",delivery:"Doprava",free:"Zdarma",total:"Celkem",room:"Pokoj"},
+  de:{cancel:"✕ Bestellung stornieren",cancelQ:"Bestellung #{id} stornieren?",until:"Stornierung möglich bis {t}",late:"Eine Online-Stornierung ist nicht mehr möglich – bitte schreiben Sie uns per WhatsApp.",err:"Etwas ist schiefgelaufen – bitte erneut versuchen oder per WhatsApp schreiben.",receipt:"⬇ Beleg herunterladen (PDF)",s1:"Bestellung eingegangen",s2:"Wird vorbereitet",s3:"Vom Kurier abgeholt",s4:"Auf dem Weg zu Ihnen",s5:"Zugestellt",h1:"Wir haben Ihre Bestellung erhalten",h2:"Ihre Bestellung wird vorbereitet",h3:"Der Kurier hat Ihre Bestellung",h4:"Auf dem Weg zu Ihnen",h5:"Zugestellt – alles Gute!",hx:"Bestellung storniert",eta:"Ankunft",today:"heute",tomorrow:"morgen",around:"gegen",items:"Artikel",help:"Hilfe? WhatsApp",reorder:"↻ Erneut bestellen",deliveredAt:"Zugestellt",details:"Bestelldetails",subtotal:"Produkte",delivery:"Lieferung",free:"Kostenlos",total:"Gesamt",room:"Zimmer"},
+  ru:{cancel:"✕ Отменить заказ",cancelQ:"Отменить заказ #{id}?",until:"Отменить можно до {t}",late:"Отменить онлайн уже нельзя — напишите нам в WhatsApp.",err:"Что-то пошло не так — попробуйте ещё раз или напишите нам в WhatsApp.",receipt:"⬇ Скачать чек (PDF)",s1:"Заказ принят",s2:"Готовим",s3:"Курьер забрал заказ",s4:"В пути к вам",s5:"Доставлен",h1:"Мы получили ваш заказ",h2:"Ваш заказ готовится",h3:"Заказ у курьера",h4:"В пути к вам",h5:"Доставлен — будьте здоровы!",hx:"Заказ отменён",eta:"Доставка",today:"сегодня",tomorrow:"завтра",around:"около",items:"шт.",help:"Нужна помощь? WhatsApp",reorder:"↻ Заказать снова",deliveredAt:"Доставлен",details:"Детали заказа",subtotal:"Товары",delivery:"Доставка",free:"Бесплатно",total:"Итого",room:"Номер"},
+  uk:{cancel:"✕ Скасувати замовлення",cancelQ:"Скасувати замовлення #{id}?",until:"Скасувати можна до {t}",late:"Скасувати онлайн уже неможливо — напишіть нам у WhatsApp.",err:"Щось пішло не так — спробуйте ще раз або напишіть нам у WhatsApp.",receipt:"⬇ Завантажити чек (PDF)",s1:"Замовлення прийнято",s2:"Готуємо",s3:"Кур’єр забрав замовлення",s4:"В дорозі до вас",s5:"Доставлено",h1:"Ми отримали ваше замовлення",h2:"Ваше замовлення готується",h3:"Замовлення у кур’єра",h4:"В дорозі до вас",h5:"Доставлено — будьте здорові!",hx:"Замовлення скасовано",eta:"Доставка",today:"сьогодні",tomorrow:"завтра",around:"близько",items:"шт.",help:"Потрібна допомога? WhatsApp",reorder:"↻ Замовити знову",deliveredAt:"Доставлено",details:"Деталі замовлення",subtotal:"Товари",delivery:"Доставка",free:"Безкоштовно",total:"Разом",room:"Номер"},
+  pl:{cancel:"✕ Anuluj zamówienie",cancelQ:"Anulować zamówienie #{id}?",until:"Możesz anulować do {t}",late:"Anulowanie online nie jest już możliwe — napisz do nas na WhatsApp.",err:"Coś poszło nie tak — spróbuj ponownie lub napisz do nas na WhatsApp.",receipt:"⬇ Pobierz paragon (PDF)",s1:"Zamówienie przyjęte",s2:"Przygotowujemy",s3:"Kurier odebrał zamówienie",s4:"W drodze do Ciebie",s5:"Dostarczono",h1:"Otrzymaliśmy Twoje zamówienie",h2:"Twoje zamówienie jest przygotowywane",h3:"Kurier ma Twoje zamówienie",h4:"W drodze do Ciebie",h5:"Dostarczono — na zdrowie!",hx:"Zamówienie anulowane",eta:"Dostawa",today:"dziś",tomorrow:"jutro",around:"około",items:"szt.",help:"Potrzebujesz pomocy? WhatsApp",reorder:"↻ Zamów ponownie",deliveredAt:"Dostarczono",details:"Szczegóły zamówienia",subtotal:"Produkty",delivery:"Dostawa",free:"Gratis",total:"Razem",room:"Pokój"}
 };
 function scTrackLang(){ var l="en"; try{ if(typeof displayLanguage!=="undefined"&&displayLanguage) l=String(displayLanguage); }catch(e){} if(l==="ua") l="uk"; return SC_TRACK_TXT[l]?l:"en"; }
 function scTrackT(k){ var d=SC_TRACK_TXT[scTrackLang()]; return d[k]||SC_TRACK_TXT.en[k]||""; }
@@ -11500,6 +11503,33 @@ function scTrackState(o, r, nowMs){
   if(st.indexOf("deliver")!==-1 && st.indexOf("out")===-1){ stage=5; if(!t[4]) t[4]= due || now; }
   if(r.courier_arrived){ stage=Math.max(stage,5); if(r.courier_arrived_at) t[4]=Date.parse(r.courier_arrived_at); }
   return { stage:stage, cancelled: st.indexOf("cancel")!==-1, times:t, due:due };
+}
+/* v-cancel: the guest can cancel from My Orders until 3 hours before the delivery slot.
+   A secret made on this phone at order time proves it is their order; the database checks the time. */
+function scNewCancelToken(){ var a=new Uint8Array(24); crypto.getRandomValues(a); return Array.from(a,function(b){return ("0"+b.toString(16)).slice(-2);}).join(""); }
+async function scSha256Hex(s){ var d=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)); return Array.from(new Uint8Array(d),function(b){return ("0"+b.toString(16)).slice(-2);}).join(""); }
+function scCanCancel(o, r, now){
+  try{
+    if(!o || !o.tk || !/^[0-9]+$/.test(String(o.id||""))) return false;
+    var S=scTrackState(o, r, now); if(S.cancelled || S.stage>=5 || !S.due) return false;
+    return (now||Date.now()) < S.due - 3*3600000;
+  }catch(e){ return false; }
+}
+async function scCancelOrder(idx){
+  var hist=scGetOrderHistory(), o=hist[idx]; if(!o || !o.tk) return;
+  if(!confirm(scTrackT("cancelQ").replace("{id}", o.id))) return;
+  try{
+    var res=await fetch(SB_URL+"/rest/v1/rpc/customer_cancel_order",{method:"POST",headers:SB_HEADERS,body:JSON.stringify({p_order_id:Number(o.id),p_token:o.tk})});
+    var j=res.ok?await res.json():null;
+    if(j && j.ok){
+      var c=scTrackCache[String(o.id)]||{}; c=Object.assign({},c,{status:"Cancelled"}); scTrackCache[String(o.id)]=c;
+      try{ localStorage.setItem(SC_TRACK_CACHE_KEY, JSON.stringify(scTrackCache)); }catch(e){}
+      scTrackRerender(); try{ scRefreshOrderStatuses(); }catch(e){}
+      return;
+    }
+    alert(j && j.reason==="too_late" ? scTrackT("late") : scTrackT("err"));
+    scTrackRerender();
+  }catch(e){ alert(scTrackT("err")); }
 }
 function scTrackCardHtml(o, r, nowMs, idx){
   var now = nowMs || Date.now();
@@ -11576,6 +11606,7 @@ function scTrackCardHtml(o, r, nowMs, idx){
   if(!S.cancelled && S.stage<5) h+='<a href="https://wa.me/201501401776" target="_blank" rel="noopener" style="flex:1;text-align:center;text-decoration:none;border:1.5px solid #25D366;color:#128C7E;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px">💬 '+scTrackT("help")+'</a>';
   h+='<button type="button" onclick="scReorderFromHistory('+(idx||0)+')" style="flex:1;border:none;background:'+((S.stage===5||S.cancelled)?'linear-gradient(135deg,#0f766e,#14a08f)':'#eef6f4')+';color:'+((S.stage===5||S.cancelled)?'#fff':teal)+';font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px;cursor:pointer">'+scTrackT("reorder")+'</button>';
   h+='</div>';
+  if(scCanCancel(o, r, now)) h+='<div style="padding:0 16px 10px;margin-top:-4px"><button type="button" onclick="scCancelOrder('+(idx||0)+')" style="width:100%;border:1.5px solid #f1c4c0;background:#fff7f6;color:#b4382e;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px;cursor:pointer">'+scTrackT("cancel")+'</button><div style="text-align:center;font-size:11px;font-weight:700;color:#8aa29e;margin-top:5px">'+scTrackT("until").replace("{t}", scTrackTime(S.due-3*3600000))+'</div></div>';
   if(!S.cancelled) h+='<div style="padding:0 16px 14px;margin-top:-4px"><button type="button" onclick="scDownloadReceipt('+(idx||0)+')" style="width:100%;border:1.5px dashed #b9d3ce;background:#fff;color:#17324d;font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:12px;cursor:pointer">'+scTrackT("receipt")+'</button></div>';
   h+='</div>';
   return h;
