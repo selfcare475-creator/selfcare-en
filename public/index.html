@@ -6615,7 +6615,7 @@ body { padding-bottom: 34px !important; }
     🛒 Basket
     <span class="cart-badge hidden" id="cartBadge">0</span>
   </button>
-  <button class="cart-btn" id="myOrdersBtn" onclick="scOpenMyOrders()" style="display:none">
+  <button class="cart-btn" id="myOrdersBtn" onclick="scOpenMyOrders()">
     🧾 <span id="myOrdersBtnText">My Orders</span>
   </button>
   </div>
@@ -11211,7 +11211,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.20</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.21</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
@@ -11737,18 +11737,23 @@ function scUpdateMyOrdersBtn(){
   try{
     var b = document.getElementById("myOrdersBtn");
     if(!b) return;
-    var has = scGetOrderHistory().length > 0;
-    b.style.display = has ? "" : "none";
+    b.style.display = ""; /* always visible, even before the first order */
     var t = document.getElementById("myOrdersBtnText");
     if(t) t.textContent = scMyOrdersLabel();
   }catch(e){}
+}
+function scMyOrdersEmptyHtml(){
+  var L={en:["No orders yet","When you place an order, you can follow it here."],cs:["Zatím žádné objednávky","Po objednání ji zde můžete sledovat."],de:["Noch keine Bestellungen","Nach Ihrer Bestellung können Sie sie hier verfolgen."],ru:["Заказов пока нет","После оформления заказа вы сможете отслеживать его здесь."],uk:["Замовлень поки немає","Після оформлення замовлення ви зможете відстежувати його тут."],pl:["Brak zamówień","Po złożeniu zamówienia możesz je tutaj śledzić."]};
+  var lang="en"; try{ if(typeof scTrackLang==="function") lang=scTrackLang(); }catch(e){}
+  var t=L[lang]||L.en;
+  return '<div style="text-align:center;padding:48px 20px;color:#5d7285"><div style="font-size:42px;margin-bottom:10px">🧾</div><div style="font-weight:800;font-size:16px;color:#17324d;margin-bottom:6px">'+t[0]+'</div><div style="font-size:13px;line-height:1.5">'+t[1]+'</div></div>';
 }
 function scOpenMyOrders(){
   try{
     var body = document.getElementById("myOrdersBody");
     var title = document.getElementById("myOrdersTitle");
     if(title) title.textContent = "🧾 " + scMyOrdersLabel();
-    if(body) body.innerHTML = scOrderHistoryHtml() || "";
+    if(body) body.innerHTML = scOrderHistoryHtml() || scMyOrdersEmptyHtml();
     var inner = document.getElementById("scOrderHistory");
     if(inner){ var h = inner.querySelector("div"); if(h) h.style.display = "none"; }
     document.getElementById("myOrdersOverlay").style.display = "block";
