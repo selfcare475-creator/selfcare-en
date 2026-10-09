@@ -11159,7 +11159,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.17</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.18</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
@@ -12821,5 +12821,88 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
  mo.observe(document.body,{childList:true,subtree:true,characterData:true});
  addBtn();
  try{ if(localStorage.getItem("selfcare_ar")==="1" && !window.__SC_AR){ toggle(); } }catch(e){}
+})();
+</script>
+<script id="cart-prune-locked-v1">
+/* v-cart-prune: a product the pharmacy locks (out of stock) is taken out of the basket automatically,
+   even if the guest added it long ago, and the guest is told which item was removed. */
+(function(){
+  var TXT={
+    en:"No longer available — removed from your basket:",
+    cs:"Již není k dispozici — odebráno z košíku:",
+    de:"Nicht mehr verfügbar — aus dem Warenkorb entfernt:",
+    ru:"Больше нет в наличии — удалено из корзины:",
+    uk:"Більше немає в наявності — видалено з кошика:",
+    pl:"Już niedostępne — usunięto z koszyka:"
+  };
+  function lang(){ try{ if(typeof scTrackLang==="function") return scTrackLang(); }catch(e){} try{ if(typeof displayLanguage!=="undefined"&&TXT[displayLanguage]) return displayLanguage; }catch(e){} return "en"; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m];}); }
+  var lastRemoved=[];
+  function prune(){
+    var removed=[];
+    try{
+      if(typeof cart!=="object"||!cart||typeof isOutOfStock!=="function"||!products||!products.length) return removed;
+      Object.keys(cart).forEach(function(k){
+        var p=products[parseInt(k,10)];
+        if(!p||!(cart[k]>0)) return;
+        if(isOutOfStock(p.name)){ delete cart[k]; removed.push(p.name); }
+      });
+      if(removed.length){
+        lastRemoved=removed.slice();
+        try{ saveCart(); }catch(e){}
+        try{ updateCartBadge(); }catch(e){}
+        try{ if(typeof updateVisibleCardQtyUI==="function") updateVisibleCardQtyUI(); else if(typeof smoothRenderGridSoon==="function") smoothRenderGridSoon(); }catch(e){}
+        toast(removed);
+      }
+    }catch(e){}
+    return removed;
+  }
+  function noteHtml(list){
+    return '<div class="sc-cart-removed" style="margin:0 0 10px;padding:10px 12px;border-radius:12px;background:#fff4e5;border:1px solid #ffd59a;color:#7a4b00;font-size:12.5px;line-height:1.45">'
+      +'<b>⚠️ '+esc(TXT[lang()]||TXT.en)+'</b><br>'+list.map(esc).join(" · ")+'</div>';
+  }
+  function toast(list){
+    try{
+      var el=document.getElementById("scCartRemovedToast");
+      if(!el){ el=document.createElement("div"); el.id="scCartRemovedToast";
+        el.style.cssText="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:100001;max-width:min(92vw,420px);background:#17324d;color:#fff;padding:11px 14px;border-radius:14px;font-size:13px;line-height:1.4;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:opacity .3s";
+        document.body.appendChild(el); }
+      el.innerHTML='⚠️ '+esc(TXT[lang()]||TXT.en)+'<br><b>'+list.map(esc).join(" · ")+'</b>';
+      el.style.opacity="1"; el.style.display="block";
+      clearTimeout(el._t); el._t=setTimeout(function(){ el.style.opacity="0"; setTimeout(function(){ el.style.display="none"; },320); },6000);
+    }catch(e){}
+  }
+  function isOpen(id,cls){ var el=document.getElementById(id); return !!(el&&el.classList.contains(cls)); }
+  function refreshOpen(){
+    try{ if(isOpen("cartOverlay","open")||isOpen("cartPanel","open")) renderCart(); }catch(e){}
+    try{ if(isOpen("checkoutOverlay","active")){
+      if(!Object.keys(cart).some(function(k){return cart[k]>0;})){ if(typeof closeCheckout==="function") closeCheckout(); if(typeof openCart==="function") openCart(); }
+      else renderCheckout();
+    } }catch(e){}
+  }
+  window.scPruneLockedCart=function(){ var r=prune(); if(r.length) refreshOpen(); return r; };
+
+  /* the basket and the checkout always drop locked items before they are drawn */
+  if(typeof renderCart==="function"){
+    var rc=renderCart;
+    renderCart=function(){ prune(); var out=rc.apply(this,arguments);
+      try{ if(lastRemoved.length){ var it=document.getElementById("cartItems"); if(it) it.insertAdjacentHTML("afterbegin",noteHtml(lastRemoved)); } }catch(e){}
+      return out; };
+  }
+  if(typeof renderCheckout==="function"){
+    var rk=renderCheckout;
+    renderCheckout=function(){ prune(); return rk.apply(this,arguments); };
+  }
+  if(typeof openCheckout==="function"){
+    var oc=openCheckout;
+    openCheckout=function(){ prune(); return oc.apply(this,arguments); };
+  }
+  /* new locks from the pharmacy (stock refresh) take effect in an open basket too */
+  if(typeof loadStockStatus==="function"){
+    var ls=loadStockStatus;
+    loadStockStatus=function(){ var r=ls.apply(this,arguments); try{ Promise.resolve(r).then(function(){ window.scPruneLockedCart(); }); }catch(e){} return r; };
+  }
+  setInterval(function(){ window.scPruneLockedCart(); }, 20000);
+  if(document.readyState==="complete") setTimeout(window.scPruneLockedCart,3000); else window.addEventListener("load",function(){ setTimeout(window.scPruneLockedCart,3000); });
 })();
 </script>
