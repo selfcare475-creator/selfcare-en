@@ -7970,19 +7970,15 @@ const categoryGroups = {
   medicine: {
     label: "💊 Medicines",
     subs: [
-      "Fever & pain",
-      "Headache & migraine",
+      "Pain, fever & headache",
       "Muscles & joints",
-      "Cold & flu",
+      "Cold & blocked nose",
       "Cough & mucus",
       "Sore throat",
-      "Blocked nose",
       "Diarrhea",
       "Heartburn & reflux",
       "Cramps & bloating",
       "Nausea & vomiting",
-      "Constipation",
-      "Worms & parasites",
       "Digestion",
       "Antibiotics",
       "Sleep",
@@ -7990,12 +7986,10 @@ const categoryGroups = {
       "Weight loss",
       "Eyes & ears",
       "Allergy",
-      "Antiviral",
       "Skin medicines",
       "Veins & circulation",
       "Chronic care",
       "Mental health",
-      "Urinary & kidney",
       "Men’s health",
       "Women’s care"
     ]
@@ -8783,13 +8777,13 @@ Object.assign(manualSubcats, {
 });
 
 var DB_SUB_TO_SITE = {
-  "Cold & flu":"Cold & flu","Nasal congestion":"Blocked nose","Cough & mucus":"Cough & mucus","Throat & cough":"Sore throat",
-  "Pain & fever":"Fever & pain","Muscle & joint":"Muscles & joints","Migraine":"Headache & migraine",
-  "Digestion":"Digestion","Reflux & acidity":"Heartburn & reflux","Diarrhea & gut":"Diarrhea","Cramps & bloating":"Cramps & bloating","Nausea":"Nausea & vomiting","Constipation":"Constipation","Antiparasitic":"Worms & parasites",
-  "Eyes & ears":"Eyes & ears","Allergy":"Allergy","Antibiotics":"Antibiotics","Antiviral":"Antiviral",
+  "Cold & flu":"Cold & blocked nose","Nasal congestion":"Cold & blocked nose","Cough & mucus":"Cough & mucus","Throat & cough":"Sore throat",
+  "Pain & fever":"Pain, fever & headache","Muscle & joint":"Muscles & joints","Migraine":"Pain, fever & headache",
+  "Digestion":"Digestion","Reflux & acidity":"Heartburn & reflux","Diarrhea & gut":"Diarrhea","Cramps & bloating":"Cramps & bloating","Nausea":"Nausea & vomiting","Constipation":"Digestion","Antiparasitic":"Digestion",
+  "Eyes & ears":"Eyes & ears","Allergy":"Allergy","Antibiotics":"Antibiotics","Antiviral":"Skin medicines",
   "Skin medicines":"Skin medicines","Hemorrhoid care":"Veins & circulation",
   "Chronic care":"Chronic care","Weight loss & diabetes":"Diabetes",
-  "Diabetes":"Diabetes","Weight loss":"Weight loss","Mental health":"Mental health","Urinary & kidney":"Urinary & kidney",
+  "Diabetes":"Diabetes","Weight loss":"Weight loss","Mental health":"Mental health","Urinary & kidney":"Chronic care",
   "Sleep support":"Sleep","Men's health":"Men’s health","Women's care":"Women’s care",
   "Vitamins & minerals":"Vitamins & minerals","Omega 3":"Vitamins & minerals","Hair, skin & nails":"Vitamins & minerals",
   "Collagen (oral)":"Collagen","Sport & protein":"Sport & protein","Immunity":"Immunity","Energy & performance":"Energy & performance","Men's vitality":"Men’s vitality",
