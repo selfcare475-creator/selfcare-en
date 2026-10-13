@@ -4350,14 +4350,12 @@ body.checkout-open .sticky-cart-bar {
 
 .kits-section, .suggested-box { display: none !important; }
 
-.sub-filters .filter-btn[data-cat="Diarrhea"],
 .sub-filters .filter-btn[data-cat="Mosquito"],
 .sub-filters .filter-btn[data-cat="Cold"],
 .sub-filters .filter-btn[data-cat="Beach"] {
   border-color: #f0c8b7 !important;
   background: #fff8f4 !important;
 }
-.sub-filters .filter-btn.active[data-cat="Diarrhea"],
 .sub-filters .filter-btn.active[data-cat="Mosquito"],
 .sub-filters .filter-btn.active[data-cat="Cold"],
 .sub-filters .filter-btn.active[data-cat="Beach"] {
@@ -8803,8 +8801,7 @@ var DB_SUB_TO_SITE = {
 var SC_CODE_SUB = {"SCX0140":"Herbal teas","SCX0141":"Herbal teas","SCX0142":"Herbal teas","SCX0143":"Herbal teas","SCX0144":"Herbal teas","SCX0145":"Herbal teas",
   "SC377":"Gym & fitness","SCX0012":"Gym & fitness","SCX0093":"Gym & fitness","SC365":"Gym & fitness"};
 /* kids items also shown under Skin & body > Baby & kids (they stay in their own section too) */
-var SC_KIDS_CODES = ["121","167","12","SC071","SC078","SC079","SC081","SC082","SC087","SC417","SC184","SC431","SC215","SC185","SC398","SC424","SC182","SC085","15","SC226","SC179","SCX0149","SCX0132",
-  "1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139"];
+var SC_KIDS_CODES = ["SCX0149","SCX0132","1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139"];
 var SC_KIDS_CARE_CODES = ["SCX0149","SCX0132","1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139"];
 function productSubcat(p){
   try{ var _oc = SC_CODE_SUB[productCodeValue(p)]; if(_oc) return _oc; }catch(e){}
