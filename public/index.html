@@ -8804,7 +8804,8 @@ var SC_CODE_SUB = {"SCX0140":"Herbal teas","SCX0141":"Herbal teas","SCX0142":"He
   "SC377":"Gym & fitness","SCX0012":"Gym & fitness","SCX0093":"Gym & fitness","SC365":"Gym & fitness"};
 /* kids items also shown under Skin & body > Baby & kids (they stay in their own section too) */
 var SC_KIDS_CODES = ["121","167","12","SC071","SC078","SC079","SC081","SC082","SC087","SC417","SC184","SC431","SC215","SC185","SC398","SC424","SC182","SC085","15","SC226","SC179","SCX0149","SCX0132",
-  "1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139","SC238","SC246","SC284","SC322","SC332"];
+  "1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139"];
+var SC_KIDS_CARE_CODES = ["1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139"];
 function productSubcat(p){
   try{ var _oc = SC_CODE_SUB[productCodeValue(p)]; if(_oc) return _oc; }catch(e){}
   try{ if(p && p.subcategory){ var _m = DB_SUB_TO_SITE[String(p.subcategory).trim()]; if(_m) return _m; } }catch(e){}
@@ -9749,6 +9750,14 @@ function sortFastBucket(list, main, sub){
     if(stock) return stock;
     return (touristNeedRank(a.p, sub)-touristNeedRank(b.p, sub)) || productSortKey(a.p).localeCompare(productSortKey(b.p));
   });
+  if(main === "skin" && sub === "Baby & kids"){
+    // care items (oils, creams, shampoo, wipes...) first, then kids medicines and vitamins
+    var kidsRank = function(it){ var c = productCodeValue(it.p); return (productSubcat(it.p) === "Baby & kids" || SC_KIDS_CARE_CODES.indexOf(c) > -1) ? 0 : 1; };
+    return list.sort(function(a,b){
+      var stock = oosDelta(a,b); if(stock) return stock;
+      return (kidsRank(a) - kidsRank(b)) || (categoryPriorityScore(b.p) - categoryPriorityScore(a.p)) || productSortKey(a.p).localeCompare(productSortKey(b.p));
+    });
+  }
   return list.sort(function(a,b){
     var stock = oosDelta(a,b);
     if(stock) return stock;
