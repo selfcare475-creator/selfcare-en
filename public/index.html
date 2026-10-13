@@ -8801,7 +8801,7 @@ var DB_SUB_TO_SITE = {
 };
 /* v-subs-extra: per-product placement by pharmacy code (herbal teas, gym) */
 var SC_CODE_SUB = {"SCX0140":"Herbal teas","SCX0141":"Herbal teas","SCX0142":"Herbal teas","SCX0143":"Herbal teas","SCX0144":"Herbal teas","SCX0145":"Herbal teas",
-  "SC377":"Gym & fitness","SCX0012":"Gym & fitness","SCX0093":"Gym & fitness"};
+  "SC377":"Gym & fitness","SCX0012":"Gym & fitness","SCX0093":"Gym & fitness","SC365":"Gym & fitness"};
 /* kids items also shown under Skin & body > Baby & kids (they stay in their own section too) */
 var SC_KIDS_CODES = ["121","167","12","SC071","SC078","SC079","SC081","SC082","SC087","SC417","SC184","SC431","SC215","SC185","SC398","SC424","SC182","SC085","15","SC226","SC179","SCX0149","SCX0132",
   "1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139","SC238","SC246","SC284","SC322","SC332"];
@@ -12954,6 +12954,29 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 @media(max-width:560px){
   .sub-filters:has(> .filter-btn:nth-child(5)){ row-gap:6px !important; column-gap:6px !important; }
   .sub-filters:has(> .filter-btn:nth-child(5)) .filter-btn{ font-size:9.7px !important; padding:6px 7px !important; min-height:30px !important; border-radius:11px !important; letter-spacing:-.1px !important; }
+}
+</style>
+<style id="sc-kits-2col">
+/* v-kits-2col: on phones the kit cards sit two per row in a compact layout */
+@media(max-width:560px){
+  #grid.kit-grid{grid-template-columns:1fr 1fr!important;gap:8px!important;padding:0 8px!important;align-items:stretch!important}
+  #grid.kit-grid .kit-product-card.kit-offer-card{display:flex!important;flex-direction:column!important;min-height:0!important;padding:6px!important;border-radius:16px!important;gap:6px!important;min-width:0!important}
+  #grid.kit-grid .kit-card-visual.kit-offer-visual{min-height:150px!important;height:150px!important;flex:0 0 150px!important;border-radius:12px!important}
+  #grid.kit-grid .kit-card-visual.kit-offer-visual::before{top:40px!important;height:80px!important}
+  #grid.kit-grid .kit-premium-title{top:6px!important;left:6px!important;right:6px!important}
+  #grid.kit-grid .kit-premium-title span{font-size:8.4px!important;min-height:0!important;padding:4px 6px!important;letter-spacing:.06em!important;line-height:1.15!important;white-space:normal!important;text-align:center!important}
+  #grid.kit-grid .kit-premium-title span::before,#grid.kit-grid .kit-premium-title span::after{display:none!important}
+  #grid.kit-grid .kit-badge-row{top:auto!important;bottom:6px!important;right:6px!important;left:auto!important;transform:scale(.72)!important;transform-origin:bottom right!important}
+  #grid.kit-grid .kit-collage-stage{height:184px!important;min-height:184px!important;margin:0!important;position:absolute!important;left:50%!important;top:40px!important;width:300px!important;transform:translateX(-50%) scale(.5)!important;transform-origin:top center!important}
+  #grid.kit-grid .kit-offer-body{padding:0 3px 2px!important;display:flex!important;flex-direction:column!important;gap:4px!important;flex:1!important}
+  #grid.kit-grid .kit-card-title{display:none!important}
+  #grid.kit-grid .kit-card-mini{font-size:9.6px!important;line-height:1.3!important;margin:0!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;min-height:2.6em!important}
+  #grid.kit-grid .kit-price-row{margin:2px 0 0!important;padding:0!important;gap:4px!important;align-items:baseline!important}
+  #grid.kit-grid .kit-price-main{font-size:17px!important}
+  #grid.kit-grid .kit-price-main .cur{font-size:10px!important}
+  #grid.kit-grid .kit-price-alt{font-size:9.5px!important;padding-left:5px!important}
+  #grid.kit-grid .kit-add-all-btn{font-size:11px!important;padding:8px 6px!important;min-height:0!important;border-radius:11px!important;margin-top:auto!important}
+  #grid.kit-grid .kit-view-hint{display:none!important}
 }
 </style>
 </body>
