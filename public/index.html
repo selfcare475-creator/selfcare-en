@@ -12793,8 +12793,7 @@ Object.assign(T.en, { mTitle: 'Mobility scooter rental', mSub: 'Delivered to you
 // Exchange rates: the storefront's own (settings.rate_gbp / rate_eur / rate_usd).
 const baseCatalog = api.catalog;
 api.catalog = async () => {
-  const d = await baseCatalog();
-  const rows = await rest('settings?select=key,value&key=in.(rate_gbp,rate_eur,rate_usd)');
+  const [d, rows] = await Promise.all([baseCatalog(), rest('settings?select=key,value&key=in.(rate_gbp,rate_eur,rate_usd)')]);
   rows.forEach(r => { d.settings['official_' + String(r.key).slice(5)] = Number(r.value); });
   d.settings.rate_discount = 0;
   return d;
@@ -12811,7 +12810,7 @@ function renderInfo() {
   const p = chosen(), tr = p && tiersOf(p.id)[0];
   $('#mhead').hidden = !p;
   if (!p) return;
-  $('#mheadImg').innerHTML = imgOrIcon(p);
+  $('#mheadImg').innerHTML = imgOrIcon(p).replace(/\/upload\/([^/]*)w_\d+/, '/upload/$1w_160');
   $('#mheadName').textContent = L(p, 'name');
   const box = root.querySelector('.mhead-txt'); let fp = root.getElementById('mheadFrom');
   if (!fp) { fp = document.createElement('p'); fp.id = 'mheadFrom'; box.appendChild(fp); }
@@ -13021,38 +13020,60 @@ function bind() {
 }
 
 let started = false;
+/* Fast open: the catalog is fetched once in the background after the page loads and kept on this
+   device, so the booking card draws at once from the saved copy and then quietly refreshes. */
+const CAT_KEY = 'scm_cat_v2';
+let catPromise = null;
+const fixCat = d => { d.tiers.forEach(x => { x.days = Number(x.days); }); if (typeof WA === 'string' && WA) d.settings.whatsapp = WA; return d; };
+function fetchCatalog() {
+  if (!catPromise) catPromise = api.catalog().then(d => { fixCat(d); try { store.set(CAT_KEY, { t: Date.now(), d }); } catch (e) {} return d; })
+    .catch(e => { catPromise = null; throw e; });
+  return catPromise;
+}
+function cachedCatalog() {
+  try { const c = store.get(CAT_KEY); if (c && c.d && c.d.products && c.d.tiers && Date.now() - c.t < 14 * 864e5) return fixCat(c.d); } catch (e) {}
+  return null;
+}
+async function previewCatalog() {
+  // Until the mob_ tables exist in the database, show the card in preview mode with the
+  // built-in price list and the storefront's own hotel list (same fee → area rule as the database).
+  LIVE = false; api.catalog = baseCatalog;
+  const d = JSON.parse(JSON.stringify(SEED));
+  d.settings.official_gbp = typeof GBP_RATE === 'number' ? GBP_RATE : 65; d.settings.official_eur = typeof EUR_RATE_EN === 'number' ? EUR_RATE_EN : 55;
+  d.settings.official_usd = typeof USD_RATE_EN === 'number' ? USD_RATE_EN : 45; d.settings.rate_discount = 0;
+  d.hotels = (typeof hotels !== 'undefined' && Array.isArray(hotels) ? hotels : []).map((h, i) => ({ id: 'h' + i, name: h.name, aliases: h.aliases || [], active: true,
+    zone_id: !(h.fee > 0) ? null : h.fee <= 100 ? 'z-downtown' : h.fee <= 250 ? 'z-villages' : h.fee < 400 ? 'z-sahl' : h.fee === 400 ? 'z-makadi' : 'z-soma' }));
+  const kept = store.get(DEMO_KEY); if (kept && kept.bookings) d.bookings = kept.bookings;
+  store.set(DEMO_KEY, d);
+  $('#mpreview').hidden = false;
+  return fixCat(await api.catalog());
+}
+function showCard() { $('#loading').hidden = true; $('#loadError').hidden = true; $('#wizard').hidden = false; if (!showCard.bound) { showCard.bound = true; bind(); } renderAll(); }
 async function start() {
   if (started) return; started = true;
   renderStatic();
-  $('#loading').hidden = false; $('#loadError').hidden = true;
+  const cached = cachedCatalog();
+  if (cached) { DB = cached; showCard(); }
+  else { $('#loading').hidden = false; $('#loadError').hidden = true; }
   try {
-    try { DB = await api.catalog(); }
-    catch (e) {
-      // Until the mob_ tables exist in the database, show the card in preview mode with the
-      // built-in price list and the storefront's own hotel list (same fee → area rule as the database).
-      LIVE = false; api.catalog = baseCatalog;
-      const d = JSON.parse(JSON.stringify(SEED));
-      d.settings.official_gbp = typeof GBP_RATE === 'number' ? GBP_RATE : 65; d.settings.official_eur = typeof EUR_RATE_EN === 'number' ? EUR_RATE_EN : 55;
-      d.settings.official_usd = typeof USD_RATE_EN === 'number' ? USD_RATE_EN : 45; d.settings.rate_discount = 0;
-      d.hotels = (typeof hotels !== 'undefined' && Array.isArray(hotels) ? hotels : []).map((h, i) => ({ id: 'h' + i, name: h.name, aliases: h.aliases || [], active: true,
-        zone_id: !(h.fee > 0) ? null : h.fee <= 100 ? 'z-downtown' : h.fee <= 250 ? 'z-villages' : h.fee < 400 ? 'z-sahl' : h.fee === 400 ? 'z-makadi' : 'z-soma' }));
-      const kept = store.get(DEMO_KEY); if (kept && kept.bookings) d.bookings = kept.bookings;
-      store.set(DEMO_KEY, d);
-      DB = await api.catalog();
-      $('#mpreview').hidden = false;
-    }
-    DB.tiers.forEach(x => { x.days = Number(x.days); });
-    // One WhatsApp number for the whole storefront: bookings go to the same chat as orders.
-    if (typeof WA === 'string' && WA) DB.settings.whatsapp = WA;
+    let fresh;
+    try { fresh = await fetchCatalog(); }
+    catch (e) { if (cached) return; fresh = await previewCatalog(); }
+    DB = fresh;
+    if (S.busy) return;
+    showCard();
   } catch (e) {
+    if (cached) return;
     started = false;
     $('#loading').hidden = true; $('#loadError').hidden = false;
-    return;
   }
-  $('#loading').hidden = true; $('#wizard').hidden = false;
-  bind();
-  renderAll();
 }
+// Warm up in the background a few seconds after the page loads, so the first tap is instant too.
+(function warm() {
+  const go = () => { if (!DB) fetchCatalog().catch(() => {}); };
+  const later = () => (window.requestIdleCallback ? requestIdleCallback(go, { timeout: 4000 }) : setTimeout(go, 2500));
+  if (document.readyState === 'complete') setTimeout(later, 1500); else addEventListener('load', () => setTimeout(later, 1500));
+})();
 window.scMobility = { open() { host.hidden = false; start(); }, close() { host.hidden = true; }, focus() { toCard(); } };
 
 })();
