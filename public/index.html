@@ -8805,7 +8805,7 @@ var SC_CODE_SUB = {"SCX0140":"Herbal teas","SCX0141":"Herbal teas","SCX0142":"He
 /* kids items also shown under Skin & body > Baby & kids (they stay in their own section too) */
 var SC_KIDS_CODES = ["121","167","12","SC071","SC078","SC079","SC081","SC082","SC087","SC417","SC184","SC431","SC215","SC185","SC398","SC424","SC182","SC085","15","SC226","SC179","SCX0149","SCX0132",
   "1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139"];
-var SC_KIDS_CARE_CODES = ["1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139"];
+var SC_KIDS_CARE_CODES = ["SCX0149","SCX0132","1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139"];
 function productSubcat(p){
   try{ var _oc = SC_CODE_SUB[productCodeValue(p)]; if(_oc) return _oc; }catch(e){}
   try{ if(p && p.subcategory){ var _m = DB_SUB_TO_SITE[String(p.subcategory).trim()]; if(_m) return _m; } }catch(e){}
@@ -9353,6 +9353,8 @@ function kitBenefit(kit){
     "adult-diarrhea-vomiting": "For adult diarrhea with nausea or vomiting.",
     "kids-diarrhea-vomiting": "For kids diarrhea with nausea or vomiting.",
     "sunburn": "For sunburn, itching and skin irritation.",
+    "acne-care": "For pimples, oily skin and blemishes.",
+    "eczema-psoriasis": "For dry, itchy, eczema and psoriasis skin.",
     "mosquito-bites": "For mosquito bites, itching and allergy symptoms.",
     "hangover-rescue": "For headache, nausea and dehydration after a night out.",
     "cold-flu": "For cold, blocked nose, sore throat and fever.",
@@ -9610,7 +9612,7 @@ function productSortKey(p){
   return p._sortKey;
 }
 const CATALOG_PRODUCTS_URL = "products-en.json?v=33";
-const CATALOG_KITS_URL = "kits-en.json?v=44";
+const CATALOG_KITS_URL = "kits-en.json?v=45";
 let catalogDataLoaded = false;
 let catalogDataPromise = null;
 const FAST_INITIAL_RENDER_LIMIT = 12;
