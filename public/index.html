@@ -7157,6 +7157,9 @@ function autoCardTextFromCategory(p){
     "Scrubs":"Exfoliating care.",
     "Body care":"Body care.",
     "Baby care":"Baby care.",
+    "Baby & kids":"Baby & kids care.",
+    "Gym & fitness":"Sport nutrition.",
+    "Herbal teas":"Natural herbal tea.",
     "Lips":"Lip care.",
     "Dental care":"Dental care.",
     "Shampoos":"Hair cleansing.",
@@ -7998,9 +8001,10 @@ const categoryGroups = {
     label: "🌿 Supplements",
     subs: [
       "Vitamins & minerals",
+      "Herbal teas",
       "Collagen",
       "Energy & performance",
-      "Sport & protein",
+      "Gym & fitness",
       "Men’s vitality",
       "Immunity"
     ]
@@ -8017,7 +8021,7 @@ const categoryGroups = {
       "Soap",
       "Foot & hand care",
       "Lips",
-      "Baby care",
+      "Baby & kids",
       "Dental care",
       "Repellents"
     ]
@@ -8051,7 +8055,8 @@ function cleanCatLabel(cat){
   const map = {
     "Best sellers":"Best sellers",
     "Dental care":"Dental care",
-    "Baby care":"Baby care",
+    "Baby care":"Baby & kids",
+    "Baby & kids":"Baby & kids",
     "Digestion":"Digestion",
     "Skin medicines":"Skin medicines",
     "Eyes & ears":"Eyes & ears",
@@ -8786,15 +8791,22 @@ var DB_SUB_TO_SITE = {
   "Diabetes":"Diabetes","Weight loss":"Weight loss","Mental health":"Mental health","Urinary & kidney":"Chronic care",
   "Sleep support":"Sleep","Men's health":"Men’s health","Women's care":"Women’s care",
   "Vitamins & minerals":"Vitamins & minerals","Omega 3":"Vitamins & minerals","Hair, skin & nails":"Vitamins & minerals",
-  "Collagen (oral)":"Collagen","Sport & protein":"Sport & protein","Immunity":"Immunity","Energy & performance":"Energy & performance","Men's vitality":"Men’s vitality",
+  "Collagen (oral)":"Collagen","Sport & protein":"Gym & fitness","Gym":"Gym & fitness","Herbal teas":"Herbal teas","Immunity":"Immunity","Energy & performance":"Energy & performance","Men's vitality":"Men’s vitality",
   "Face creams":"Face creams","Eye care":"Face creams","Serums":"Serums","Face masks":"Masks","Scrubs & exfoliation":"Scrubs",
   "Body care":"Body care","Deodorant":"Deodorants","Soap & cleansing":"Soap","Foot & hand care":"Foot & hand care",
-  "Lips":"Lips","Baby care":"Baby care","Oral care":"Dental care","Nail care":"Body care","Cosmetics":"Body care",
+  "Lips":"Lips","Baby care":"Baby & kids","Oral care":"Dental care","Nail care":"Body care","Cosmetics":"Body care",
   "Mosquito protection":"Repellents",
   "Shampoo":"Shampoos","Conditioner":"Conditioners","Hair mask":"Hair masks","Hair serum & oil":"Serums & oils","Natural oils":"Natural oils","Hair ampoules":"Ampoules","Hair loss":"Hair loss care","Anti-dandruff":"Anti-dandruff","Hair care":"Serums & oils",
   "Sunscreen SPF 50":"Sun protection SPF 50","Sunscreen SPF 30-45":"Sun protection SPF 30–45","Sunscreen":"Sun protection SPF 30–45","Kids sun":"Kids sun protection","Tanning":"Tanning oils","After sun":"After sun","Sun & beach":"After sun"
 };
+/* v-subs-extra: per-product placement by pharmacy code (herbal teas, gym) */
+var SC_CODE_SUB = {"SCX0140":"Herbal teas","SCX0141":"Herbal teas","SCX0142":"Herbal teas","SCX0143":"Herbal teas","SCX0144":"Herbal teas","SCX0145":"Herbal teas",
+  "SC377":"Gym & fitness","SCX0012":"Gym & fitness","SCX0093":"Gym & fitness"};
+/* kids items also shown under Skin & body > Baby & kids (they stay in their own section too) */
+var SC_KIDS_CODES = ["121","167","12","SC071","SC078","SC079","SC081","SC082","SC087","SC417","SC184","SC431","SC215","SC185","SC398","SC424","SC182","SC085","15","SC226","SC179","SCX0149","SCX0132",
+  "1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139","SC238","SC246","SC284","SC322","SC332"];
 function productSubcat(p){
+  try{ var _oc = SC_CODE_SUB[productCodeValue(p)]; if(_oc) return _oc; }catch(e){}
   try{ if(p && p.subcategory){ var _m = DB_SUB_TO_SITE[String(p.subcategory).trim()]; if(_m) return _m; } }catch(e){}
   const n = (p.name || "").toLowerCase();
   const d = (p.desc || "").toLowerCase();
@@ -8825,7 +8837,7 @@ function productSubcat(p){
   if(c === "Oral care" || includesAny(t, ["oral gel", "oral gel", "mouth ulcers", "mouth ulcers", "gums", "oracure", "miconaz oral", "mouth ulcers"])) return "Skin medicines";
 
   // Vitamins & supplements
-  if(includesAny(t, ["whey", "protein", "sport"])) return "Sport & protein";
+  if(includesAny(t, ["whey", "protein", "sport"])) return "Gym & fitness";
   if(c === "Vitamins" && includesAny(t, ["kolagen", "collagen"])) return "Collagen";
   if(includesAny(t, ["banox", "organic nation"])) return "Collagen";
   if(includesAny(t, ["probiotic", "probiot", "enterogermina", "linex"])) return "Digestion";
@@ -9083,7 +9095,7 @@ function productBadge(p){
   const sub = productSubcat(p);
   if(["Antinal 24 capsules","Streptoquin 20 tablets","ORS 10 sachets","Enterogermina 2 Billion oral suspension","OFF repellent spray"].includes(p.name)) return {label:"Tourist favorite", className:"badge-tourist"};
   if(["Sun protection SPF 50","Sun protection SPF 30–45","Kids sun protection","After sun","Tanning oils"].includes(sub)) return {label:"Beach essential", className:"badge-beach"};
-  if(["Pain relief","Cold & flu","Digestion","Allergy","Eyes & ears"].includes(sub)) return {label:"Fast relief", className:"badge-fast"};
+  if(["Pain relief","Cold & flu","Digestion","Allergy","Eyes & ears","Pain, fever & headache","Muscles & joints","Cold & blocked nose","Cough & mucus","Sore throat","Diarrhea","Heartburn & reflux","Cramps & bloating","Nausea & vomiting"].includes(sub)) return {label:"Fast relief", className:"badge-fast"};
   if(["Face creams","Serums","Masks","Scrubs","Body care","Lips"].includes(sub)) return {label:"Beauty pick", className:"badge-beauty"};
   if(isBestSeller(p.name) || p.cat === "Top products") return {label:"Best seller", className:"badge-tourist"};
   return null;
@@ -9161,7 +9173,7 @@ const categoryCorrectionMap = {
   "Halla Cleopatra Camel Milk Cream 200 ml":"Face creams",
   "Halla Cleopatra Gold Mask":"Masks",
   "Lotus Ostrich Fat Cream":"Body care",
-  "Baby Cream cream 60 g":"Baby care",
+  "Baby Cream cream 60 g":"Baby & kids",
   "Panthenol El Nile cream":"Body care",
   "Mollinsy Panthenol 10% body lotion":"After sun",
   "Orgakera Panthenol lotion 10%":"After sun",
@@ -9754,6 +9766,7 @@ function buildFastCategoryBuckets(){
     const main = productMainKey(p);
     const sub = productSubcat(p);
     if(buckets[main] && buckets[main][sub]) buckets[main][sub].push(item);
+    try{ if(sub !== "Baby & kids" && buckets.skin && buckets.skin["Baby & kids"] && SC_KIDS_CODES.indexOf(productCodeValue(p)) > -1) buckets.skin["Baby & kids"].push(item); }catch(e){}
     if(buckets.tourist){
       (categoryGroups.tourist.subs || []).forEach(tourSub=>{
         if(tourSub === "Care Kits" || tourSub === "Beauty Kits") return;
@@ -9788,6 +9801,7 @@ async function buildFastCategoryBucketsAsync(){
       const main = productMainKey(p);
       const sub = productSubcat(p);
       if(buckets[main] && buckets[main][sub]) buckets[main][sub].push(item);
+      try{ if(sub !== "Baby & kids" && buckets.skin && buckets.skin["Baby & kids"] && SC_KIDS_CODES.indexOf(productCodeValue(p)) > -1) buckets.skin["Baby & kids"].push(item); }catch(e){}
       if(buckets.tourist){
         (categoryGroups.tourist.subs || []).forEach(tourSub=>{
           if(tourSub === "Care Kits" || tourSub === "Beauty Kits") return;
@@ -12989,7 +13003,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   ["Preparation + delivery takes at least 90 minutes.","التجهيز + التوصيل بياخد 90 دقيقة على الأقل."],
   ["Your basket is empty","سلتك فاضية"],["Add your hotel and room number.","اكتب اسم فندقك ورقم الغرفة."],
   ["New","جديد"],["Preparing","بنجهّز"],["On the way","في الطريق"],["Delivered","تم التوصيل"],["Cancelled","ملغي"],["Confirmed","تم التأكيد"],
-  ["Care Kits","باقات العناية"],["Beauty Kits","باقات التجميل"],["Diarrhea & stomach","إسهال ومعدة"],["Sunburn & SPF","حروق الشمس وواقي"],["Cold & sore throat","برد والتهاب الحلق"],["Pain & fever","ألم وحرارة"],["Allergy","حساسية"],["Eye drops","قطرات عين"],["Mosquito protection","الحماية من الناموس"],["Cosmetics","تجميل"],["Sleep support","دعم النوم"],["Antibiotics","مضادات حيوية"],["Digestion","هضم"],["Sleep","نوم"],["Weight loss & diabetes","تخسيس وسكر"],["Diabetes","السكري"],["Weight loss","التخسيس"],["Mental health","الصحة النفسية"],["Urinary & kidney","المسالك البولية"],["Repellents","طارد الناموس"],["Cold & flu","برد وإنفلونزا"],["Pain relief","مسكّنات"],["Eyes & ears","عيون وآذان"],["Antiviral","مضادات فيروسات"],["Skin medicines","أدوية جلدية"],["Veins & circulation","أوردة ودورة دموية"],["Chronic care","أدوية مزمنة"],["Men’s health","صحة الرجل"],["Women’s care","العناية بالمرأة"],["Vitamins & minerals","فيتامينات ومعادن"],["Collagen","كولاجين"],["Energy & performance","طاقة وأداء"],["Sport & protein","رياضة وبروتين"],["Men’s vitality","حيوية الرجل"],["Immunity","مناعة"],["Face creams","كريمات الوجه"],["Serums","سيرومات"],["Masks","ماسكات"],["Scrubs","مقشّرات"],["Body care","العناية بالجسم"],["Deodorants","مزيلات العرق"],["Soap","صابون"],["Foot & hand care","العناية بالقدم واليد"],["Natural oils","زيوت طبيعية"],["Baby care","عناية الأطفال"],["Lips","شفايف"],["Dental care","العناية بالأسنان"],["Shampoos","شامبوهات"],["Conditioners","بلسم"],["Hair masks","ماسكات شعر"],["Serums & oils","سيرومات وزيوت"],["Ampoules","أمبولات"],["Hair loss care","علاج تساقط الشعر"],["Anti-dandruff","ضد القشرة"],["Sun protection SPF 50","واقي شمس SPF 50"],["Sun protection SPF 30–45","واقي شمس SPF 30–45"],["Kids sun protection","واقي شمس للأطفال"],["Tanning oils","زيوت تسمير"],["After sun","بعد الشمس"]
+  ["Care Kits","باقات العناية"],["Beauty Kits","باقات التجميل"],["Diarrhea & stomach","إسهال ومعدة"],["Sunburn & SPF","حروق الشمس وواقي"],["Cold & sore throat","برد والتهاب الحلق"],["Pain & fever","ألم وحرارة"],["Allergy","حساسية"],["Eye drops","قطرات عين"],["Mosquito protection","الحماية من الناموس"],["Cosmetics","تجميل"],["Sleep support","دعم النوم"],["Antibiotics","مضادات حيوية"],["Digestion","هضم"],["Sleep","نوم"],["Weight loss & diabetes","تخسيس وسكر"],["Diabetes","السكري"],["Weight loss","التخسيس"],["Mental health","الصحة النفسية"],["Urinary & kidney","المسالك البولية"],["Repellents","طارد الناموس"],["Cold & flu","برد وإنفلونزا"],["Pain relief","مسكّنات"],["Eyes & ears","عيون وآذان"],["Antiviral","مضادات فيروسات"],["Skin medicines","أدوية جلدية"],["Veins & circulation","أوردة ودورة دموية"],["Chronic care","أدوية مزمنة"],["Men’s health","صحة الرجل"],["Women’s care","العناية بالمرأة"],["Vitamins & minerals","فيتامينات ومعادن"],["Collagen","كولاجين"],["Energy & performance","طاقة وأداء"],["Sport & protein","رياضة وبروتين"],["Men’s vitality","حيوية الرجل"],["Immunity","مناعة"],["Face creams","كريمات الوجه"],["Serums","سيرومات"],["Masks","ماسكات"],["Scrubs","مقشّرات"],["Body care","العناية بالجسم"],["Deodorants","مزيلات العرق"],["Soap","صابون"],["Foot & hand care","العناية بالقدم واليد"],["Natural oils","زيوت طبيعية"],["Baby care","عناية الأطفال"],["Baby & kids","الأطفال والرضّع"],["Gym & fitness","جيم ولياقة"],["Herbal teas","أعشاب"],["Pain, fever & headache","ألم وحرارة وصداع"],["Muscles & joints","عضلات ومفاصل"],["Cold & blocked nose","برد واحتقان"],["Cough & mucus","كحة وبلغم"],["Sore throat","التهاب الحلق"],["Diarrhea","إسهال"],["Heartburn & reflux","حموضة وارتجاع"],["Cramps & bloating","مغص وانتفاخ"],["Nausea & vomiting","غثيان وقيء"],["Lips","شفايف"],["Dental care","العناية بالأسنان"],["Shampoos","شامبوهات"],["Conditioners","بلسم"],["Hair masks","ماسكات شعر"],["Serums & oils","سيرومات وزيوت"],["Ampoules","أمبولات"],["Hair loss care","علاج تساقط الشعر"],["Anti-dandruff","ضد القشرة"],["Sun protection SPF 50","واقي شمس SPF 50"],["Sun protection SPF 30–45","واقي شمس SPF 30–45"],["Kids sun protection","واقي شمس للأطفال"],["Tanning oils","زيوت تسمير"],["After sun","بعد الشمس"]
  ];
  var D={}; P.forEach(function(p){D[p[0]]=p[1];});
  var REGEX=[
