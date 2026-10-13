@@ -12993,6 +12993,27 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   #grid.kit-grid .kit-view-hint{display:none!important}
 }
 </style>
+<script id="sc-modal-dedup">
+/* v-modal-dedup: when the product description and the "use for" line say the same thing, show it once */
+(function(){
+  function norm(t){ return String(t||"").toLowerCase().replace(/[.\s]+$/,"").replace(/\s+/g," ").trim(); }
+  function run(){
+    var d=document.getElementById("mDesc"), u=document.getElementById("mUseFor");
+    if(!d||!u) return;
+    var same = norm(d.textContent) && norm(d.textContent) === norm(u.textContent);
+    d.style.display = same ? "none" : "";
+  }
+  function init(){
+    var d=document.getElementById("mDesc"), u=document.getElementById("mUseFor");
+    if(!d||!u) return setTimeout(init,500);
+    var mo=new MutationObserver(run);
+    mo.observe(d,{childList:true,characterData:true,subtree:true});
+    mo.observe(u,{childList:true,characterData:true,subtree:true});
+    run();
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init); else init();
+})();
+</script>
 </body>
 </html>
 
