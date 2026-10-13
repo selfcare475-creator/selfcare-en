@@ -7973,23 +7973,23 @@ const categoryGroups = {
   medicine: {
     label: "💊 Medicines",
     subs: [
+      "Diarrhea",
+      "Weight loss",
       "Pain, fever & headache",
-      "Muscles & joints",
+      "Sleep",
+      "Antibiotics",
       "Cold & blocked nose",
       "Cough & mucus",
       "Sore throat",
-      "Diarrhea",
       "Heartburn & reflux",
       "Cramps & bloating",
       "Nausea & vomiting",
-      "Digestion",
-      "Antibiotics",
-      "Sleep",
-      "Diabetes",
-      "Weight loss",
-      "Eyes & ears",
+      "Muscles & joints",
       "Allergy",
       "Skin medicines",
+      "Eyes & ears",
+      "Digestion",
+      "Diabetes",
       "Veins & circulation",
       "Chronic care",
       "Mental health",
@@ -12951,6 +12951,10 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   align-items:stretch !important;
 }
 .sub-filters:has(> .filter-btn:nth-child(5)) .filter-btn{ justify-content:center !important; text-align:center !important; }
+@media(max-width:560px){
+  .sub-filters:has(> .filter-btn:nth-child(5)){ row-gap:6px !important; column-gap:6px !important; }
+  .sub-filters:has(> .filter-btn:nth-child(5)) .filter-btn{ font-size:9.7px !important; padding:6px 7px !important; min-height:30px !important; border-radius:11px !important; letter-spacing:-.1px !important; }
+}
 </style>
 </body>
 </html>
