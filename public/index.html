@@ -13227,8 +13227,14 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     }
     document.addEventListener("click", function(e){ try{ var a = e.target.closest && e.target.closest('a[href*="wa.me"],a[href^="whatsapp:"]'); if(a) send("wa_open", a.id || null); }catch(_){} }, true);
     var errs = 0;
-    window.addEventListener("error", function(e){ if(errs++ < 3 && e && e.message) send("js_error", e.message + " @" + String(e.filename || "").split("/").pop() + ":" + (e.lineno || "")); });
-    window.addEventListener("unhandledrejection", function(e){ if(errs++ < 3) send("js_error", "promise: " + ((e.reason && e.reason.message) || String(e.reason)).slice(0,200)); });
+    /* Only our own page's errors: skip browser-extension, wallet and in-app-browser noise. */
+    var NOISE = /^Script error\.?$|ethereum|web3|Java object is gone|postMessage|webkit\.messageHandlers|instantSearchSDK|__gCrWeb|zaloJSV2|ResizeObserver loop|Non-Error promise rejection/i;
+    function ours(f){ return !f || f.indexOf(location.origin) === 0; }
+    window.addEventListener("error", function(e){
+      if(!e || !e.message || NOISE.test(e.message) || !ours(e.filename) || !e.filename) return;
+      if(errs++ < 3) send("js_error", e.message + " @" + String(e.filename).split("/").pop() + ":" + (e.lineno || ""));
+    });
+    window.addEventListener("unhandledrejection", function(e){ var m = (e && e.reason && e.reason.message) || String(e && e.reason); if(NOISE.test(m) || /fetch|network|load failed/i.test(m)) return; if(errs++ < 3) send("js_error", "promise: " + m.slice(0,200)); });
   }catch(e){}
 })();
 </script>
