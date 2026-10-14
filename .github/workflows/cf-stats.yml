@@ -1,0 +1,33 @@
+name: Cloudflare traffic stats (read-only)
+on:
+  push:
+    branches: [ cf-stats ]
+permissions:
+  contents: write
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Query Cloudflare analytics
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACC: da77fd5165dc79f35a5d3c58ca9dc021
+        run: |
+          mkdir -p stats
+          H="Authorization: Bearer $CF"
+          curl -s -H "$H" "https://api.cloudflare.com/client/v4/user/tokens/verify" | jq '{success, status: .result.status}' > stats/token.json
+          curl -s -H "$H" "https://api.cloudflare.com/client/v4/zones?per_page=50" | jq '{success, errors, zones: [.result[]? | {id, name, plan: .plan.name}]}' > stats/zones.json
+          SINCE=$(date -u -d '45 days ago' +%Y-%m-%d)
+          for Z in $(jq -r '.zones[].id' stats/zones.json); do
+            N=$(jq -r --arg z "$Z" '.zones[]|select(.id==$z)|.name' stats/zones.json)
+            Q=$(jq -n --arg z "$Z" --arg s "$SINCE" '{query:"query($z:String!,$s:Date!){viewer{zones(filter:{zoneTag:$z}){httpRequests1dGroups(limit:60,filter:{date_geq:$s},orderBy:[date_ASC]){dimensions{date} sum{requests pageViews} uniq{uniques}}}}}",variables:{z:$z,s:$s}}')
+            curl -s -H "$H" -H "Content-Type: application/json" https://api.cloudflare.com/client/v4/graphql -d "$Q" > "stats/zone_$N.json"
+          done
+          Q=$(jq -n --arg a "$ACC" --arg s "$SINCE" '{query:"query($a:String!,$s:Date!){viewer{accounts(filter:{accountTag:$a}){rumPageloadEventsAdaptiveGroups(limit:5000,filter:{date_geq:$s}){count sum{visits} dimensions{date requestHost}}}}}",variables:{a:$a,s:$s}}')
+          curl -s -H "$H" -H "Content-Type: application/json" https://api.cloudflare.com/client/v4/graphql -d "$Q" > stats/rum.json
+          ls -la stats; head -c 400 stats/zones.json
+      - name: Save results
+        run: |
+          git config user.name "stats-bot"; git config user.email "stats-bot@users.noreply.github.com"
+          git add stats && git commit -m "Cloudflare stats snapshot" && git push
