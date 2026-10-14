@@ -13179,6 +13179,59 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init); else init();
 })();
 </script>
+<script id="sc-funnel">
+/* Customer-journey tracking: one row per step, no personal data. Read in the admin "رحلة العميل" tab. */
+(function(){
+  try{
+    var host = location.hostname, cz = /selfcare-cz/.test(host) || (typeof displayLanguage !== "undefined" && !/selfcare-en/.test(host) && document.documentElement.lang !== "en" && /cz|cs/.test(document.title.toLowerCase()));
+    var SITE = ("en" || (cz ? "cz" : "en")) + (/selfcare-(en|cz)\.com$/.test(host) ? "" : "-test");
+    var sid; try{ sid = sessionStorage.getItem("sc_fsid"); if(!sid){ sid = Date.now().toString(36) + Math.random().toString(36).slice(2,8); sessionStorage.setItem("sc_fsid", sid); } }catch(e){ sid = "x" + Math.random().toString(36).slice(2,10); }
+    var ua = navigator.userAgent || "";
+    var dev = (/iPhone|iPad|iPod/.test(ua) ? "ios" : /Android/.test(ua) ? "android" : "desktop")
+      + (/FBAN|FBAV|FB_IAB/.test(ua) ? "-facebook" : /Instagram/.test(ua) ? "-instagram" : /WhatsApp/.test(ua) ? "-whatsapp" : /TikTok|musical_ly|Bytedance/i.test(ua) ? "-tiktok" : /Snapchat/.test(ua) ? "-snapchat" : "");
+    var once = {};
+    function lang(){ try{ return String(typeof displayLanguage !== "undefined" ? displayLanguage : (document.documentElement.lang || "")).slice(0,10); }catch(e){ return ""; } }
+    function send(ev, info, uniq){
+      try{
+        if(uniq){ if(once[ev]) return; once[ev] = 1; }
+        var body = JSON.stringify({ site: SITE, sid: sid, event: ev, info: info ? String(info).slice(0,300) : null, device: dev, lang: lang() });
+        fetch(SB_URL + "/rest/v1/site_events", { method: "POST", keepalive: true,
+          headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json", "Prefer": "return=minimal" }, body: body }).catch(function(){});
+      }catch(e){}
+    }
+    window.scTrack = send;
+    send("visit", (document.referrer || "").replace(/^https?:\/\//, "").split("/")[0] || "direct", true);
+
+    function cartCount(){ try{ var n = 0; for(var k in cart) n += Number(cart[k]) || 0; return n; }catch(e){ return 0; } }
+    if(typeof saveCart === "function"){ var _sc = saveCart; saveCart = function(){ var r = _sc.apply(this, arguments); if(cartCount() > 0) send("cart", null, true); return r; }; }
+    if(typeof openCheckout === "function"){ var _oc = openCheckout; openCheckout = function(){ send("checkout", "items:" + cartCount(), true); return _oc.apply(this, arguments); }; }
+    document.addEventListener("click", function(e){
+      try{
+        var b = e.target && e.target.closest && e.target.closest("#finalCheckoutBtn"); if(!b) return;
+        if(b.style.pointerEvents === "none" || b.style.opacity === "0.5"){
+          var hotel = (document.getElementById("checkoutHotel") || {}).value || "", phone = (document.getElementById("checkoutPhone") || {}).value || "";
+          send("tap_blocked", (b.title || "blocked") + (hotel.trim().length < 2 ? " | no hotel" : "") + (phone.replace(/\D/g, "").length < 6 ? " | short phone" : ""));
+        } else send("tap_order");
+      }catch(_){}
+    }, true);
+    if(typeof window.showOrderConfirm === "function"){
+      var _soc = window.showOrderConfirm;
+      window.showOrderConfirm = function(){ var p = _soc.apply(this, arguments); try{ p.then(function(){ send("confirmed"); }, function(){ send("confirm_cancel"); }); }catch(e){} return p; };
+    }
+    if(typeof createConfirmedOrder === "function"){
+      var _co = createConfirmedOrder;
+      createConfirmedOrder = async function(){
+        try{ var r = await _co.apply(this, arguments); send("order", r && r.id ? "#" + r.id : null); return r; }
+        catch(err){ send("order_error", (err && err.message) || String(err)); throw err; }
+      };
+    }
+    document.addEventListener("click", function(e){ try{ var a = e.target.closest && e.target.closest('a[href*="wa.me"],a[href^="whatsapp:"]'); if(a) send("wa_open", a.id || null); }catch(_){} }, true);
+    var errs = 0;
+    window.addEventListener("error", function(e){ if(errs++ < 3 && e && e.message) send("js_error", e.message + " @" + String(e.filename || "").split("/").pop() + ":" + (e.lineno || "")); });
+    window.addEventListener("unhandledrejection", function(e){ if(errs++ < 3) send("js_error", "promise: " + ((e.reason && e.reason.message) || String(e.reason)).slice(0,200)); });
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
 
