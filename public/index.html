@@ -10670,6 +10670,8 @@ function renderCheckout(){
       const row = await createConfirmedOrder(window.__pendingOrder);
       const orderId = row && row.id ? row.id : "";
       try{ scSaveOrderToHistory(orderId, window.__pendingOrder); }catch(e){}
+      /* empty the basket once the order is saved, so a returning customer does not resend the same items */
+      try{ cart = {}; if(typeof scCartPending !== "undefined") scCartPending = []; updateCartBadge(); if(typeof updateVisibleCardQtyUI === "function") updateVisibleCardQtyUI(); }catch(e){}
       let cleanMsg = msgText.replace(/\n# Code 61\s*$/,"").trim();
       const finalMsg = cleanMsg.replace("🛒 *Self Care Pharmacy Order*", "🛒 *Self Care Pharmacy Order*\n\nOrder Number: #"+orderId+"\nCode: 61");
       // en-v21: use wa.me only — works reliably on all devices.
@@ -11264,7 +11266,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
 <script>window.SELFCARE_MIN_ORDER_POPUP_ACTIONS_FIXED_BUILD="en-v29-min1000";</script>
 
 <script>window.SELFCARE_EN_MIN500_BUILD="en-v30";</script>
-<div class="sc-version-stamp" aria-hidden="true">en-v31.40</div>
+<div class="sc-version-stamp" aria-hidden="true">en-v31.41</div>
 <!-- en-v22: Order Success Modal — clear confirmation with order number -->
 <div id="orderSuccessOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,45,60,.72);backdrop-filter:blur(6px);z-index:999999;align-items:center;justify-content:center;padding:20px;font-family:inherit;">
   <div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;overflow:hidden;animation:sc-order-success-in .35s cubic-bezier(.16,1,.3,1);">
@@ -13203,7 +13205,12 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     send("visit", (document.referrer || "").replace(/^https?:\/\//, "").split("/")[0] || "direct", true);
 
     function cartCount(){ try{ var n = 0; for(var k in cart) n += Number(cart[k]) || 0; return n; }catch(e){ return 0; } }
-    if(typeof saveCart === "function"){ var _sc = saveCart; saveCart = function(){ var r = _sc.apply(this, arguments); if(cartCount() > 0) send("cart", null, true); return r; }; }
+    var touched = false, lastN = null;
+    ["pointerdown","keydown","touchstart"].forEach(function(t){ document.addEventListener(t, function(){ touched = true; }, {capture:true, passive:true}); });
+    if(typeof saveCart === "function"){ var _sc = saveCart; saveCart = function(){ var r = _sc.apply(this, arguments); try{ var n = cartCount();
+      if(!touched){ if(n > 0) send("cart_restored", "items:" + n, true); }
+      else if(n > (lastN || 0)) send("cart", null, true);
+      lastN = n; }catch(_){} return r; }; }
     if(typeof openCheckout === "function"){ var _oc = openCheckout; openCheckout = function(){ send("checkout", "items:" + cartCount(), true); return _oc.apply(this, arguments); }; }
     document.addEventListener("click", function(e){
       try{
