@@ -13263,6 +13263,33 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 })();
 </script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "799e181d553a4f3b866aeb86da2ff7d1"}'></script><!-- End Cloudflare Web Analytics -->
+<style id="sc-coming-soon-css">
+.card.card-soon{opacity:1!important;filter:none!important}
+.card.card-soon .card-img-wrap img{opacity:1!important}
+.card.card-soon .badge-soldout{background:#7a3e9d!important;box-shadow:0 2px 8px rgba(122,62,157,.35)!important}
+.card.card-soon .soldout-label{color:#7a3e9d!important;border-color:#dccbe0!important;background:#f7f1fa!important}
+</style>
+<script id="sc-coming-soon">
+/* Products shown as "Coming soon" while they are out of stock (they still can't be ordered). */
+(function(){
+  var NAMES=["myvi sleep"];
+  var L={en:"Coming soon",cs:"Již brzy",sk:"Už čoskoro",pl:"Wkrótce",ru:"Скоро",ua:"Незабаром",de:"Demnächst",ar:"قريباً"};
+  function label(){ var l=(typeof displayLanguage!=="undefined"&&displayLanguage)||"en"; return L[l]||L.en; }
+  function hit(t){ t=String(t||"").toLowerCase(); return NAMES.some(function(n){return t.indexOf(n)>-1;}); }
+  function fix(){
+    document.querySelectorAll(".card.card-soldout").forEach(function(c){
+      var n=c.querySelector(".card-name"); if(!n||!hit(n.textContent)) return;
+      c.classList.add("card-soon"); var t=label();
+      c.querySelectorAll(".badge-soldout,.soldout-label").forEach(function(e){ if(e.textContent!==t) e.textContent=t; });
+    });
+    var ov=document.getElementById("modalOverlay"), no=document.getElementById("modalOosNotice");
+    if(ov&&no&&hit(ov.textContent)){ var s="⏳ "+label(); if(no.textContent!==s){ no.textContent=s; no.style.background="#f7f1fa"; no.style.color="#7a3e9d"; } }
+    else if(no&&no.style.color!=="rgb(179, 38, 30)"){ no.style.background="#fdecec"; no.style.color="#b3261e"; }
+  }
+  var q=0; new MutationObserver(function(){ if(q) return; q=1; requestAnimationFrame(function(){ q=0; fix(); }); }).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+  document.addEventListener("DOMContentLoaded",fix);
+})();
+</script>
 </body>
 </html>
 
