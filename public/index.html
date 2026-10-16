@@ -13272,7 +13272,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 <script id="sc-coming-soon">
 /* Products shown as "Coming soon" while they are out of stock (they still can't be ordered). */
 (function(){
-  var NAMES=["myvi sleep"];
+  var NAMES=["myvi "];
   var L={en:"Coming soon",cs:"Již brzy",sk:"Už čoskoro",pl:"Wkrótce",ru:"Скоро",ua:"Незабаром",de:"Demnächst",ar:"قريباً"};
   function label(){ var l=(typeof displayLanguage!=="undefined"&&displayLanguage)||"en"; return L[l]||L.en; }
   function hit(t){ t=String(t||"").toLowerCase(); return NAMES.some(function(n){return t.indexOf(n)>-1;}); }
