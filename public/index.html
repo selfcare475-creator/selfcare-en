@@ -13254,6 +13254,40 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   }catch(e){}
 })();
 </script>
+<script id="sc-funnel-checkout">
+/* Checkout detail tracking: which field a guest reached and what they saw before leaving. No personal data. */
+(function(){
+  try{
+    var ov = document.getElementById("checkoutOverlay"); if(!ov || typeof window.scTrack !== "function") return;
+    var T = window.scTrack, open = false, t0 = 0, seen = {}, last = "", tapped = false, sent = false;
+    var F = { checkoutHotel:"hotel", deliveryDay:"day", deliveryTime:"time", checkoutPhoneCode:"code", checkoutPhone:"phone", checkoutPhoneCodeManual:"code_manual", checkoutNote:"note", paymentMethod:"pay" };
+    function v(id){ var e = document.getElementById(id); return e ? String(e.value || "") : ""; }
+    function secs(){ return Math.round((Date.now() - t0) / 1000); }
+    function hotelState(){ var h = v("checkoutHotel").trim(); if(h.length < 2) return "empty"; try{ var m = typeof findHotelByInput === "function" ? findHotelByInput(h) : null; return m ? "ok" : "unknown"; }catch(e){ return "?"; } }
+    function fee(){ try{ var m = findHotelByInput(v("checkoutHotel").trim()); return m ? (Number(m.fee) || 0) : ""; }catch(e){ return ""; } }
+    function total(){ try{ var t = 0, n = 0; for(var k in cart){ var q = Number(cart[k]) || 0; if(q > 0){ n += q; t += livePrice(products[parseInt(k)]) * q; } } return n + "pc/" + t; }catch(e){ return ""; } }
+    function slots(){ try{ var s = document.getElementById("deliveryTime"), c = 0; for(var i = 0; i < s.options.length; i++) if(!s.options[i].disabled && s.options[i].style.display !== "none") c++; return c; }catch(e){ return ""; } }
+    function msg(){ var e = document.getElementById("minOrderMsg"); return e && e.offsetParent && e.textContent.trim() ? "|min=" + e.textContent.trim().slice(0,40) : ""; }
+    function snap(why){
+      var pay = (document.querySelector('input[name="paymentMethod"]:checked') || {}).value || "";
+      return why + "|t=" + secs() + "s|hotel=" + hotelState() + "|fee=" + fee() + "|day=" + v("deliveryDay") + "|time=" + v("deliveryTime") + "|slots=" + slots()
+        + "|phone=" + v("checkoutPhone").replace(/\D/g, "").length + "d|code=" + v("checkoutPhoneCode") + "|note=" + (v("checkoutNote").trim() ? 1 : 0)
+        + "|pay=" + pay + "|cart=" + total() + "|last=" + (last || "none") + "|tap=" + (tapped ? 1 : 0) + msg();
+    }
+    function start(){ open = true; t0 = Date.now(); seen = {}; last = ""; tapped = false; sent = false; T("co_open", "slots=" + slots() + "|day=" + v("deliveryDay") + "|hotel=" + hotelState()); }
+    function stop(why){ if(!open || sent) return; sent = true; open = why === "hidden" ? open : false; T("co_exit", snap(why)); }
+    new MutationObserver(function(){ var a = ov.classList.contains("active"); if(a && !open) start(); else if(!a && open){ stop("close"); open = false; } }).observe(ov, { attributes:true, attributeFilter:["class"] });
+    if(ov.classList.contains("active")) start();
+    function field(e){ try{ var el = e.target; if(!el || !ov.contains(el)) return; var f = F[el.id] || F[el.name]; if(!f) return; last = f; if(!seen[f]){ seen[f] = 1; T("co_field", f + "|t=" + secs() + "s"); } }catch(_){} }
+    ov.addEventListener("focusin", field, true); ov.addEventListener("change", field, true);
+    ov.addEventListener("change", function(e){ try{ if(e.target && e.target.id === "checkoutHotel" && hotelState() === "unknown") T("co_hotel_unknown", v("checkoutHotel").trim().slice(0,50)); }catch(_){} }, true);
+    document.addEventListener("click", function(e){ try{ if(e.target.closest && e.target.closest("#finalCheckoutBtn")){ tapped = true; } }catch(_){} }, true);
+    document.addEventListener("visibilitychange", function(){ if(document.visibilityState === "hidden" && open && !tapped) stop("hidden"); });
+    window.addEventListener("pagehide", function(){ if(open && !tapped) stop("pagehide"); });
+  }catch(e){}
+})();
+</script>
+
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "799e181d553a4f3b866aeb86da2ff7d1"}'></script><!-- End Cloudflare Web Analytics -->
 <style id="sc-coming-soon-css">
 .card.card-soon{opacity:1!important;filter:none!important}
