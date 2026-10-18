@@ -400,9 +400,11 @@ rep('onclick="scDismissHotelWarn()">Got it — I understand</button>', 'id="hwOk
 rep('<div class="card-name" onclick="openModal(${idx})">${pName(p)}</div>', '<div class="card-name${scNameCls(pName(p))}" onclick="openModal(${idx})">${pName(p)}</div>', 2);
 /* + / − on a card: update that card only (no full grid redraw = no blink) */
 repIn("changeCardQty", "  smoothRenderGridSoon();\n}", "  var __pill = e && e.currentTarget && e.currentTarget.closest ? e.currentTarget.closest(\".qty-pill\") : null;\n  if(__pill){ __pill.classList.toggle(\"active\", next > 0); var __n = __pill.querySelector(\".qty-pill-num\"); if(__n) __n.textContent = next; try{ e.currentTarget.blur(); }catch(_){} }\n  else smoothRenderGridSoon();\n}");
+rep("<span>Visa</span>", "<span id=\"cardLabel\">Card on delivery</span>");
+repIn("renderCheckout", "<span>${paymentMethod === \"visa\" ? \"Visa\" : T(\"cash\")}</span>", "<span>${paymentMethod === \"visa\" ? T(\"cardDelivery\") : T(\"cash\")}</span>");
 /* ===== checkout v2: needed fields first, compact time, sticky total + button ===== */
-repIn("renderCheckout", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    try{ scCoBtn(btn, !hotelValid ? \"needHotel\" : \"needPhone\"); }catch(e){}\n    return;");
-repIn("renderCheckout", "  btn.title = \"\";\n", "  btn.title = \"\";\n  try{ scCoBtn(btn, \"\"); }catch(e){}\n");
+repIn("renderCheckout", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;");
+repIn("renderCheckout", "  btn.title = \"\";\n", "  btn.title = \"\";\n");
 repIn("renderCheckout", "  const deliveryDay = document.getElementById(\"deliveryDay\")?.value || \"Today\";", "  try{ scCoSum(itemCount, finalTotal); }catch(e){}\n  const deliveryDay = document.getElementById(\"deliveryDay\")?.value || \"Today\";");
 (function(){
   const cut = (a, b) => { const i = html.indexOf(a), j = html.indexOf(b, i + 1); if(i < 0 || j < 0){ failures.push("checkout cut: " + a.slice(0, 60)); return null; } return [i, j]; };
@@ -484,7 +486,7 @@ rep("\n</body>\n", `\n<style id="sc-look-v1">
 #grid .qty-pill-btn:last-child{background:#5B295A!important}
 #grid .qty-pill-btn .qty-symbol{font-size:17px!important}
 #grid .qty-pill-num{font-size:15px!important;font-weight:900!important}
-#checkoutOverlay .payment-option span{font-size:14px!important;font-weight:900!important}
+#checkoutOverlay .payment-option span{font-size:14px!important;font-weight:900!important;text-align:center!important;flex:0 1 auto!important}
 
 /* ===== checkout v2 ===== */
 #checkoutOverlay .checkout-sheet{padding:14px 14px 0!important;background:#fff!important}
@@ -498,6 +500,8 @@ rep("\n</body>\n", `\n<style id="sc-look-v1">
 #checkoutOverlay .checkout-input:focus{border-color:#A94AA7!important;background:#fff!important;outline:none!important;box-shadow:0 0 0 3px rgba(169,74,167,.12)!important}
 #checkoutOverlay .checkout-note-field{text-align:left!important}
 #checkoutOverlay .phone-row{grid-template-columns:104px 1fr!important;gap:8px!important}
+#checkoutOverlay .checkout-input,#checkoutOverlay .phone-code,#checkoutOverlay .phone-number{height:44px!important;min-height:44px!important}
+#checkoutOverlay .checkout-section label{margin-bottom:6px!important}
 #checkoutOverlay .phone-code{font-size:14px!important}
 #checkoutOverlay .checkout-help{text-align:left!important;color:#8a7a8a!important;opacity:1!important}
 #checkoutOverlay .sc-co-miss{border-color:#D6501B!important;box-shadow:0 0 0 3px rgba(214,80,27,.15)!important}
@@ -513,7 +517,9 @@ rep("\n</body>\n", `\n<style id="sc-look-v1">
 #checkoutOverlay .checkout-date-time-grid .checkout-section{border:0!important;padding:4px 2px!important}
 #checkoutOverlay .payment-options{display:flex!important;gap:8px!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
 #checkoutOverlay .payment-option{flex:1;display:flex!important;align-items:center;justify-content:center;min-height:40px!important;border:1.5px solid #ecdfec!important;border-radius:999px!important;background:#fff!important;font-size:14px!important;font-weight:900!important;color:#5B295A!important;box-shadow:none!important;cursor:pointer}
-#checkoutOverlay .payment-option input{position:absolute;opacity:0;pointer-events:none}
+#checkoutOverlay .payment-option{height:44px!important;min-height:44px!important;padding:0 10px!important;justify-content:center!important;gap:0!important;border-radius:999px!important;position:relative!important;transition:none!important;transform:none!important;-webkit-tap-highlight-color:transparent!important;user-select:none}
+#checkoutOverlay .payment-option input{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;opacity:0!important;cursor:pointer}
+#checkoutOverlay .payment-option:active,#checkoutOverlay .payment-option:focus-within{transform:none!important;outline:none!important}
 #checkoutOverlay .payment-option:has(input:checked){background:#5B295A!important;border-color:#5B295A!important;color:#fff!important}
 #checkoutOverlay .payment-note{text-align:left!important;color:#8a7a8a!important}
 .sc-co-foot{position:sticky;bottom:0;z-index:4;background:#fff;margin:6px -14px 0;padding:10px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #f1e8f1;box-shadow:0 -8px 20px rgba(91,41,90,.06)}
@@ -526,10 +532,10 @@ rep("\n</body>\n", `\n<style id="sc-look-v1">
 .sc-co-sum.sc-open .sc-co-more{transform:rotate(180deg)}
 #checkoutOverlay .checkout-total-box{display:none!important;background:#fbf8fb!important;border:0!important;box-shadow:none!important;margin:0 0 8px!important}
 #checkoutOverlay .checkout-total-box.sc-open{display:block!important}
-#checkoutOverlay .final-checkout-btn{height:50px!important;border-radius:16px!important;font-size:15px!important;opacity:1!important}
+#checkoutOverlay .final-checkout-btn{height:50px!important;border-radius:16px!important;font-size:15px!important}
 #checkoutOverlay .final-checkout-btn.sc-co-wait{background:#f3e9f3!important;color:#5B295A!important;box-shadow:none!important;border:1.5px dashed #d9bfd8!important}
 .sc-co-btnwrap{cursor:pointer}
-.sc-co-foot .checkout-help{margin-top:6px!important;text-align:center!important;font-size:10.5px!important}
+.sc-co-foot #checkoutConfirmHelp{display:none!important}
 
 button,a,.card,.card-img-wrap,.qty-pill,.qty-pill-btn{-webkit-tap-highlight-color:transparent!important}
 .qty-pill-btn:focus,.qty-pill-btn:focus-visible,.qty-pill-btn:active{outline:none!important}
