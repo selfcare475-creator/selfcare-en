@@ -607,6 +607,10 @@ html:not(.sc-ar) .sub-filter-panel::after{content:var(--sc-swipe,"Swipe →")!im
   if(n < 100) failures.push("green → purple count " + n);
 }
 
+rep("\n</body>\n", `\n<style id="sc-gold-text">
+.badge-top,.cat-hot,.cart-badge,header .cart-badge,#filters .main-filters .main-filter-btn .cat-hot{color:#111!important;text-shadow:none!important}
+header .cart-badge{border-color:#111!important}
+</style>\n</body>\n`);
 /* ---------- logo palette: purple -> warm black (light tints -> blush), orange -> logo gold ---------- */
 {
   const rgb2hsl = (r, g, b) => { r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b); let h = 0, s = 0; const l = (mx + mn) / 2;
@@ -614,9 +618,9 @@ html:not(.sc-ar) .sub-filter-panel::after{content:var(--sc-swipe,"Swipe →")!im
   const hsl2rgb = (h, s, l) => { if(!s) return [l, l, l].map(v => Math.round(v * 255)); const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
     const f = t => { if(t < 0) t += 1; if(t > 1) t -= 1; return t < 1/6 ? p + (q - p) * 6 * t : t < 1/2 ? q : t < 2/3 ? p + (q - p) * (2/3 - t) * 6 : p; }; return [f(h + 1/3), f(h), f(h - 1/3)].map(v => Math.round(v * 255)); };
   const tr = (r, g, b) => { const [h, s, l] = rgb2hsl(r, g, b);
-    if(s > .12 && h >= .75 && h <= .92 && l > .04 && l < .985){ if(l > .86) return hsl2rgb(10/360, Math.min(s, .55), l); return hsl2rgb(25/360, Math.min(s, .10), Math.min(l * .55, .22)); }
-    if(s > .45 && (h <= .09 || h >= .98) && l > .3 && l < .75) return hsl2rgb(42/360, .42, Math.min(l, .46));
-    if(s > .45 && (h <= .09) && l >= .75 && l < .95) return hsl2rgb(43/360, .55, .72);
+    if(s > .12 && h >= .75 && h <= .92 && l > .04 && l < .985){ if(l > .86) return hsl2rgb(10/360, Math.min(s, .6), l); return hsl2rgb(0, 0, Math.min(.05 + l * .3, .2)); }
+    if(s > .45 && (h <= .09 || h >= .98) && l > .3 && l < .75) return [198, 176, 114];
+    if(s > .45 && (h <= .09) && l >= .75 && l < .95) return [198, 176, 114];
     return null; };
   const KEEP = new Set(["25d366", "128c7e", "1db954"]);
   let n = 0;
