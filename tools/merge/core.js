@@ -59,6 +59,15 @@ function scHostLang(){
   var h = String(window.__SC_TEST_HOST || location.hostname || "").toLowerCase();
   return /(^|\.)selfcare-cz\.com$/.test(h) ? "cs" : "en";
 }
+/* the phone's own language, when it is one of ours (Arabic is never picked automatically) */
+function scPhoneLang(){
+  try{
+    var map = {en:"en", cs:"cs", sk:"sk", pl:"pl", ru:"ru", uk:"ua", de:"de"};
+    var list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ""];
+    for(var i = 0; i < list.length; i++){ var b = String(list[i] || "").toLowerCase().split("-")[0]; if(map[b]) return map[b]; }
+  }catch(e){}
+  return null;
+}
 var displayLanguage = (function(){
   try{
     var q = (location.search.match(/[?&]lang=([a-z]{2})/i) || [])[1];
@@ -66,6 +75,7 @@ var displayLanguage = (function(){
     if(q && SC_LANGS.indexOf(q) >= 0){ try{ localStorage.setItem("sc_lang", q); }catch(e){} return q; }
     var s = null; try{ s = localStorage.getItem("sc_lang"); }catch(e){}
     if(s && SC_LANGS.indexOf(s) >= 0) return s;
+    var p = scPhoneLang(); if(p) return p;
   }catch(e){}
   return scHostLang();
 })();

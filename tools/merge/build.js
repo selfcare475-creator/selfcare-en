@@ -405,6 +405,10 @@ rep("<span>Visa</span>", "<span id=\"cardLabel\">Card on delivery</span>");
 repIn("renderCheckout", "<span>${paymentMethod === \"visa\" ? \"Visa\" : T(\"cash\")}</span>", "<span>${paymentMethod === \"visa\" ? T(\"cardDelivery\") : T(\"cash\")}</span>");
 rep('["Cash","كاش"],', '["Cash","كاش"],["🚪 Room number","🚪 رقم الغرفة"],["Room number","رقم الغرفة"],["📱 WhatsApp number","📱 رقم واتساب"],["Card on delivery","كارت عند التوصيل"],["Language & currency","اللغة والعملة"],["Mobility rental","تأجير الكراسي المتحركة"],["Confirm order & send WhatsApp","تأكيد الطلب وإرسال واتساب"],["Bestsellery","الأكثر مبيعاً"],');
 rep('   [/^Minimum delivery time is', '   [/^(\\d+) pcs$/, "$1 قطعة"],\n   [/^Minimum delivery time is');
+/* our pages are already translated: stop Chrome offering its own translation */
+rep('<html lang="en">', '<html lang="en" translate="no">');
+rep('<html lang="en" translate="no">\n<head>\n', '<html lang="en" translate="no">\n<head>\n<meta name="google" content="notranslate">\n');
+rep("  document.documentElement.lang = S.lang;\n", "");
 /* ===== checkout v2: needed fields first, compact time, sticky total + button ===== */
 repIn("renderCheckout", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;");
 repIn("renderCheckout", "  btn.title = \"\";\n", "  btn.title = \"\";\n");
