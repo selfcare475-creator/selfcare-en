@@ -5,6 +5,7 @@ module.exports = {
   language:{en:"Language",cs:"Jazyk",sk:"Jazyk",pl:"Język",ru:"Язык",ua:"Мова",de:"Sprache"},
   currency:{en:"Currency",cs:"Měna",sk:"Mena",pl:"Waluta",ru:"Валюта",ua:"Валюта",de:"Währung"},
   myOrdersBtn:{en:"My Orders",cs:"Objednávky",sk:"Objednávky",pl:"Zamówienia",ru:"Заказы",ua:"Замовлення",de:"Bestellungen"},
+  done:{en:"Done",cs:"Hotovo",sk:"Hotovo",pl:"Gotowe",ru:"Готово",ua:"Готово",de:"Fertig"},
   basket:{en:"Basket",cs:"Košík",sk:"Košík",pl:"Koszyk",ru:"Корзина",ua:"Кошик",de:"Warenkorb"},
   search:{en:"Search by product or symptom...",cs:"Hledat produkt nebo potíž...",sk:"Hľadať produkt alebo ťažkosť...",pl:"Szukaj produktu lub objawu...",ru:"Поиск по товару или симптому...",ua:"Пошук за товаром або симптомом...",de:"Produkt oder Beschwerde suchen..."},
   howTitle:{en:"How to order",cs:"Jak objednat",sk:"Ako objednať",pl:"Jak zamówić",ru:"Как заказать",ua:"Як замовити",de:"So bestellen Sie"},

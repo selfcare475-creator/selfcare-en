@@ -100,7 +100,7 @@ function scSetAttr(id, a, v){ var el = document.getElementById(id); if(el) el.se
 var SC_PHONE_BY_LANG = {en:"44",cs:"420",sk:"421",pl:"48",ru:"7",ua:"380",de:"49"};
 function scApplyStaticTexts(){
   document.documentElement.lang = SC_HTML_LANG[displayLanguage] || "en";
-  scSetText("prefLangLabel", T("language")); scSetText("prefCurLabel", T("currency"));
+  scSetText("prefLangLabel", T("language")); scSetText("prefCurLabel", T("currency")); scSetText("scPrefsDone", T("done"));
   scSetText("cartBtnText", T("basket"));
   scSetAttr("searchInput", "placeholder", T("search"));
   scSetText("howTitle", T("howTitle"));
@@ -142,8 +142,22 @@ function scFitHeaderButtons(){
   }catch(e){}
 }
 window.addEventListener("resize", function(){ scFitHeaderButtons(); });
+var SC_CUR_SYM = {GBP:"£",EUR:"€",USD:"$",CZK:"Kč"};
+function scOpenPrefs(){ var s = document.getElementById("scPrefsSheet"); if(!s) return; scUpdatePrefButtons(); s.classList.add("show"); s.setAttribute("aria-hidden","false"); }
+function scClosePrefs(){ var s = document.getElementById("scPrefsSheet"); if(!s) return; s.classList.remove("show"); s.setAttribute("aria-hidden","true"); }
+function scPickArabic(){
+  if(window.__SC_AR) return;
+  if(displayLanguage !== "en") setDisplayLanguage("en");
+  try{ if(typeof window.__scToggleAR === "function") window.__scToggleAR(); }catch(e){}
+  scUpdatePrefButtons();
+}
+document.addEventListener("keydown", function(e){ if(e.key === "Escape") scClosePrefs(); });
 function scUpdatePrefButtons(){
-  document.querySelectorAll("[data-sc-lang]").forEach(function(b){ var on = b.getAttribute("data-sc-lang") === displayLanguage; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
+  var ar = !!window.__SC_AR;
+  var chip = document.getElementById("scPrefsChipText");
+  if(chip) chip.textContent = (ar ? "ع" : (SC_LANG_BTN[displayLanguage] || "EN")) + " · " + (SC_CUR_SYM[displayCurrency] || "£");
+  document.querySelectorAll("[data-sc-ar]").forEach(function(b){ b.classList.toggle("active", ar); b.setAttribute("aria-pressed", ar ? "true" : "false"); });
+  document.querySelectorAll("[data-sc-lang]").forEach(function(b){ var on = !ar && b.getAttribute("data-sc-lang") === displayLanguage; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
   document.querySelectorAll("[data-sc-cur]").forEach(function(b){ var on = b.getAttribute("data-sc-cur") === displayCurrency; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
 }
 function scRerenderAll(){
@@ -158,11 +172,11 @@ function scRerenderAll(){
   try{ var mo = document.getElementById("modalOverlay"); if(mo && mo.classList.contains("open") && typeof openModal === "function" && typeof currentModalIdx !== "undefined" && currentModalIdx != null) openModal(currentModalIdx); }catch(e){}
   try{ var mp = document.getElementById("myOrdersPanel"); if(mp && mp.style.display === "flex" && typeof scOpenMyOrders === "function") scOpenMyOrders(); }catch(e){}
 }
-function setDisplayLanguage(l){
+function setDisplayLanguage(l, opts){
   if(l === "cz") l = "cs"; if(l === "uk") l = "ua";
   if(SC_LANGS.indexOf(l) < 0) l = "en";
   /* picking a language switches the Arabic overlay off */
-  if(l !== "en" && window.__SC_AR && typeof window.__scToggleAR === "function"){ try{ window.__scToggleAR(); }catch(e){} }
+  if(!(opts && opts.keepAr) && window.__SC_AR && typeof window.__scToggleAR === "function"){ try{ window.__scToggleAR(); }catch(e){} }
   displayLanguage = l;
   try{ localStorage.setItem("sc_lang", l); }catch(e){}
   /* picking a language always sets its currency: English → £, every other language (Czech included) → € ; the customer can still change it after */

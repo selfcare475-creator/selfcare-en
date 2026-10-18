@@ -191,9 +191,12 @@ repIn("openModal", "document.getElementById(\"mName\").textContent = p.name;", "
 repIn("openModal", "document.getElementById(\"mDesc\").textContent = p.desc;", "document.getElementById(\"mDesc\").textContent = pDesc(p);");
 repIn("openModal", "notice.textContent = \"⛔ Out of stock\";", "notice.textContent = T(\"oosModal\");");
 repIn("addFromModal", "btn.innerHTML = \"✓ Added to basket\";", "btn.innerHTML = T(\"addedBtn\");");
-replaceDecl("productBadge", getDecl("productBadge")
-  .replace('label:"Tourist favorite"', 'label:T("badgeTourist")').replace('label:"Beach essential"', 'label:T("badgeBeach")')
-  .replace('label:"Fast relief"', 'label:T("badgeFast")').replace('label:"Beauty pick"', 'label:T("badgeBeauty")').replace('label:"Best seller"', 'label:T("badgeBest")'));
+/* badges only on a few products: the 5 tourist favourites and the top 6 best sellers */
+replaceDecl("productBadge", `function productBadge(p){
+  if(["Antinal 24 capsules","Streptoquin 20 tablets","ORS 10 sachets","Enterogermina 2 Billion oral suspension","OFF repellent spray"].includes(p.name)) return {label:T("badgeTourist"), className:"badge-tourist"};
+  if(isBestSeller(p.name) && bestSellerRank(p.name) < 6) return {label:T("badgeBest"), className:"badge-tourist"};
+  return null;
+}`);
 
 /* basket */
 repIn("renderCart", "`<div class=\"cart-empty\">🛒<br><br>Your basket is empty.<br>Add products from the list.</div>`", "`<div class=\"cart-empty\">${T(\"cartEmpty\")}</div>`");
@@ -316,7 +319,7 @@ rep('if(t) t.textContent = scMyOrdersLabel();', 'if(t) t.textContent = (typeof T
   html = html.slice(0, s.codeStart) + code + html.slice(s.codeStart + s.code.length);
 }
 /* Arabic (staff/local) option works on top of the English texts */
-rep("window.__SC_AR=!window.__SC_AR;\n   if(window.__SC_AR){", "window.__SC_AR=!window.__SC_AR;\n   if(window.__SC_AR && typeof displayLanguage!==\"undefined\" && displayLanguage!==\"en\"){ try{ setDisplayLanguage(\"en\"); }catch(e){} }\n   if(window.__SC_AR){");
+rep("window.__SC_AR=!window.__SC_AR;\n   if(window.__SC_AR){", "window.__SC_AR=!window.__SC_AR;\n   if(window.__SC_AR && typeof displayLanguage!==\"undefined\" && displayLanguage!==\"en\"){ try{ setDisplayLanguage(\"en\", {keepAr:true}); }catch(e){} }\n   if(window.__SC_AR){\n     try{ scUpdatePrefButtons(); }catch(e){}");
 /* scooter booking: German texts exist, everything else stays English; currency follows the page */
 rep("S.lang = 'en'; S.cur = 'GBP'; S.custom = true;", "S.lang = (typeof displayLanguage !== 'undefined' && displayLanguage === 'de') ? 'de' : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : (typeof displayCurrency !== 'undefined' && displayCurrency === 'CZK' ? 'EUR' : 'GBP'); S.custom = true;");
 /* scooter booking: no currency picker of its own — it follows the site's currency buttons (Kč → €, the booking has no Kč rate) */
@@ -329,16 +332,25 @@ rep('var SITE = ("en" || (cz ? "cz" : "en"))', 'var SITE = ((/selfcare-cz/.test(
 /* ---------- 4. page markup ---------- */
 rep('<header>\n  <div class="logo">Self Care <span>Pharmacy</span></div>', '<header>\n  <div class="logo">Self Care <span>Pharmacy</span></div>');
 rep("🛒 Basket\n    <span class=\"cart-badge", "🛒 <span id=\"cartBtnText\">Basket</span>\n    <span class=\"cart-badge");
-rep('<div class="controls">\n  <div class="search-wrap">', `<div class="sc-prefs" aria-label="Language and currency">
-  <div class="sc-pref-row" role="group" aria-labelledby="prefLangLabel"><span class="sc-pref-label" id="prefLangLabel">Language</span><div class="sc-pref-opts">${
-    ["en","cs","sk","pl","ru","ua","de"].map(l => `<button type="button" class="sc-pref-btn" data-sc-lang="${l}" onclick="setDisplayLanguage('${l}');this.blur()">${({en:"EN",cs:"CZ",sk:"SK",pl:"PL",ru:"RU",ua:"UA",de:"DE"})[l]}</button>`).join("")
-  }</div></div>
-  <div class="sc-pref-row" role="group" aria-labelledby="prefCurLabel"><span class="sc-pref-label" id="prefCurLabel">Currency</span><div class="sc-pref-opts">${
-    [["GBP","£"],["EUR","€"],["USD","$"],["CZK","Kč"]].map(([c, s]) => `<button type="button" class="sc-pref-btn" data-sc-cur="${c}" onclick="setDisplayCurrency('${c}');this.blur()">${s}</button>`).join("")
-  }</div></div>
+/* language + currency: one small chip in the header opens this sheet */
+rep('<div class="controls">\n  <div class="search-wrap">', `<div class="sc-sheet-backdrop" id="scPrefsSheet" onclick="if(event.target===this)scClosePrefs()" aria-hidden="true">
+  <div class="sc-sheet" role="dialog" aria-modal="true" aria-labelledby="prefLangLabel">
+    <div class="sc-sheet-grab"></div>
+    <div class="sc-sheet-title" id="prefLangLabel">Language</div>
+    <div class="sc-sheet-grid">${
+      ["en","cs","sk","pl","ru","ua","de"].map(l => `<button type="button" class="sc-pref-btn" data-sc-lang="${l}" onclick="setDisplayLanguage('${l}');this.blur()"><b>${({en:"EN",cs:"CZ",sk:"SK",pl:"PL",ru:"RU",ua:"UA",de:"DE"})[l]}</b><small>${({en:"English",cs:"Čeština",sk:"Slovenčina",pl:"Polski",ru:"Русский",ua:"Українська",de:"Deutsch"})[l]}</small></button>`).join("")
+    }<button type="button" class="sc-pref-btn" data-sc-ar="1" onclick="scPickArabic();this.blur()"><b>ع</b><small>العربية</small></button></div>
+    <div class="sc-sheet-title" id="prefCurLabel">Currency</div>
+    <div class="sc-sheet-grid sc-sheet-cur">${
+      [["GBP","£"],["EUR","€"],["USD","$"],["CZK","Kč"]].map(([c, s]) => `<button type="button" class="sc-pref-btn" data-sc-cur="${c}" onclick="setDisplayCurrency('${c}');this.blur()"><b>${s}</b><small>${c}</small></button>`).join("")
+    }</div>
+    <button type="button" class="sc-sheet-done" id="scPrefsDone" onclick="scClosePrefs()">OK</button>
+  </div>
 </div>
 <div class="controls">
   <div class="search-wrap">`);
+/* header: My Orders becomes an icon next to the language chip */
+rep('<button class="cart-btn" id="myOrdersBtn" onclick="scOpenMyOrders()">\n    🧾 <span id="myOrdersBtnText">My Orders</span>\n  </button>', '<div class="sc-hdr-row"><button class="cart-btn sc-icon-btn" id="myOrdersBtn" onclick="scOpenMyOrders()" aria-labelledby="myOrdersBtnText">🧾<span id="myOrdersBtnText" class="sc-vh">My Orders</span></button><button type="button" class="cart-btn sc-prefs-chip" id="scPrefsChip" onclick="scOpenPrefs()" aria-haspopup="dialog">🌐 <span id="scPrefsChipText">EN · £</span></button></div>');
 rep("<h2>How to order</h2>", "<h2 id=\"howTitle\">How to order</h2>");
 rep("<div><b>1.</b> Choose your product.</div>", "<div><b>1.</b> <span id=\"howStep1\">Choose your product.</span></div>");
 rep("<div><b>2.</b> Add it to your basket.</div>", "<div><b>2.</b> <span id=\"howStep2\">Add it to your basket.</span></div>");
@@ -383,16 +395,26 @@ rep('onclick="scDismissHotelWarn()">Got it — I understand</button>', 'id="hwOk
 
 /* language + currency row: same look as the English site's buttons */
 rep("\n</head>\n", `\n<style id="sc-prefs-css">
-.sc-prefs{display:flex;flex-direction:column;gap:6px;padding:10px 16px 2px}
-.sc-pref-row{display:flex;align-items:center;gap:8px;min-width:0}
-.sc-pref-label{flex:0 0 auto;min-width:64px;font-size:11.5px;font-weight:800;color:#5b6b7a;text-transform:uppercase;letter-spacing:.4px}
-.sc-pref-opts{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:1px}
-.sc-pref-opts::-webkit-scrollbar{display:none}
-.sc-pref-btn{flex:0 0 auto;min-width:38px;height:30px;padding:0 9px;border-radius:999px;border:1px solid #d5e4e1;background:#fff;color:#17324d;font:inherit;font-size:12.5px;font-weight:800;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
-.sc-pref-btn.active{background:#0f766e;border-color:#0f766e;color:#fff}
-header .cart-btn{white-space:nowrap;max-width:118px;overflow:hidden;text-overflow:ellipsis}
-.sc-pref-btn,.sc-pref-btn:focus,.sc-pref-btn:focus-visible,.sc-pref-btn:active{-webkit-tap-highlight-color:transparent;outline:none;box-shadow:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
-@media (max-width:430px){.sc-prefs{padding:8px 12px 2px}.sc-pref-row{gap:6px}.sc-pref-opts{gap:4px}.sc-pref-label{min-width:52px;font-size:10.5px}.sc-pref-btn{min-width:33px;height:29px;padding:0 6px;font-size:12px}}
+.sc-hdr-row{display:flex;gap:6px}
+header .cart-btn.sc-icon-btn{flex:0 0 auto;width:40px;min-width:40px;padding:0!important;justify-content:center;font-size:16px}
+header .cart-btn.sc-prefs-chip{flex:1 1 auto;min-width:0;padding:0 8px!important;justify-content:center;gap:4px;font-size:12.5px;letter-spacing:.2px}
+.sc-vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sc-sheet-backdrop{position:fixed;inset:0;z-index:100000;background:rgba(30,12,30,.42);display:none;align-items:flex-end;justify-content:center}
+.sc-sheet-backdrop.show{display:flex}
+.sc-sheet{width:100%;max-width:520px;background:#fff;border-radius:22px 22px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.18);animation:scSheetUp .22s ease-out}
+@keyframes scSheetUp{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
+.sc-sheet-grab{width:40px;height:4px;border-radius:9px;background:#e3d6e3;margin:4px auto 10px}
+.sc-sheet-title{font-size:12px;font-weight:900;color:#7a6a7a;text-transform:uppercase;letter-spacing:.5px;margin:8px 2px 8px}
+.sc-sheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sc-pref-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;padding:6px 4px;border-radius:14px;border:1px solid #eadcea;background:#fff;color:#3b1d3b;font:inherit;cursor:pointer}
+.sc-pref-btn b{font-size:15px;font-weight:900;line-height:1}
+.sc-pref-btn small{font-size:10.5px;font-weight:700;color:#8a7a8a;line-height:1.1;text-align:center}
+.sc-pref-btn.active{background:#5B295A;border-color:#5B295A;color:#fff}
+.sc-pref-btn.active small{color:rgba(255,255,255,.8)}
+.sc-pref-btn,.sc-pref-btn:focus,.sc-pref-btn:focus-visible,.sc-pref-btn:active{-webkit-tap-highlight-color:transparent;outline:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.sc-sheet-done{display:block;width:100%;margin-top:14px;height:46px;border:none;border-radius:14px;background:#D6501B;color:#fff;font:inherit;font-size:15px;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#scArBtn{display:none!important}
+header .cart-btn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 `);
@@ -415,10 +437,14 @@ rep("\n</body>\n", `\n<style id="sc-look-v1">
 .floating-wa{width:46px!important;height:46px!important;right:12px!important;bottom:14px!important;font-size:21px!important;border-width:2px!important;box-shadow:0 6px 16px rgba(37,211,102,.32)!important}
 body{padding-bottom:64px}
 .sc-version-stamp{display:none!important}
-#filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:68px!important;height:56px!important;flex:0 0 56px!important;margin:0 auto 3px!important;background:none!important;border-radius:0!important;overflow:visible!important}
+#filters .main-filters{display:flex!important;grid-template-columns:none!important;overflow-x:auto!important;overflow-y:visible!important;gap:8px!important;padding:10px 2px 6px!important;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#filters .main-filters::-webkit-scrollbar{display:none}
+#filters .main-filters .main-filter-btn,#filters .main-filters .main-filter-btn.tourist-main,#filters .main-filters .main-filter-btn[onclick*="mobility"]{flex:0 0 84px!important;width:84px!important;min-width:84px!important;min-height:88px!important;grid-column:auto!important;grid-row:auto!important;padding:6px 3px 7px!important;scroll-snap-align:start;position:relative!important}
+#filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:60px!important;height:48px!important;flex:0 0 48px!important;margin:0 auto 4px!important;background:none!important;border-radius:0!important;overflow:visible!important}
 #filters .main-filters .main-filter-btn .cat-icon.cat-img img{width:100%!important;height:100%!important;object-fit:contain!important;border-radius:0!important;filter:drop-shadow(0 3px 5px rgba(91,41,90,.12))}
-#filters .main-filters .main-filter-btn,#filters .main-filters .main-filter-btn.tourist-main{min-height:96px!important;padding:7px 4px 8px!important}
-@media(min-width:700px){#filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:96px!important;height:78px!important;flex-basis:78px!important}}
+#filters .main-filters .main-filter-btn .cat-name,#filters .main-filters .main-filter-btn.tourist-main .cat-name{font-size:10px!important;line-height:1.12!important;letter-spacing:-.15px!important;overflow-wrap:anywhere;hyphens:auto;max-width:100%;padding:0 1px!important}
+#filters .main-filters .main-filter-btn .cat-hot{top:-7px!important;font-size:7.5px!important;padding:1px 5px!important;white-space:nowrap}
+@media(min-width:700px){#filters .main-filters .main-filter-btn,#filters .main-filters .main-filter-btn.tourist-main,#filters .main-filters .main-filter-btn[onclick*="mobility"]{flex:1 1 0!important;width:auto!important;min-height:110px!important}#filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:84px!important;height:66px!important;flex-basis:66px!important}#filters .main-filters .main-filter-btn .cat-name{font-size:12.5px!important}}
 .final-checkout-btn{background:linear-gradient(135deg,#5B295A,#9A2D98)!important;box-shadow:0 12px 26px rgba(91,41,90,.22)!important}
 </style>
 </body>
