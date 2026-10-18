@@ -391,7 +391,12 @@ window.addEventListener("resize", function(){ document.querySelectorAll("#grid .
 /* first screen ends neatly: if the 2nd product row only peeks above the bottom bar, push it just below the bar (small gap only) */
 var __scFoldVH = 0, __scFoldW = 0;
 var __scFoldT = 0;
-function scFoldFix(){ clearTimeout(__scFoldT); __scFoldT = setTimeout(__scFoldRun, 160); }
+function scFoldFix(){
+  var g = document.getElementById("grid");
+  if(g && (window.scrollY || 0) < 40 && window.innerWidth < 900) g.classList.add("sc-fold-wait");
+  __scFoldRun(true);
+  clearTimeout(__scFoldT); __scFoldT = setTimeout(function(){ __scFoldRun(); var g2 = document.getElementById("grid"); if(g2) g2.classList.remove("sc-fold-wait"); }, 180);
+}
 function __scFoldRun(){
   try{
     var cards = document.querySelectorAll("#grid > .card");

@@ -519,6 +519,7 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 
 /* ---------- look: smaller WhatsApp bubble, no version stamp ---------- */
 rep("\n</body>\n", `\n<style id="sc-look-v1">
+@media(max-width:899px){#grid.sc-fold-wait > .card:nth-child(n+3){visibility:hidden!important}}
 /* tighter first screen: the first product row fits above the bottom bar */
 @media(max-width:899px){
   html body .controls{margin-top:0!important;margin-bottom:0!important;padding-top:10px!important;padding-bottom:0!important}
