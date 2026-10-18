@@ -6718,6 +6718,11 @@ header .cart-btn{white-space:nowrap;overflow:visible!important;position:relative
 .card.card-soon .soldout-label{color:#2D4876!important;border-color:#2D4876!important;background:#F1F5FA!important}
 </style>
 <style id="sc-look-v1">
+/* product cards stay still: no lift, no border/shadow change, no image zoom on hover/tap */
+html body #grid .card,html body #grid .card:hover,html body #grid .card:active,html body #grid .card:focus,html body #grid .card:focus-within{transform:none!important;transition:none!important;border-color:rgb(221,226,234)!important;box-shadow:0 10px 24px rgba(31,49,81,.06)!important;outline:none!important}
+html body #grid .card .card-img-wrap img{transition:none!important}
+html body #grid .card:hover .card-img-wrap img,html body #grid .card:active .card-img-wrap img{transform:scale(.93)!important}
+html body #grid .card:hover .card-img-wrap img.zoom-out,html body #grid .card:active .card-img-wrap img.zoom-out{transform:scale(.82)!important}
 header{background:linear-gradient(135deg,#c24a17 0%,#dc5a22 100%)!important}
 /* lighter + / − on product cards */
 #grid .qty-pill{height:36px!important;min-height:36px!important;padding:3px!important;border:0!important;background:#EFF2F5!important;box-shadow:none!important;border-radius:999px!important}
