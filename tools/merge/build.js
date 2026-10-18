@@ -176,7 +176,9 @@ replaceDecl("normalizeText", declSrc(CZ, "normalizeText"));
 /* category buttons */
 repIn("buildFilters", "const label = parts.slice(1).join(\" \");", "const label = mainLabel(key, parts.slice(1).join(\" \"));");
 repIn("buildFilters", "<span class=\"cat-hot\">Most requested</span>", "<span class=\"cat-hot\">${T(\"mostRequested\")}</span>");
-repIn("buildFilters", "  renderKits();\n}", "  try{ var fb = document.getElementById(\"filters\"); if(fb && !fb.querySelector(\".sc-cat-next\")){ fb.insertAdjacentHTML(\"beforeend\", '<button type=\"button\" class=\"sc-cat-arrow sc-cat-prev\" aria-label=\"Back\" onclick=\"scCatScroll(-1)\"><span>‹</span></button><button type=\"button\" class=\"sc-cat-arrow sc-cat-next\" aria-label=\"More\" onclick=\"scCatScroll(1)\"><span>›</span></button>'); } setTimeout(scCatHint, 0); setTimeout(scCatHint, 400); }catch(e){}\n  renderKits();\n}");
+repIn("buildFilters", "  document.getElementById(\"filters\").innerHTML =", "  var __scRow0 = document.querySelector(\"#filters .main-filters\"); var __scX = __scRow0 ? __scRow0.scrollLeft : 0;\n  document.getElementById(\"filters\").innerHTML =");
+repIn("buildFilters", "  renderKits();\n}", "  try{ var __scRow1 = document.querySelector(\"#filters .main-filters\"); if(__scRow1){ __scRow1.scrollLeft = __scX; var __a = __scRow1.querySelector(\".main-filter-btn.active\"); if(__a){ var l = __a.offsetLeft - __scRow1.offsetLeft, r = l + __a.offsetWidth; if(l < __scRow1.scrollLeft) __scRow1.scrollLeft = Math.max(0, l - 12); else if(r > __scRow1.scrollLeft + __scRow1.clientWidth) __scRow1.scrollLeft = r - __scRow1.clientWidth + 12; } } }catch(e){}\n  renderKits();\n}");
+repIn("buildFilters", "  renderKits();\n}", "  try{ var fb = document.getElementById(\"filters\"); if(fb && !fb.querySelector(\".sc-cat-next\")){ fb.insertAdjacentHTML(\"beforeend\", '<button type=\"button\" class=\"sc-cat-arrow sc-cat-next\" aria-label=\"More\" onclick=\"scCatScroll(1)\"><span>›</span></button>'); } setTimeout(scCatHint, 0); setTimeout(scCatHint, 400); }catch(e){}\n  renderKits();\n}");
 repIn("cleanCatLabel", "return map[cat] || cat;", "return catLabel(map[cat] || cat);");
 
 /* product grid + modal */
@@ -404,9 +406,8 @@ rep("\n</head>\n", `\n<style id="sc-prefs-css">
 #filters .sc-cat-arrow{position:absolute;top:10px;height:88px;width:42px;border:none;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:3;padding:0;-webkit-tap-highlight-color:transparent;font-size:0}
 #filters .sc-cat-arrow span{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#5B295A;color:#fff;font-size:17px;font-weight:900;box-shadow:0 4px 12px rgba(91,41,90,.3)}
 #filters .sc-cat-next{right:0;background:linear-gradient(90deg,rgba(247,242,247,0),rgba(247,242,247,.96) 55%)}
-#filters .sc-cat-prev{left:0;background:linear-gradient(270deg,rgba(247,242,247,0),rgba(247,242,247,.96) 55%)}
-#filters.sc-cat-more .sc-cat-next,#filters.sc-cat-back .sc-cat-prev{display:flex}
-#filters .sc-cat-next span{animation:scNudge 1.4s ease-in-out infinite}
+#filters.sc-cat-more .sc-cat-next{display:flex}
+#filters .sc-cat-next span{animation:scNudge 1.2s ease-in-out 3}
 @keyframes scNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
 @media(min-width:700px){#filters .sc-cat-arrow{height:110px}}
 .sc-vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
