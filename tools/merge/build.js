@@ -600,6 +600,34 @@ html:not(.sc-ar) .sub-filter-panel::after{content:var(--sc-swipe,"Swipe →")!im
   if(n < 100) failures.push("green → purple count " + n);
 }
 
+/* ---------- one colour: every purple becomes the brand orange family (dark → burnt orange, light tints → peach); WhatsApp green stays ---------- */
+rep("\n</body>\n", `\n<style id="sc-orange-only">
+.sc-prefs-bar{background:#fff1e6!important;color:#7a2408!important;box-shadow:0 4px 12px rgba(122,36,8,.08)!important;border-bottom:1px solid #f3d8c4!important}
+.sc-prefs-bar-label{color:#a0583a!important}
+.sc-prefs-bar-val{color:#7a2408!important}
+.sc-prefs-bar-arrow{background:#b03f12!important;color:#fff!important}
+html body #grid .card .badge-top,html body .badge-top,#filters .main-filters .main-filter-btn .cat-hot,.cat-hot{background:#4a1505!important;color:#fff!important;border-color:#4a1505!important}
+header .cart-badge{background:#fff!important;color:#b03f12!important;border-color:#b03f12!important}
+</style>\n</body>\n`);
+{
+  const rgb2hsl = (r, g, b) => { r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b); let h = 0, s = 0; const l = (mx + mn) / 2;
+    if(mx !== mn){ const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; } return [h, s, l]; };
+  const hsl2rgb = (h, s, l) => { if(!s) return [l, l, l].map(v => Math.round(v * 255)); const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+    const f = t => { if(t < 0) t += 1; if(t > 1) t -= 1; return t < 1/6 ? p + (q - p) * 6 * t : t < 1/2 ? q : t < 2/3 ? p + (q - p) * (2/3 - t) * 6 : p; }; return [f(h + 1/3), f(h), f(h - 1/3)].map(v => Math.round(v * 255)); };
+  const tr = (r, g, b) => { const [h, s, l] = rgb2hsl(r, g, b);
+    if(!(s > .12 && h >= .75 && h <= .92 && l > .04 && l < .985)) return null;
+    if(l > .86) return hsl2rgb(20/360, Math.min(s, .7), l);
+    return hsl2rgb(17/360, Math.min(Math.max(s, .6), .8), Math.min(l * .95, .40)); };
+  const KEEP = new Set(["25d366", "128c7e", "1db954"]);
+  let n = 0;
+  html = html.replace(/#([0-9a-fA-F]{6})\b/g, (m, hx) => { if(KEEP.has(hx.toLowerCase())) return m;
+    const t = tr(...[0, 2, 4].map(i => parseInt(hx.slice(i, i + 2), 16))); if(!t) return m; n++; return "#" + t.map(v => v.toString(16).padStart(2, "0")).join("").toUpperCase(); })
+  .replace(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/g, (m, r, g, b) => { r = +r; g = +g; b = +b;
+    if((r === 37 && g === 211 && b === 102) || (r === 18 && g === 140 && b === 126)) return m;
+    const t = tr(r, g, b); if(!t) return m; n++; return m.replace(/\(\s*\d+\s*,\s*\d+\s*,\s*\d+/, `(${t[0]},${t[1]},${t[2]}`); });
+  if(n < 100) failures.push("orange palette count " + n);
+}
+
 /* ---------- category icons (files in public/cat, from merge/cat) ---------- */
 replaceDecl("mainCategoryImages", "const mainCategoryImages = {\n" + ["top","medicine","supplements","skin","hair","sun","tourist"].map(k => `  ${k}: "/cat/${k}.webp?v=3"`).join(",\n") + "\n};");
 {
