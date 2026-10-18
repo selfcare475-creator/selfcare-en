@@ -7628,7 +7628,7 @@ function scFitNames(){
 var __scFitW = window.innerWidth, __scFitRaf = 0;
 window.addEventListener("resize", function(){ if(window.innerWidth === __scFitW) return; __scFitW = window.innerWidth; cancelAnimationFrame(__scFitRaf); __scFitRaf = requestAnimationFrame(function(){ document.querySelectorAll("#grid .card-name").forEach(function(n){ n.__scFit = null; }); scFitNames(); }); });
 
-/* first screen ends neatly: if the 2nd product row only peeks above the bottom bar, push it just below the bar (small gap only) */
+/* first screen: a small, even part of the 2nd product row shows above the bottom bar (scroll hint) */
 var __scFoldVH = 0, __scFoldW = 0;
 var __scFoldT = 0;
 function scFoldFix(){
@@ -7640,19 +7640,44 @@ function scFoldFix(){
 function __scFoldRun(){
   try{
     var cards = document.querySelectorAll("#grid > .card");
+    var g = document.getElementById("grid");
     for(var i = 0; i < cards.length && i < 2; i++) cards[i].style.removeProperty("margin-bottom");
+    if(g){ g.style.removeProperty("padding-top"); g.style.removeProperty("margin-top"); }
     if(window.innerWidth >= 900 || cards.length < 3) return;
     var nav = document.querySelector(".sc-bnav"); if(!nav || getComputedStyle(nav).display === "none") return;
     if(!__scFoldVH || window.innerWidth !== __scFoldW){ __scFoldVH = window.innerHeight; __scFoldW = window.innerWidth; }
     var fold = __scFoldVH - nav.offsetHeight;
     var y = window.scrollY || 0;
     var row2 = cards[2].getBoundingClientRect().top + y;
-    if(cards[2].getBoundingClientRect().top + y === cards[0].getBoundingClientRect().top + y) return;
-    var extra = Math.ceil(fold - row2 + 6);
-    if(extra > 0 && extra <= 130){ cards[0].style.setProperty("margin-bottom", extra + "px", "important"); cards[1].style.setProperty("margin-bottom", extra + "px", "important"); }
+    if(row2 === cards[0].getBoundingClientRect().top + y) return;
+    /* the top of the 2nd row (card edge + its badge) peeks SC_PEEK px above the bottom bar, so the customer sees there is more to scroll */
+    var SC_PEEK = 44, v = fold - row2;
+    if(v > SC_PEEK){
+      var extra = Math.floor(v - SC_PEEK);
+      if(extra <= 130){ cards[0].style.setProperty("margin-bottom", extra + "px", "important"); cards[1].style.setProperty("margin-bottom", extra + "px", "important"); }
+    } else if(v < SC_PEEK && g){
+      /* short screen: take up to 12px from the space above the grid */
+      var cs = getComputedStyle(g), pt = parseFloat(cs.paddingTop) || 0, mt = parseFloat(cs.marginTop) || 0;
+      var take = Math.min(SC_PEEK - v, 12), t1 = Math.min(take, Math.max(pt - 2, 0)), t2 = Math.min(take - t1, Math.max(mt, 0));
+      if(t1) g.style.setProperty("padding-top", (pt - t1) + "px", "important");
+      if(t2) g.style.setProperty("margin-top", (mt - t2) + "px", "important");
+      v += t1 + t2;
+      /* still short: slightly smaller category tiles (decided once per screen size, so nothing moves while scrolling) */
+      var R = document.documentElement;
+      if(v < SC_PEEK && !R.classList.contains("sc-short")){
+        R.classList.add("sc-short");
+        g.style.removeProperty("padding-top"); g.style.removeProperty("margin-top");
+        return __scFoldRun();
+      }
+      /* still only a thin line showing → keep the old behaviour: 2nd row starts just below the bar */
+      if(v < 22){ var ex = Math.ceil(v + 6); if(ex > 0 && ex <= 130){ cards[0].style.setProperty("margin-bottom", ex + "px", "important"); cards[1].style.setProperty("margin-bottom", ex + "px", "important"); } }
+    }
   }catch(e){}
 }
-window.addEventListener("resize", function(){ if(window.innerWidth !== __scFoldW){ __scFoldVH = 0; scFoldFix(); } });
+window.addEventListener("resize", function(){ if(window.innerWidth !== __scFoldW){ __scFoldVH = 0; document.documentElement.classList.remove("sc-short"); scFoldFix(); } });
+try{ var __scShortCss = document.createElement("style"); __scShortCss.id = "sc-short-css";
+  __scShortCss.textContent = "html.sc-short body #filters .main-filters .main-filter-btn,html.sc-short body #filters .main-filters .main-filter-btn.tourist-main,html.sc-short body #filters .main-filters .main-filter-btn[onclick*=\"mobility\"]{min-height:64px!important;padding:3px 2px 4px!important}html.sc-short body #filters .main-filters .main-filter-btn .cat-icon.cat-img,html.sc-short body #filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{height:31px!important;flex:0 0 31px!important;margin:0 auto 2px!important}";
+  document.head.appendChild(__scShortCss); }catch(e){}
 window.addEventListener("load", function(){ setTimeout(scFoldFix, 50); });
 try{ if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ setTimeout(scFoldFix, 50); }); }catch(e){}
 document.addEventListener("DOMContentLoaded", function(){ try{ var g = document.getElementById("grid"); if(g) new MutationObserver(function(){ scFoldFix(); }).observe(g, {childList: true}); }catch(e){} });
