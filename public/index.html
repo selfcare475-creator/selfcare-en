@@ -9,7 +9,7 @@
 <link rel="icon" href="/favicon-96.png" sizes="96x96" type="image/png">
 <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta name="theme-color" content="#1A3058">
+<meta name="theme-color" content="#c24a17">
 <meta name="description" content="Self Care Pharmacy Hurghada – fast medicine, beauty, tourist kits and essentials ordering through WhatsApp, delivered to your hotel.">
 
 <!-- en-v13: preconnect to critical third-party origins so TCP+TLS handshake
@@ -6718,6 +6718,14 @@ header .cart-btn{white-space:nowrap;overflow:visible!important;position:relative
 .card.card-soon .soldout-label{color:#2D4876!important;border-color:#2D4876!important;background:#F1F5FA!important}
 </style>
 <style id="sc-look-v1">
+/* language chip inside the header */
+html body header .sc-hchip{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:7px 10px 7px 12px;border-radius:999px;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.35);color:#fff;font:inherit;font-size:13.5px;font-weight:900;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;flex:0 0 auto}
+html body header .sc-hchip-arrow{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#fff;color:#c24a17;font-size:9px}
+html body header > div:last-child{margin-left:10px!important}
+@media(max-width:340px){html body header .sc-hchip{padding:6px 8px;font-size:12px}}
+/* product names: two lines (long names get a smaller font and may use three short lines in the same height) */
+html body #grid .card-name{height:38px!important;min-height:38px!important;max-height:38px!important;-webkit-line-clamp:2!important}
+
 /* bottom navigation bar (phones and tablets) */
 .sc-bnav{display:none}
 @media(max-width:899px){
@@ -6817,9 +6825,7 @@ button,a,.card,.card-img-wrap,.qty-pill,.qty-pill-btn{-webkit-tap-highlight-colo
 #grid .card-name{height:54px!important;min-height:54px!important;max-height:54px!important;-webkit-line-clamp:3!important;overflow-wrap:break-word;hyphens:manual!important}
 #grid .card-use-for{height:38px!important;min-height:38px!important;max-height:38px!important}
 #grid .card:not(.kit-card){height:auto!important}
-#grid .card-name.sc-n2{font-size:.9em!important;line-height:1.25!important}
-#grid .card-name.sc-n3{font-size:.8em!important;line-height:1.22!important}
-#grid .card-name.sc-n4{font-size:.72em!important;line-height:1.2!important}
+
 .floating-wa{width:46px!important;height:46px!important;right:12px!important;bottom:14px!important;font-size:21px!important;border-width:2px!important;box-shadow:0 6px 16px rgba(37,211,102,.32)!important}
 body{padding-bottom:64px}
 .sc-version-stamp{display:none!important}
@@ -6853,6 +6859,7 @@ header .cart-badge{background:#1f2f52!important;color:#fff!important;border-colo
 <header>
   <span class="sc-hlogo" role="img" aria-label="Self Care"></span>
   <div class="logo">Self Care <span>Pharmacy</span></div>
+  <button type="button" class="sc-hchip" id="scPrefsChip" onclick="scOpenPrefs()" aria-haspopup="dialog" aria-label="Language &amp; currency"><span id="scPrefsChipText">🇬🇧 EN · £</span><span class="sc-hchip-arrow" aria-hidden="true">▾</span></button>
   <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch">
   <button class="cart-btn" onclick="openCart()">
     🛒 <span id="cartBtnText">Basket</span>
@@ -6874,7 +6881,6 @@ header .cart-badge{background:#1f2f52!important;color:#fff!important;border-colo
     <button type="button" class="sc-sheet-done" id="scPrefsDone" onclick="scClosePrefs()">OK</button>
   </div>
 </div>
-<button type="button" class="sc-prefs-bar" id="scPrefsChip" onclick="scOpenPrefs()" aria-haspopup="dialog"><span class="sc-prefs-bar-label" id="scPrefsBarLabel">Language &amp; currency</span><span class="sc-prefs-bar-val"><span id="scPrefsChipText">🇬🇧 English · £ GBP</span><span class="sc-prefs-bar-arrow" aria-hidden="true">▾</span></span></button>
 <div class="controls">
   <div class="search-wrap">
     <span class="ico">🔍</span>
@@ -7472,7 +7478,8 @@ function scUpdatePrefButtons(){
   var SC_FLAG = {en:"🇬🇧",cs:"🇨🇿",sk:"🇸🇰",pl:"🇵🇱",ru:"🇷🇺",ua:"🇺🇦",de:"🇩🇪"};
   var SC_NAME = {en:"English",cs:"Čeština",sk:"Slovenčina",pl:"Polski",ru:"Русский",ua:"Українська",de:"Deutsch"};
   var chip = document.getElementById("scPrefsChipText");
-  if(chip) chip.textContent = (ar ? "🇪🇬 العربية" : (SC_FLAG[displayLanguage] + " " + SC_NAME[displayLanguage])) + "  ·  " + (SC_CUR_SYM[displayCurrency] || "£") + " " + displayCurrency;
+  var SC_CODE = {en:"EN",cs:"CZ",sk:"SK",pl:"PL",ru:"RU",ua:"UA",de:"DE"};
+  if(chip) chip.textContent = (ar ? "🇪🇬 AR" : (SC_FLAG[displayLanguage] + " " + SC_CODE[displayLanguage])) + " · " + (SC_CUR_SYM[displayCurrency] || "£");
   scSetText("scPrefsBarLabel", T("langCur"));
   document.querySelectorAll("[data-sc-ar]").forEach(function(b){ b.classList.toggle("active", ar); b.setAttribute("aria-pressed", ar ? "true" : "false"); });
   document.querySelectorAll("[data-sc-lang]").forEach(function(b){ var on = !ar && b.getAttribute("data-sc-lang") === displayLanguage; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
@@ -7572,11 +7579,33 @@ function scNavUpdate(){
     for(var k in cart){ var q = parseInt(cart[k]) || 0; if(q > 0 && products[k]){ n += q; sum += (Number(livePrice(products[k])) || 0) * q; } }
     var b = document.getElementById("scNavBadge"), l = document.getElementById("scNavCartL");
     if(b){ b.textContent = n; b.classList.toggle("show", n > 0); }
-    if(l){ l.textContent = n > 0 ? (Math.round(sum) + " EGP") : T("basket"); }
+    if(l){ l.textContent = n > 0 ? String(approxText(sum)).replace(/^≈\s*/, "") : T("basket"); }
   }catch(e){}
 }
 function scNavSearch(){ var i = document.getElementById("searchInput"); if(!i) return; try{ i.scrollIntoView({block: "center", behavior: "smooth"}); }catch(e){} setTimeout(function(){ try{ i.focus({preventScroll: true}); }catch(e){ i.focus(); } }, 250); }
 function scNavHome(){ try{ window.scrollTo({top: 0, behavior: "smooth"}); }catch(e){ window.scrollTo(0, 0); } }
+
+/* product names: fit each name in its fixed 2-line box — smaller font (and 3 short lines) only when needed */
+var SC_NAME_STEPS = [[1, 1.25, 2], [.9, 1.2, 2], [.82, 1.15, 3], [.76, 1.12, 3], [.7, 1.08, 3], [.64, 1.05, 3]];
+function scFitNames(){
+  try{
+    var base = 0;
+    document.querySelectorAll("#grid .card-name").forEach(function(n){
+      if(n.__scFit === n.textContent) return;
+      n.style.removeProperty("font-size"); n.style.removeProperty("line-height"); n.style.removeProperty("-webkit-line-clamp");
+      if(!base) base = parseFloat(getComputedStyle(n).fontSize) || 14.4;
+      for(var i = 0; i < SC_NAME_STEPS.length; i++){
+        var st = SC_NAME_STEPS[i];
+        n.style.setProperty("font-size", (base * st[0]).toFixed(2) + "px", "important");
+        n.style.setProperty("line-height", String(st[1]), "important");
+        n.style.setProperty("-webkit-line-clamp", String(st[2]), "important");
+        if(n.scrollHeight <= n.clientHeight + 1) break;
+      }
+      n.__scFit = n.textContent;
+    });
+  }catch(e){}
+}
+window.addEventListener("resize", function(){ document.querySelectorAll("#grid .card-name").forEach(function(n){ n.__scFit = null; }); scFitNames(); });
 
 /* scooter / wheelchair booking — texts for the extra site languages (WhatsApp messages to the pharmacy stay English) */
 var SC_MOB_TX = {
@@ -11567,6 +11596,7 @@ function renderGrid() {
       </div>
     </div>`;
   }).join("") + fastLoadMoreHtml(renderedCount,totalMatches);
+  try{ scFitNames(); }catch(e){}
 }
 
 function showToast(){ return; }

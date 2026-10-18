@@ -259,7 +259,8 @@ function scUpdatePrefButtons(){
   var SC_FLAG = {en:"🇬🇧",cs:"🇨🇿",sk:"🇸🇰",pl:"🇵🇱",ru:"🇷🇺",ua:"🇺🇦",de:"🇩🇪"};
   var SC_NAME = {en:"English",cs:"Čeština",sk:"Slovenčina",pl:"Polski",ru:"Русский",ua:"Українська",de:"Deutsch"};
   var chip = document.getElementById("scPrefsChipText");
-  if(chip) chip.textContent = (ar ? "🇪🇬 العربية" : (SC_FLAG[displayLanguage] + " " + SC_NAME[displayLanguage])) + "  ·  " + (SC_CUR_SYM[displayCurrency] || "£") + " " + displayCurrency;
+  var SC_CODE = {en:"EN",cs:"CZ",sk:"SK",pl:"PL",ru:"RU",ua:"UA",de:"DE"};
+  if(chip) chip.textContent = (ar ? "🇪🇬 AR" : (SC_FLAG[displayLanguage] + " " + SC_CODE[displayLanguage])) + " · " + (SC_CUR_SYM[displayCurrency] || "£");
   scSetText("scPrefsBarLabel", T("langCur"));
   document.querySelectorAll("[data-sc-ar]").forEach(function(b){ b.classList.toggle("active", ar); b.setAttribute("aria-pressed", ar ? "true" : "false"); });
   document.querySelectorAll("[data-sc-lang]").forEach(function(b){ var on = !ar && b.getAttribute("data-sc-lang") === displayLanguage; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
@@ -359,8 +360,30 @@ function scNavUpdate(){
     for(var k in cart){ var q = parseInt(cart[k]) || 0; if(q > 0 && products[k]){ n += q; sum += (Number(livePrice(products[k])) || 0) * q; } }
     var b = document.getElementById("scNavBadge"), l = document.getElementById("scNavCartL");
     if(b){ b.textContent = n; b.classList.toggle("show", n > 0); }
-    if(l){ l.textContent = n > 0 ? (Math.round(sum) + " EGP") : T("basket"); }
+    if(l){ l.textContent = n > 0 ? String(approxText(sum)).replace(/^≈\s*/, "") : T("basket"); }
   }catch(e){}
 }
 function scNavSearch(){ var i = document.getElementById("searchInput"); if(!i) return; try{ i.scrollIntoView({block: "center", behavior: "smooth"}); }catch(e){} setTimeout(function(){ try{ i.focus({preventScroll: true}); }catch(e){ i.focus(); } }, 250); }
 function scNavHome(){ try{ window.scrollTo({top: 0, behavior: "smooth"}); }catch(e){ window.scrollTo(0, 0); } }
+
+/* product names: fit each name in its fixed 2-line box — smaller font (and 3 short lines) only when needed */
+var SC_NAME_STEPS = [[1, 1.25, 2], [.9, 1.2, 2], [.82, 1.15, 3], [.76, 1.12, 3], [.7, 1.08, 3], [.64, 1.05, 3]];
+function scFitNames(){
+  try{
+    var base = 0;
+    document.querySelectorAll("#grid .card-name").forEach(function(n){
+      if(n.__scFit === n.textContent) return;
+      n.style.removeProperty("font-size"); n.style.removeProperty("line-height"); n.style.removeProperty("-webkit-line-clamp");
+      if(!base) base = parseFloat(getComputedStyle(n).fontSize) || 14.4;
+      for(var i = 0; i < SC_NAME_STEPS.length; i++){
+        var st = SC_NAME_STEPS[i];
+        n.style.setProperty("font-size", (base * st[0]).toFixed(2) + "px", "important");
+        n.style.setProperty("line-height", String(st[1]), "important");
+        n.style.setProperty("-webkit-line-clamp", String(st[2]), "important");
+        if(n.scrollHeight <= n.clientHeight + 1) break;
+      }
+      n.__scFit = n.textContent;
+    });
+  }catch(e){}
+}
+window.addEventListener("resize", function(){ document.querySelectorAll("#grid .card-name").forEach(function(n){ n.__scFit = null; }); scFitNames(); });

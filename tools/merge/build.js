@@ -353,7 +353,6 @@ rep('<div class="controls">\n  <div class="search-wrap">', `<div class="sc-sheet
     <button type="button" class="sc-sheet-done" id="scPrefsDone" onclick="scClosePrefs()">OK</button>
   </div>
 </div>
-<button type="button" class="sc-prefs-bar" id="scPrefsChip" onclick="scOpenPrefs()" aria-haspopup="dialog"><span class="sc-prefs-bar-label" id="scPrefsBarLabel">Language &amp; currency</span><span class="sc-prefs-bar-val"><span id="scPrefsChipText">🇬🇧 English · £ GBP</span><span class="sc-prefs-bar-arrow" aria-hidden="true">▾</span></span></button>
 <div class="controls">
   <div class="search-wrap">`);
 rep("<h2>How to order</h2>", "<h2 id=\"howTitle\">How to order</h2>");
@@ -441,6 +440,9 @@ rep('<a class="floating-wa" href="https://wa.me/201501401776"', `<nav class="sc-
 </nav>
 <a class="floating-wa" href="https://wa.me/201501401776"`);
 repIn("updateStickyCart", "    if(bar){ bar.classList.toggle(\"show\", total > 0); }", "    if(bar){ bar.classList.toggle(\"show\", total > 0); }\n    try{ scNavUpdate(); }catch(_){}");
+/* language + currency: a compact chip inside the orange header */
+rep('  <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch">', '  <button type="button" class="sc-hchip" id="scPrefsChip" onclick="scOpenPrefs()" aria-haspopup="dialog" aria-label="Language &amp; currency"><span id="scPrefsChipText">🇬🇧 EN · £</span><span class="sc-hchip-arrow" aria-hidden="true">▾</span></button>\n  <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch">');
+repIn("renderGrid", "fastLoadMoreHtml(renderedCount,totalMatches);", "fastLoadMoreHtml(renderedCount,totalMatches);\n  try{ scFitNames(); }catch(e){}");
 /* ===== checkout v2: needed fields first, compact time, sticky total + button ===== */
 repIn("renderCheckout", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;");
 repIn("renderCheckout", "  btn.title = \"\";\n", "  btn.title = \"\";\n");
@@ -517,6 +519,14 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 
 /* ---------- look: smaller WhatsApp bubble, no version stamp ---------- */
 rep("\n</body>\n", `\n<style id="sc-look-v1">
+/* language chip inside the header */
+html body header .sc-hchip{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:7px 10px 7px 12px;border-radius:999px;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.35);color:#fff;font:inherit;font-size:13.5px;font-weight:900;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;flex:0 0 auto}
+html body header .sc-hchip-arrow{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#fff;color:#c24a17;font-size:9px}
+html body header > div:last-child{margin-left:10px!important}
+@media(max-width:340px){html body header .sc-hchip{padding:6px 8px;font-size:12px}}
+/* product names: two lines (long names get a smaller font and may use three short lines in the same height) */
+html body #grid .card-name{height:38px!important;min-height:38px!important;max-height:38px!important;-webkit-line-clamp:2!important}
+
 /* bottom navigation bar (phones and tablets) */
 .sc-bnav{display:none}
 @media(max-width:899px){
@@ -616,9 +626,7 @@ button,a,.card,.card-img-wrap,.qty-pill,.qty-pill-btn{-webkit-tap-highlight-colo
 #grid .card-name{height:54px!important;min-height:54px!important;max-height:54px!important;-webkit-line-clamp:3!important;overflow-wrap:break-word;hyphens:manual!important}
 #grid .card-use-for{height:38px!important;min-height:38px!important;max-height:38px!important}
 #grid .card:not(.kit-card){height:auto!important}
-#grid .card-name.sc-n2{font-size:.9em!important;line-height:1.25!important}
-#grid .card-name.sc-n3{font-size:.8em!important;line-height:1.22!important}
-#grid .card-name.sc-n4{font-size:.72em!important;line-height:1.2!important}
+
 .floating-wa{width:46px!important;height:46px!important;right:12px!important;bottom:14px!important;font-size:21px!important;border-width:2px!important;box-shadow:0 6px 16px rgba(37,211,102,.32)!important}
 body{padding-bottom:64px}
 .sc-version-stamp{display:none!important}
@@ -718,6 +726,8 @@ replaceDecl("mainCategoryImages", "const mainCategoryImages = {\n" + ["top","med
   }
 }
 
+/* browser bar in the header orange */
+html = html.replace(/<meta name="theme-color" content="[^"]*">/, '<meta name="theme-color" content="#c24a17">');
 /* ---------- 5. write ---------- */
 if(failures.length){ console.error("BUILD FAILED:\n - " + failures.join("\n - ")); process.exit(1); }
 for(const s of inlineScripts(html)){ try{ parse(s.code); }catch(e){ console.error("syntax error in script at", s.start, e.message, s.code.slice(0, 80)); process.exit(1); } }
