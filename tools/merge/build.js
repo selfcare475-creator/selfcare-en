@@ -787,12 +787,6 @@ repIn("loadSharedCurrencyRates", "    if(typeof requestGridRender===\"function\"
 /* product pictures are plain (non-CORS) requests: the existing crossorigin preconnect is not used for them → add a normal one */
 rep('<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>', '<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>\n<link rel="preconnect" href="https://res.cloudinary.com">');
 
-/* smooth scrolling through the list: the next cards are added earlier (1800px before the end, not 720px), 24 at a time,
-   and the pictures of the cards after them are already downloading */
-rep("const FAST_RENDER_STEP = 12;", "const FAST_RENDER_STEP = 24;");
-rep("    if((window.innerHeight + window.scrollY) < (document.body.offsetHeight - 720)) return;", "    if((window.innerHeight + window.scrollY) < (document.body.offsetHeight - 1800)) return;");
-rep("  fastGridRendered = renderedCount;", "  fastGridRendered = renderedCount;\n  try{ scPrefetchImgs(filtered.slice(renderedCount, renderedCount + 24)); }catch(e){}");
-
 /* ---------- no flash on load: every <style> that sits in the page body moves into <head> (same order, so the cascade is unchanged),
    and a non-English page stays hidden until its texts are switched (max 1.2 s) ---------- */
 {

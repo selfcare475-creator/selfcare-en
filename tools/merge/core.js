@@ -469,58 +469,8 @@ function scReuseImgs(){
     /* remember the pictures of this render (and keep earlier ones, up to 400) for the next one */
     __scImgKeep.forEach(function(v, k){ if(!next.has(k) && next.size < 400) next.set(k, v); });
     __scImgKeep = next;
-    /* the first rows start downloading at once (not "lazy"); a picture that is not ready yet appears with a short fade instead of popping in */
-    var live = document.querySelectorAll("#grid > .card .card-img-wrap img");
-    for(var j = 0; j < live.length; j++){
-      var im = live[j];
-      if(j < 16 && im.loading === "lazy") im.loading = "eager";
-      if(j < 4) try{ im.fetchPriority = "high"; }catch(e){}
-      if(!im.complete && !im.__scWait){
-        im.__scWait = 1; im.classList.add("sc-img-wait");
-        var done = function(){ this.classList.remove("sc-img-wait"); };
-        im.addEventListener("load", done, {once: true}); im.addEventListener("error", done, {once: true});
-      }
-    }
   }catch(e){}
 }
-/* download pictures of products that are about to be shown (next cards of the list) */
-var __scPrefetched = {};
-function scPrefetchImgs(list){
-  try{
-    var c = navigator.connection || {}; if(c.saveData) return;
-    (list || []).forEach(function(p){
-      var u = typeof productImg === "function" ? productImg(p) : ""; if(!u || u.indexOf("data:") === 0 || __scPrefetched[u]) return;
-      __scPrefetched[u] = 1; var im = new Image(); try{ im.fetchPriority = "low"; }catch(e){} im.decoding = "async"; im.src = u;
-    });
-  }catch(e){}
-}
-/* after the page has settled, quietly download the first pictures of every section (max 160, low priority, not on data-saver / 2G),
-   so opening a category or scrolling shows pictures that are already on the phone */
-var __scWarmDone = false;
-function scWarmImgs(){
-  if(__scWarmDone) return; __scWarmDone = true;
-  try{
-    var c = navigator.connection || {};
-    if(c.saveData || /(^|-)2g$/.test(c.effectiveType || "")) return;
-    if(typeof products === "undefined" || !products.length || typeof productImg !== "function") return;
-    var per = {}, list = [];
-    for(var i = 0; i < products.length && list.length < 160; i++){
-      var p = products[i], k = p.subcategory || p.cat || "";
-      if((per[k] = (per[k] || 0) + 1) > 6) continue;
-      var u = productImg(p); if(u && u.indexOf("data:") !== 0 && !__scImgKeep.has(u)) list.push(u);
-    }
-    var at = 0;
-    (function nextBatch(){
-      var batch = list.slice(at, at + 6); at += 6; if(!batch.length) return;
-      var left = batch.length;
-      batch.forEach(function(u){ var im = new Image(); try{ im.fetchPriority = "low"; }catch(e){} im.decoding = "async"; im.onload = im.onerror = function(){ if(--left === 0) setTimeout(nextBatch, 120); }; im.src = u; });
-    })();
-  }catch(e){}
-}
-window.addEventListener("load", function(){ setTimeout(function(){ (window.requestIdleCallback || function(f){ setTimeout(f, 1); })(scWarmImgs); }, 3500); });
-try{ var __scImgCss = document.createElement("style"); __scImgCss.id = "sc-img-css";
-  __scImgCss.textContent = "html body #grid .card .card-img-wrap img.sc-img-wait{opacity:0!important}html body #grid .card .card-img-wrap img{transition:opacity .2s ease!important}";
-  document.head.appendChild(__scImgCss); }catch(e){}
 document.addEventListener("DOMContentLoaded", function(){ try{ var g = document.getElementById("grid"); if(g) new MutationObserver(function(){ scReuseImgs(); scFoldFix(); }).observe(g, {childList: true}); }catch(e){} });
 /* an image that fails before the main script loads would call imageFallback() too early — retry once it exists */
 if(typeof window.imageFallback !== "function"){ window.imageFallback = function __scImgWait(img){ setTimeout(function(){ if(window.imageFallback !== __scImgWait) try{ window.imageFallback(img); }catch(e){} }, 300); }; }
