@@ -485,7 +485,7 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 
 /* ---------- look: smaller WhatsApp bubble, no version stamp ---------- */
 rep("\n</body>\n", `\n<style id="sc-look-v1">
-header{background:linear-gradient(135deg,#93330f 0%,#b03f12 100%)!important}
+header{background:linear-gradient(135deg,#c24a17 0%,#dc5a22 100%)!important}
 /* lighter + / − on product cards */
 #grid .qty-pill{height:36px!important;min-height:36px!important;padding:3px!important;border:0!important;background:#f5eff5!important;box-shadow:none!important;border-radius:999px!important}
 #grid .qty-pill.active{background:#eee0ee!important;box-shadow:none!important}
@@ -605,9 +605,9 @@ rep("\n</body>\n", `\n<style id="sc-orange-only">
 .sc-prefs-bar{background:#fff1e6!important;color:#7a2408!important;box-shadow:0 4px 12px rgba(122,36,8,.08)!important;border-bottom:1px solid #f3d8c4!important}
 .sc-prefs-bar-label{color:#a0583a!important}
 .sc-prefs-bar-val{color:#7a2408!important}
-.sc-prefs-bar-arrow{background:#b03f12!important;color:#fff!important}
+.sc-prefs-bar-arrow{background:#c24a17!important;color:#fff!important}
 html body #grid .card .badge-top,html body .badge-top,#filters .main-filters .main-filter-btn .cat-hot,.cat-hot{background:#4a1505!important;color:#fff!important;border-color:#4a1505!important}
-header .cart-badge{background:#fff!important;color:#b03f12!important;border-color:#b03f12!important}
+header .cart-badge{background:#fff!important;color:#c24a17!important;border-color:#c24a17!important}
 </style>\n</body>\n`);
 {
   const rgb2hsl = (r, g, b) => { r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b); let h = 0, s = 0; const l = (mx + mn) / 2;
@@ -617,7 +617,7 @@ header .cart-badge{background:#fff!important;color:#b03f12!important;border-colo
   const tr = (r, g, b) => { const [h, s, l] = rgb2hsl(r, g, b);
     if(!(s > .12 && h >= .75 && h <= .92 && l > .04 && l < .985)) return null;
     if(l > .86) return hsl2rgb(20/360, Math.min(s, .7), l);
-    return hsl2rgb(17/360, Math.min(Math.max(s, .6), .8), Math.min(l * .95, .40)); };
+    if(l < .2) return hsl2rgb(18/360, .35, l); return hsl2rgb(18/360, Math.min(Math.max(s, .65), .8), Math.min(Math.max(l * 1.1, .34), .47)); };
   const KEEP = new Set(["25d366", "128c7e", "1db954"]);
   let n = 0;
   html = html.replace(/#([0-9a-fA-F]{6})\b/g, (m, hx) => { if(KEEP.has(hx.toLowerCase())) return m;
