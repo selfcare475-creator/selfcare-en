@@ -224,7 +224,7 @@ function scCatHint(){
       setTimeout(function(){ row.scrollTo({left:70, behavior:"smooth"}); setTimeout(function(){ row.scrollTo({left:0, behavior:"smooth"}); }, 650); }, 900); }
   }
 }
-function scNameCls(n){ n = String(n||""); var w = Math.max.apply(null, n.split(/\s+/).map(function(x){ return x.length; }).concat([0])); return (n.length > 42 || w > 15) ? " sc-n3" : (n.length > 28 || w > 12) ? " sc-n2" : ""; }
+function scNameCls(n){ n = String(n||""); var w = Math.max.apply(null, n.split(/\s+/).map(function(x){ return x.length; }).concat([0])); return (n.length > 52 || w > 19) ? " sc-n4" : (n.length > 40 || w > 15) ? " sc-n3" : (n.length > 28 || w > 12) ? " sc-n2" : ""; }
 function scCatScroll(dir){ var row = document.querySelector("#filters .main-filters"); if(row) row.scrollBy({left: dir * Math.round(row.clientWidth * 0.7), behavior:"smooth"}); }
 var SC_CUR_SYM = {GBP:"£",EUR:"€",USD:"$",CZK:"Kč"};
 function scOpenPrefs(){ var s = document.getElementById("scPrefsSheet"); if(!s) return; scUpdatePrefButtons(); s.classList.add("show"); s.setAttribute("aria-hidden","false"); }
@@ -325,3 +325,10 @@ function scCoFocusMissing(){
   var el = document.getElementById(b.dataset.scNeed === "needHotel" ? "checkoutHotel" : "checkoutPhone");
   if(el){ el.classList.add("sc-co-miss"); el.scrollIntoView({block:"center", behavior:"smooth"}); setTimeout(function(){ try{ el.focus({preventScroll:true}); }catch(e){ el.focus(); } }, 250); setTimeout(function(){ el.classList.remove("sc-co-miss"); }, 1600); }
 }
+
+/* card texts that stayed English in every language */
+var SC_USE_FIX = {
+ "Sunscreen SPF 50":{cs:"Opalovací krém SPF 50",sk:"Opaľovací krém SPF 50",pl:"Krem z filtrem SPF 50",ru:"Солнцезащитный SPF 50",ua:"Сонцезахисний SPF 50",de:"Sonnenschutz LSF 50"},
+ "Sunscreen SPF 30-45":{cs:"Opalovací krém SPF 30–45",sk:"Opaľovací krém SPF 30–45",pl:"Krem z filtrem SPF 30–45",ru:"Солнцезащитный SPF 30–45",ua:"Сонцезахисний SPF 30–45",de:"Sonnenschutz LSF 30–45"}
+};
+function scUseFix(t){ try{ var f = SC_USE_FIX[String(t||"").trim()]; if(f && f[displayLanguage]) return f[displayLanguage]; }catch(e){} return t; }

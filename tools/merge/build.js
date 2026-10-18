@@ -145,7 +145,8 @@ repIn("applyDynOverlayCache", "dynamicCardTextForLang({use_en:ue0,use_cz:uc0}, \
   replaceDecl("autoCardTextFromCategory", enAuto + "\nfunction autoCardTextFromCategory(p){ return displayLanguage === \"en\" ? __autoCardTextEn(p) : __autoCardTextI18n(p); }");
 }
 repIn("dynamicCardTextForLang", "if(lang===\"cs\"&&useCz)return useCz;", "if(lang===\"cs\"&&useCz)return useCz;\n  if(lang===\"sk\"&&useCz)return (window.SC_SK_USE&&window.SC_SK_USE[useCz])||useCz;\n  if(lang===\"de\"||lang===\"ru\"||lang===\"ua\")return useEn||useCz||\"\";");
-replaceDecl("productUseFor", `function productUseFor(p){
+replaceDecl("productUseFor", `function productUseFor(p){ return scUseFix(__productUseForRaw(p)); }
+function __productUseForRaw(p){
   const lang = displayLanguage;
   const approved = getApprovedCardText(p, lang);
   if(approved && !isGenericProductInfoText(approved)) return approved;
@@ -549,9 +550,12 @@ header .cart-badge{background:#D6501B!important;border-color:#fff!important;colo
 
 button,a,.card,.card-img-wrap,.qty-pill,.qty-pill-btn{-webkit-tap-highlight-color:transparent!important}
 .qty-pill-btn:focus,.qty-pill-btn:focus-visible,.qty-pill-btn:active{outline:none!important}
-#grid .card-name{max-height:none!important;-webkit-line-clamp:3!important;overflow-wrap:break-word;hyphens:manual!important}
+#grid .card-name{height:54px!important;min-height:54px!important;max-height:54px!important;-webkit-line-clamp:3!important;overflow-wrap:break-word;hyphens:manual!important}
+#grid .card-use-for{height:38px!important;min-height:38px!important;max-height:38px!important}
+#grid .card:not(.kit-card){height:auto!important}
 #grid .card-name.sc-n2{font-size:.9em!important;line-height:1.25!important}
-#grid .card-name.sc-n3{font-size:.82em!important;line-height:1.22!important}
+#grid .card-name.sc-n3{font-size:.8em!important;line-height:1.22!important}
+#grid .card-name.sc-n4{font-size:.72em!important;line-height:1.2!important}
 .floating-wa{width:46px!important;height:46px!important;right:12px!important;bottom:14px!important;font-size:21px!important;border-width:2px!important;box-shadow:0 6px 16px rgba(37,211,102,.32)!important}
 body{padding-bottom:64px}
 .sc-version-stamp{display:none!important}
