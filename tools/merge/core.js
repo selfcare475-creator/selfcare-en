@@ -1,3 +1,54 @@
+/* full Polish names where the Czech-site Polish name was still half Czech */
+var SC_PL_FULL = {
+"OFF repelentní spray":"OFF spray odstraszający owady",
+"Coldatrexy na nachlazení 30 tabletek":"Coldatrex na przeziębienie 30 tabletek",
+"Vacation opalovací spray SPF 50":"Vacation spray do opalania SPF 50",
+"Eva denní gel s kwasem hialuronowym":"Eva żel na dzień z kwasem hialuronowym",
+"Eva plátýnková maska s uhlím 3 ks":"Eva maska w płachcie z węglem 3 szt.",
+"Eva plátýnková maska s witaminą C 3 ks":"Eva maska w płachcie z witaminą C 3 szt.",
+"Eva kolagenová plátýnková maska 3 ks":"Eva kolagenowa maska w płachcie 3 szt.",
+"Eva White Pearl plátýnková maska 3 ks":"Eva White Pearl maska w płachcie 3 szt.",
+"Bobana uhlíková maska":"Bobana maska z węglem",
+"Bobana plátýnková maska s kwasem hialuronowym":"Bobana maska w płachcie z kwasem hialuronowym",
+"Orgakera kolagenová maska s uhlím":"Orgakera kolagenowa maska z węglem",
+"Vatika szampon Česnek – Natural Growth 200 ml":"Vatika szampon Czosnek – Natural Growth 200 ml",
+"Vatika szampon Rozmarýn & Ibišek – Hair Growth 200 ml":"Vatika szampon Rozmaryn i Hibiskus – Hair Growth 200 ml",
+"Momento opalovací spray dla dorosłych":"Momento spray do opalania dla dorosłych",
+"Bobana marocké mýdlo Oliva":"Bobana marokańskie mydło Oliwka",
+"Bobana marocké mýdlo Argan":"Bobana marokańskie mydło Argan",
+"Capixy intenzivní tonikový spray":"Capixy intensywny tonik w sprayu",
+"Infinity retinolový do oczu krem":"Infinity krem pod oczy z retinolem",
+"Infinity retinolový krem na obličej":"Infinity krem do twarzy z retinolem",
+"Capixy hydratační odżywka":"Capixy odżywka nawilżająca",
+"Eva Vitamin C denní krem":"Eva krem na dzień z witaminą C",
+"Eva Niacinamide sérum na obličej":"Eva serum do twarzy z niacynamidem",
+"Eva Vitamin A sérum na obličej":"Eva serum do twarzy z witaminą A",
+"Sea Shell opalovací krem SPF 40":"Sea Shell krem do opalania SPF 40",
+"Lotus kolagenowe ampułki Káva & Zelený čaj":"Lotus kolagenowe ampułki Kawa i Zielona herbata",
+"Lotus masážní Joint krem czarnuszka":"Lotus krem do masażu stawów z czarnuszką",
+"Lotus vlasové ampułki Hadí olej":"Lotus ampułki do włosów z olejem z węża",
+"Lotus vlasové ampułki Rozmarýn":"Lotus ampułki do włosów z rozmarynem",
+"Lotus kolagenowe ampułki na obličej s aloe vera":"Lotus kolagenowe ampułki do twarzy z aloesem",
+"Shaan zklidňující gel 120 g":"Shaan żel łagodzący 120 g",
+"Egy Bio Hadí olej":"Egy Bio olej z węża",
+"Blaji opalovací spray SPF 50":"Blaji spray do opalania SPF 50",
+"Capixy vlasový olej Elixir":"Capixy olejek do włosów Elixir",
+"Infinity retinolové sérum na obličej":"Infinity serum do twarzy z retinolem",
+"Botox pleťový krem 24K Black":"Botox krem do twarzy 24K Black",
+"Botox pleťový krem Silver":"Botox krem do twarzy Silver",
+"Calypso opalovací krem SPF 50":"Calypso krem do opalania SPF 50",
+"Calypso opalovací krem SPF 45":"Calypso krem do opalania SPF 45",
+"Calypso opalovací krem SPF 40":"Calypso krem do opalania SPF 40",
+"Calypso opalovací krem SPF 30":"Calypso krem do opalania SPF 30",
+"Nivea opalovací spray SPF 30":"Nivea spray do opalania SPF 30",
+"Luna gel na opalování":"Luna żel do opalania",
+"Bobana zlatý peeling":"Bobana złoty peeling",
+"Bobana bahenní maska":"Bobana maska błotna",
+"Bobana peeling s uhlím":"Bobana peeling z węglem",
+"Lipozomální zinek 30 tabletek":"Liposomalny cynk 30 tabletek",
+"Perfect aktivní uhlí 60 tabletek":"Perfect węgiel aktywny 60 tabletek",
+"Syrovátkový protein prášek":"Białko serwatkowe w proszku"
+};
 /* ===== Self Care — one site, all languages (EN base + Czech-site languages) =====
    Language: ?lang=xx → saved choice → domain (selfcare-cz.com = Czech, otherwise English).
    Currency: saved choice → language default (English = £, others = €). */
@@ -50,7 +101,7 @@ function approxText(egp){
 /* ---- product names / texts in the chosen language ---- */
 /* Czech words left in Polish / Slovak names */
 var SC_PL_FIX = [["opalovací spray pro děti","spray do opalania dla dzieci"],["dětský opalovací krem","krem do opalania dla dzieci"],["pleťový krem s mořským kolagenem","krem do twarzy z kolagenem morskim"],["ampułki s mořským kolagenem","ampułki z kolagenem morskim"],["bělící pleťový krem","wybielający krem do twarzy"],["bělicí pasta","wybielająca pasta"],["tělové mléko","mleczko do ciała"],["sérum na řasy","serum do rzęs"],["tekutý doplněk","suplement w płynie"],["pěna","pianka"]];
-var SC_SK_FIX = [["mléko pro dospělé","mlieko pre dospelých"],["pro dospělé","pre dospelých"],["pro děti","pre deti"],["sérum na řasy","sérum na mihalnice"],["proti vypadávání vlasů","proti vypadávaniu vlasov"],["proti lupům","proti lupinám"],["krém s mořským kolagenem","krém s morským kolagénom"],["ampule s mořským kolagenem","ampulky s morským kolagénom"],["bělicí","bieliaca"],["bělící","bieliaci"],["tekutý doplněk","tekutý doplnok"],["pěna","pena"]];
+var SC_SK_FIX = [["mléko pro dospělé","mlieko pre dospelých"],["pro dospělé","pre dospelých"],["pro děti","pre deti"],["sérum na řasy","sérum na mihalnice"],["proti vypadávání vlasů","proti vypadávaniu vlasov"],["proti lupům","proti lupinám"],["krém s mořským kolagenem","krém s morským kolagénom"],["krém na obličej","krém na tvár"],["ampule s mořským kolagenem","ampulky s morským kolagénom"],["bělicí","bieliaca"],["bělící","bieliaci"],["tekutý doplněk","tekutý doplnok"],["pěna","pena"]];
 function scFixCz(n, list){ n = String(n||""); for(var i = 0; i < list.length; i++){ n = n.split(list[i][0]).join(list[i][1]); } return n; }
 function pName(p){
   if(!p) return "";
@@ -61,7 +112,7 @@ function pName(p){
   try{
     if(l === "cs") return cz;
     if(l === "sk") return scFixCz(productNameSk(cz).replace(/perorální/gi, "perorálna").replace(/injekční pero/gi, "injekčné pero"), SC_SK_FIX);
-    if(l === "pl") return scFixCz(productNamePl(cz).replace(/injekční pero/gi, "wstrzykiwacz").replace(/perorální/gi, "doustna"), SC_PL_FIX);
+    if(l === "pl") var __pl = scFixCz(productNamePl(cz).replace(/injekční pero/gi, "wstrzykiwacz").replace(/perorální/gi, "doustna"), SC_PL_FIX); return SC_PL_FULL[__pl] || __pl;
     if(l === "ru") return productNameRu(p.name || cz);
     if(l === "ua") return productNameUa(p.name || cz);
     if(l === "de") return productNameDe(p.name || cz);
@@ -93,6 +144,7 @@ function catLabel(sub){
 }
 function mainLabel(key, enLabel){
   if(displayLanguage === "en") return enLabel;
+  if(key === "top" && (displayLanguage === "pl" || displayLanguage === "sk")) return "Bestsellery";
   var c = SC_MAIN_I18N[key]; if(c && c[displayLanguage]) return c[displayLanguage];
   return enLabel;
 }
@@ -120,7 +172,7 @@ function scApplyStaticTexts(){
   scSetAttr("checkoutPhone", "placeholder", T("phonePh")); scSetText("phoneManualOption", T("phoneOther"));
   scSetText("checkoutPhoneHelp", T("phoneHelp")); scSetText("checkoutNoteLabel", T("noteLabel"));
   scSetAttr("checkoutNote", "placeholder", T("notePh")); scSetText("checkoutConfirmHelp", T("confirmHelp"));
-  var fb = document.getElementById("finalCheckoutBtn"); if(fb && !fb.dataset.submitting && !fb.href) fb.textContent = fb.dataset.scNeed ? T(fb.dataset.scNeed) : T("confirmBtn"); scSetText("scCoWhenEdit", T("coChange")); scSetText("cardLabel", T("cardDelivery")); scSetText("scCoWhenLabel", T("coWhen"));
+  var fb = document.getElementById("finalCheckoutBtn"); if(fb && !fb.dataset.submitting && !fb.href) fb.textContent = fb.dataset.scNeed ? T(fb.dataset.scNeed) : T("confirmBtn"); scSetText("scCoWhenEdit", T("coChange")); scSetText("cardLabel", T("cardDelivery")); try{ document.documentElement.style.setProperty("--sc-browse", JSON.stringify(T("browseCat"))); document.documentElement.style.setProperty("--sc-swipe", JSON.stringify(T("swipeHint"))); }catch(e){} scSetText("scCoWhenLabel", T("coWhen"));
   scSetText("osTitle", T("osTitle")); scSetText("osSub", T("osSub")); scSetText("osNum", T("osNum"));
   scSetText("sc-order-success-copied", T("osTap")); scSetText("osFinal", T("osFinal")); scSetText("osFinalText", T("osFinalText"));
   scSetText("sc-order-success-wa", T("osSend")); scSetText("osContinue", T("osContinue"));
