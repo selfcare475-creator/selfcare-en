@@ -410,6 +410,27 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 
 { const m = html.match(/<div class="sc-version-stamp" aria-hidden="true">(en-v[\d.]+)<\/div>/); if(!m) failures.push("version stamp"); else html = html.replace(m[0], `<div class="sc-version-stamp" aria-hidden="true">m1 · ${m[1]}</div>`); }
 
+/* ---------- look: two colours (teal + orange), lighter price box, smaller WhatsApp bubble, no version stamp ---------- */
+{
+  let n = 0;
+  html = html.replace(/<style([^>]*)>([\s\S]*?)<\/style>/g, (m, a, css) => {
+    const out = css.replace(/#5B295A/gi, () => { n++; return "#0F5E55"; }).replace(/rgba\(\s*91\s*,\s*41\s*,\s*90\s*,/g, () => { n++; return "rgba(15,94,85,"; });
+    return `<style${a}>${out}</style>`;
+  });
+  if(n < 20) failures.push("purple replace count " + n);
+}
+rep("\n</body>\n", `\n<style id="sc-look-v1">
+.card-price{background:#eef8f5!important;border:1px solid #cfe8e1!important;box-shadow:none!important;color:#0F5E55!important}
+.card-price .egp,.card-price .gbp{text-shadow:none!important;-webkit-text-stroke:0!important}
+.card-price .egp{color:#0F5E55!important}
+.card-price .gbp{color:#3d9a86!important;opacity:1!important}
+.floating-wa{width:46px!important;height:46px!important;right:12px!important;bottom:14px!important;font-size:21px!important;border-width:2px!important;box-shadow:0 6px 16px rgba(37,211,102,.32)!important}
+body{padding-bottom:64px}
+.sc-version-stamp{display:none!important}
+</style>
+</body>
+`);
+
 /* ---------- 5. write ---------- */
 if(failures.length){ console.error("BUILD FAILED:\n - " + failures.join("\n - ")); process.exit(1); }
 for(const s of inlineScripts(html)){ try{ parse(s.code); }catch(e){ console.error("syntax error in script at", s.start, e.message, s.code.slice(0, 80)); process.exit(1); } }
