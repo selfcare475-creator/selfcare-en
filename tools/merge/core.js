@@ -148,7 +148,18 @@ function scFitHeaderButtons(){
 }
 window.addEventListener("resize", function(){ scFitHeaderButtons(); scCatHint(); });
 /* categories row: fade + arrow on the side while more categories are hidden; a small nudge the first time */
+/* category labels: a long word gets a smaller font instead of being cut in the middle */
+function scFitCatNames(){
+  try{
+    document.querySelectorAll("#filters .main-filter-btn .cat-name").forEach(function(n){
+      n.style.removeProperty("font-size"); var fs = parseFloat(getComputedStyle(n).fontSize) || 10, k = 0;
+      while(n.scrollWidth > n.clientWidth + 1 && fs > 7 && k++ < 10){ fs -= 0.5; n.style.setProperty("font-size", fs + "px", "important"); }
+    });
+  }catch(e){}
+}
+try{ if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ scFitCatNames(); }); }catch(e){}
 function scCatHint(){
+  scFitCatNames();
   var row = document.querySelector("#filters .main-filters"); var box = document.getElementById("filters");
   if(!row || !box) return;
   var more = row.scrollWidth - row.clientWidth - row.scrollLeft > 8, back = row.scrollLeft > 8;

@@ -7153,7 +7153,18 @@ function scFitHeaderButtons(){
 }
 window.addEventListener("resize", function(){ scFitHeaderButtons(); scCatHint(); });
 /* categories row: fade + arrow on the side while more categories are hidden; a small nudge the first time */
+/* category labels: a long word gets a smaller font instead of being cut in the middle */
+function scFitCatNames(){
+  try{
+    document.querySelectorAll("#filters .main-filter-btn .cat-name").forEach(function(n){
+      n.style.removeProperty("font-size"); var fs = parseFloat(getComputedStyle(n).fontSize) || 10, k = 0;
+      while(n.scrollWidth > n.clientWidth + 1 && fs > 7 && k++ < 10){ fs -= 0.5; n.style.setProperty("font-size", fs + "px", "important"); }
+    });
+  }catch(e){}
+}
+try{ if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ scFitCatNames(); }); }catch(e){}
 function scCatHint(){
+  scFitCatNames();
   var row = document.querySelector("#filters .main-filters"); var box = document.getElementById("filters");
   if(!row || !box) return;
   var more = row.scrollWidth - row.clientWidth - row.scrollLeft > 8, back = row.scrollLeft > 8;
@@ -14315,7 +14326,7 @@ body{padding-bottom:64px}
 #filters .main-filters .main-filter-btn,#filters .main-filters .main-filter-btn.tourist-main,#filters .main-filters .main-filter-btn[onclick*="mobility"]{flex:0 0 84px!important;width:84px!important;min-width:84px!important;min-height:88px!important;grid-column:auto!important;grid-row:auto!important;padding:6px 3px 7px!important;scroll-snap-align:start;position:relative!important}
 #filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:60px!important;height:48px!important;flex:0 0 48px!important;margin:0 auto 4px!important;background:none!important;border-radius:0!important;overflow:visible!important}
 #filters .main-filters .main-filter-btn .cat-icon.cat-img img{width:100%!important;height:100%!important;object-fit:contain!important;border-radius:0!important;filter:drop-shadow(0 3px 5px rgba(91,41,90,.12))}
-#filters .main-filters .main-filter-btn .cat-name,#filters .main-filters .main-filter-btn.tourist-main .cat-name{font-size:10px!important;line-height:1.12!important;letter-spacing:-.15px!important;overflow-wrap:anywhere;hyphens:auto;max-width:100%;padding:0 1px!important}
+#filters .main-filters .main-filter-btn .cat-name,#filters .main-filters .main-filter-btn.tourist-main .cat-name{font-size:10px!important;line-height:1.12!important;letter-spacing:-.15px!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:manual!important;max-width:100%;padding:0 1px!important}
 #filters .main-filters .main-filter-btn .cat-hot{top:-7px!important;font-size:7.5px!important;padding:1px 5px!important;white-space:nowrap}
 @media(min-width:700px){#filters .main-filters .main-filter-btn,#filters .main-filters .main-filter-btn.tourist-main,#filters .main-filters .main-filter-btn[onclick*="mobility"]{flex:1 1 0!important;width:auto!important;min-height:110px!important}#filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:84px!important;height:66px!important;flex-basis:66px!important}#filters .main-filters .main-filter-btn .cat-name{font-size:12.5px!important}}
 .final-checkout-btn{background:linear-gradient(135deg,#5B295A,#9A2D98)!important;box-shadow:0 12px 26px rgba(91,41,90,.22)!important}
