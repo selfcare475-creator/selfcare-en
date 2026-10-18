@@ -784,6 +784,9 @@ repIn("loadSharedCurrencyRates", "    if(typeof requestGridRender===\"function\"
   }
 }
 
+/* product pictures are plain (non-CORS) requests: the existing crossorigin preconnect is not used for them → add a normal one */
+rep('<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>', '<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>\n<link rel="preconnect" href="https://res.cloudinary.com">');
+
 /* ---------- no flash on load: every <style> that sits in the page body moves into <head> (same order, so the cascade is unchanged),
    and a non-English page stays hidden until its texts are switched (max 1.2 s) ---------- */
 {

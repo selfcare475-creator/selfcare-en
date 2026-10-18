@@ -447,11 +447,31 @@ function __scFoldRun(){
 }
 window.addEventListener("resize", function(){ if(window.innerWidth !== __scFoldW){ __scFoldVH = 0; __scFoldMB = null; scFoldFix(); } });
 try{ var __scCvCss = document.createElement("style"); __scCvCss.id = "sc-cv-css";
-  __scCvCss.textContent = "#grid > .card:not(.kit-card){contain-intrinsic-size:auto var(--sc-card-h,305px)!important}#grid > .card:nth-child(-n+8){content-visibility:visible!important}";
+  __scCvCss.textContent = "#grid > .card:not(.kit-card){contain-intrinsic-size:auto var(--sc-card-h,305px)!important}#grid > .card{content-visibility:visible!important}";
   document.head.appendChild(__scCvCss); }catch(e){}
 window.addEventListener("load", function(){ setTimeout(scFoldFix, 50); });
 try{ if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ setTimeout(scFoldFix, 50); }); }catch(e){}
-document.addEventListener("DOMContentLoaded", function(){ try{ var g = document.getElementById("grid"); if(g) new MutationObserver(function(){ scFoldFix(); }).observe(g, {childList: true}); }catch(e){} });
+/* every re-render (category, sub-category, stock, language…) rebuilds the cards with brand-new <img> tags, so each picture blinked
+   empty and was decoded again. Keep the pictures already on screen: a new card gets the same, already-drawn <img> back. */
+var __scImgKeep = new Map();
+function scReuseImgs(){
+  try{
+    var imgs = document.querySelectorAll("#grid > .card .card-img-wrap img"), next = new Map();
+    for(var i = 0; i < imgs.length; i++){
+      var n = imgs[i], src = n.getAttribute("src") || "";
+      if(!src || src.indexOf("data:") === 0) continue;
+      var old = __scImgKeep.get(src);
+      if(old && old !== n && old.complete && old.naturalWidth > 0 && !old.isConnected){
+        old.className = n.className; old.alt = n.alt; if(n.loading) old.loading = n.loading;
+        n.replaceWith(old); next.set(src, old);
+      } else next.set(src, n);
+    }
+    /* remember the pictures of this render (and keep earlier ones, up to 400) for the next one */
+    __scImgKeep.forEach(function(v, k){ if(!next.has(k) && next.size < 400) next.set(k, v); });
+    __scImgKeep = next;
+  }catch(e){}
+}
+document.addEventListener("DOMContentLoaded", function(){ try{ var g = document.getElementById("grid"); if(g) new MutationObserver(function(){ scReuseImgs(); scFoldFix(); }).observe(g, {childList: true}); }catch(e){} });
 /* an image that fails before the main script loads would call imageFallback() too early — retry once it exists */
 if(typeof window.imageFallback !== "function"){ window.imageFallback = function __scImgWait(img){ setTimeout(function(){ if(window.imageFallback !== __scImgWait) try{ window.imageFallback(img); }catch(e){} }, 300); }; }
 /* translate what is already on screen right away (header, search, language chip), then show the page — no wait for the whole document */
