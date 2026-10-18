@@ -48,6 +48,10 @@ function approxText(egp){
 }
 
 /* ---- product names / texts in the chosen language ---- */
+/* Czech words left in Polish / Slovak names */
+var SC_PL_FIX = [["opalovací spray pro děti","spray do opalania dla dzieci"],["dětský opalovací krem","krem do opalania dla dzieci"],["pleťový krem s mořským kolagenem","krem do twarzy z kolagenem morskim"],["ampułki s mořským kolagenem","ampułki z kolagenem morskim"],["bělící pleťový krem","wybielający krem do twarzy"],["bělicí pasta","wybielająca pasta"],["tělové mléko","mleczko do ciała"],["sérum na řasy","serum do rzęs"],["tekutý doplněk","suplement w płynie"],["pěna","pianka"]];
+var SC_SK_FIX = [["mléko pro dospělé","mlieko pre dospelých"],["pro dospělé","pre dospelých"],["pro děti","pre deti"],["sérum na řasy","sérum na mihalnice"],["proti vypadávání vlasů","proti vypadávaniu vlasov"],["proti lupům","proti lupinám"],["krém s mořským kolagenem","krém s morským kolagénom"],["ampule s mořským kolagenem","ampulky s morským kolagénom"],["bělicí","bieliaca"],["bělící","bieliaci"],["tekutý doplněk","tekutý doplnok"],["pěna","pena"]];
+function scFixCz(n, list){ n = String(n||""); for(var i = 0; i < list.length; i++){ n = n.split(list[i][0]).join(list[i][1]); } return n; }
 function pName(p){
   if(!p) return "";
   var l = displayLanguage;
@@ -56,8 +60,8 @@ function pName(p){
   var cz = String(p.name_cz || "").trim() || p.name || "";
   try{
     if(l === "cs") return cz;
-    if(l === "sk") return productNameSk(cz).replace(/perorální/gi, "perorálna").replace(/injekční pero/gi, "injekčné pero");
-    if(l === "pl") return productNamePl(cz).replace(/injekční pero/gi, "wstrzykiwacz").replace(/perorální/gi, "doustna");
+    if(l === "sk") return scFixCz(productNameSk(cz).replace(/perorální/gi, "perorálna").replace(/injekční pero/gi, "injekčné pero"), SC_SK_FIX);
+    if(l === "pl") return scFixCz(productNamePl(cz).replace(/injekční pero/gi, "wstrzykiwacz").replace(/perorální/gi, "doustna"), SC_PL_FIX);
     if(l === "ru") return productNameRu(p.name || cz);
     if(l === "ua") return productNameUa(p.name || cz);
     if(l === "de") return productNameDe(p.name || cz);
@@ -135,9 +139,10 @@ function scApplyStaticTexts(){
 function scFitHeaderButtons(){
   try{
     document.querySelectorAll("header .cart-btn").forEach(function(b){
-      b.style.fontSize = "";
+      b.style.fontSize = ""; var bd = b.querySelector(".cart-badge"), bdD = bd ? bd.style.display : ""; if(bd) bd.style.display = "none";
       var fs = parseFloat(getComputedStyle(b).fontSize) || 13, n = 0;
       while(b.scrollWidth > b.clientWidth + 1 && fs > 10 && n++ < 8){ fs -= 0.5; b.style.fontSize = fs + "px"; }
+      if(bd) bd.style.display = bdD;
     });
   }catch(e){}
 }
@@ -156,6 +161,7 @@ function scCatHint(){
       setTimeout(function(){ row.scrollTo({left:70, behavior:"smooth"}); setTimeout(function(){ row.scrollTo({left:0, behavior:"smooth"}); }, 650); }, 900); }
   }
 }
+function scNameCls(n){ n = String(n||""); var w = Math.max.apply(null, n.split(/\s+/).map(function(x){ return x.length; }).concat([0])); return (n.length > 42 || w > 15) ? " sc-n3" : (n.length > 28 || w > 12) ? " sc-n2" : ""; }
 function scCatScroll(dir){ var row = document.querySelector("#filters .main-filters"); if(row) row.scrollBy({left: dir * Math.round(row.clientWidth * 0.7), behavior:"smooth"}); }
 var SC_CUR_SYM = {GBP:"£",EUR:"€",USD:"$",CZK:"Kč"};
 function scOpenPrefs(){ var s = document.getElementById("scPrefsSheet"); if(!s) return; scUpdatePrefButtons(); s.classList.add("show"); s.setAttribute("aria-hidden","false"); }

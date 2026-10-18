@@ -396,6 +396,10 @@ rep('<div class="min-order-popup-text" style="margin-top:6px">', '<div class="mi
 rep('onclick="scDismissHotelWarn()">Got it — I understand</button>', 'id="hwOk" onclick="scDismissHotelWarn()">Got it — I understand</button>');
 
 /* language + currency row: same look as the English site's buttons */
+/* long product names: 3 lines, smaller font instead of a cut-off name */
+rep('<div class="card-name" onclick="openModal(${idx})">${pName(p)}</div>', '<div class="card-name${scNameCls(pName(p))}" onclick="openModal(${idx})">${pName(p)}</div>', 2);
+/* + / − on a card: update that card only (no full grid redraw = no blink) */
+repIn("changeCardQty", "  smoothRenderGridSoon();\n}", "  var __pill = e && e.currentTarget && e.currentTarget.closest ? e.currentTarget.closest(\".qty-pill\") : null;\n  if(__pill){ __pill.classList.toggle(\"active\", next > 0); var __n = __pill.querySelector(\".qty-pill-num\"); if(__n) __n.textContent = next; try{ e.currentTarget.blur(); }catch(_){} }\n  else smoothRenderGridSoon();\n}");
 rep("\n</head>\n", `\n<style id="sc-prefs-css">
 .sc-prefs-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;width:calc(100% - 32px);max-width:1200px;margin:12px 16px 0;padding:10px 12px 10px 14px;border:1.5px solid #e4d2e4;border-radius:16px;background:linear-gradient(135deg,#fbf6fb,#fff);color:#3b1d3b;font:inherit;cursor:pointer;box-shadow:0 4px 14px rgba(91,41,90,.07);-webkit-tap-highlight-color:transparent;text-align:left}
 .sc-prefs-bar-label{font-size:11.5px;font-weight:900;color:#8a6b8a;text-transform:uppercase;letter-spacing:.4px;line-height:1.2}
@@ -426,7 +430,7 @@ rep("\n</head>\n", `\n<style id="sc-prefs-css">
 .sc-pref-btn,.sc-pref-btn:focus,.sc-pref-btn:focus-visible,.sc-pref-btn:active{-webkit-tap-highlight-color:transparent;outline:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .sc-sheet-done{display:block;width:100%;margin-top:14px;height:46px;border:none;border-radius:14px;background:#D6501B;color:#fff;font:inherit;font-size:15px;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent}
 #scArBtn{display:none!important}
-header .cart-btn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .cart-btn{white-space:nowrap;overflow:visible!important;position:relative}header .cart-btn .cart-badge{z-index:5}#cartBtnText{overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 `);
@@ -446,6 +450,11 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 
 /* ---------- look: smaller WhatsApp bubble, no version stamp ---------- */
 rep("\n</body>\n", `\n<style id="sc-look-v1">
+button,a,.card,.card-img-wrap,.qty-pill,.qty-pill-btn{-webkit-tap-highlight-color:transparent!important}
+.qty-pill-btn:focus,.qty-pill-btn:focus-visible,.qty-pill-btn:active{outline:none!important}
+#grid .card-name{max-height:none!important;-webkit-line-clamp:3!important;overflow-wrap:break-word;hyphens:auto}
+#grid .card-name.sc-n2{font-size:.9em!important;line-height:1.25!important}
+#grid .card-name.sc-n3{font-size:.82em!important;line-height:1.22!important}
 .floating-wa{width:46px!important;height:46px!important;right:12px!important;bottom:14px!important;font-size:21px!important;border-width:2px!important;box-shadow:0 6px 16px rgba(37,211,102,.32)!important}
 body{padding-bottom:64px}
 .sc-version-stamp{display:none!important}
