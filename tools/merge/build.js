@@ -562,7 +562,7 @@ html body #grid .card-name{height:38px!important;min-height:38px!important;max-h
 }
 /* header: logo + a little shorter */
 html body header{padding:9px 14px!important;justify-content:flex-start!important;gap:10px!important;min-height:0!important}
-html body header .sc-hlogo{flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:#fff7f5 url(/icon-192.png) center/118% no-repeat;border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+html body header .sc-hlogo{flex:0 0 44px;width:44px;height:44px;background:url(/sc-logo-white.png?v=1) center/contain no-repeat;border:0;border-radius:0;box-shadow:none}
 html body header > div:last-child{margin-left:auto!important;gap:5px!important}
 html body header .cart-btn{padding:6px 14px!important;min-height:0!important}
 html body header #myOrdersBtn{padding:4px 10px!important}
@@ -750,6 +750,7 @@ fs.mkdirSync(OUT_DIR, {recursive: true});
 for(const f of fs.readdirSync(EN_DIR)) if(f !== "index.html") fs.copyFileSync(path.join(EN_DIR, f), path.join(OUT_DIR, f));
 fs.writeFileSync(path.join(OUT_DIR, "index.html"), html);
 fs.writeFileSync(path.join(OUT_DIR, "products-en.json"), JSON.stringify(enProducts));
+fs.copyFileSync(path.join(__dirname, "sc-logo-white.png"), path.join(OUT_DIR, "sc-logo-white.png"));
 /* Czech-only static pages keep working on the merged site */
 for(const f of ["ochrana-osobnich-udaju.html"]) if(fs.existsSync(path.join(CZ_DIR, f))) fs.copyFileSync(path.join(CZ_DIR, f), path.join(OUT_DIR, f));
 /* server side: per-domain / per-language <title>, description, html lang, canonical + hreflang (Cloudflare Pages Function, only for the page itself) */
