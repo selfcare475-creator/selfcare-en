@@ -429,6 +429,8 @@ rep("  b.wa = waLink(lines.join('\\n'));", "  S.lang = __scL;\n  b.wa = waLink(l
   const m = html.match(/<meta name="description" content="[^"]*">/);
   if(!m) failures.push("seo: description"); else html = html.replace(m[0], '<meta name="description" content="' + esc(SEO.en.desc) + '">');
 }
+/* logo in the header */
+rep("<header>\n  <div class=\"logo\">", "<header>\n  <span class=\"sc-hlogo\" role=\"img\" aria-label=\"Self Care\"></span>\n  <div class=\"logo\">");
 /* ===== checkout v2: needed fields first, compact time, sticky total + button ===== */
 repIn("renderCheckout", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;");
 repIn("renderCheckout", "  btn.title = \"\";\n", "  btn.title = \"\";\n");
@@ -505,6 +507,15 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 
 /* ---------- look: smaller WhatsApp bubble, no version stamp ---------- */
 rep("\n</body>\n", `\n<style id="sc-look-v1">
+/* header: logo + a little shorter */
+html body header{padding:9px 14px!important;justify-content:flex-start!important;gap:10px!important;min-height:0!important}
+html body header .sc-hlogo{flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:#fff7f5 url(/icon-192.png) center/118% no-repeat;border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+html body header > div:last-child{margin-left:auto!important;gap:5px!important}
+html body header .cart-btn{padding:6px 14px!important;min-height:0!important}
+html body header #myOrdersBtn{padding:4px 10px!important}
+html body header .logo{font-size:17px!important;white-space:nowrap!important;line-height:1.15!important}
+@media(max-width:380px){html body header .logo{font-size:15px!important}}
+@media(max-width:340px){html body header .sc-hlogo{flex-basis:34px;width:34px;height:34px}html body header .logo{font-size:13.5px!important}}
 /* product cards stay still: no lift, no border/shadow change, no image zoom on hover/tap */
 html body #grid .card,html body #grid .card:hover,html body #grid .card:active,html body #grid .card:focus,html body #grid .card:focus-within{transform:none!important;transition:none!important;border-color:rgb(221,226,234)!important;box-shadow:0 10px 24px rgba(31,49,81,.06)!important;outline:none!important}
 html body #grid .card .card-img-wrap img{transition:none!important}
