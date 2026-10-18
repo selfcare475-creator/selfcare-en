@@ -485,7 +485,7 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 
 /* ---------- look: smaller WhatsApp bubble, no version stamp ---------- */
 rep("\n</body>\n", `\n<style id="sc-look-v1">
-header{background:linear-gradient(135deg,#a63b12 0%,#c24716 100%)!important}
+header{background:linear-gradient(135deg,#93330f 0%,#b03f12 100%)!important}
 /* lighter + / − on product cards */
 #grid .qty-pill{height:36px!important;min-height:36px!important;padding:3px!important;border:0!important;background:#f5eff5!important;box-shadow:none!important;border-radius:999px!important}
 #grid .qty-pill.active{background:#eee0ee!important;box-shadow:none!important}
