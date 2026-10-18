@@ -400,12 +400,38 @@ rep('onclick="scDismissHotelWarn()">Got it — I understand</button>', 'id="hwOk
 rep('<div class="card-name" onclick="openModal(${idx})">${pName(p)}</div>', '<div class="card-name${scNameCls(pName(p))}" onclick="openModal(${idx})">${pName(p)}</div>', 2);
 /* + / − on a card: update that card only (no full grid redraw = no blink) */
 repIn("changeCardQty", "  smoothRenderGridSoon();\n}", "  var __pill = e && e.currentTarget && e.currentTarget.closest ? e.currentTarget.closest(\".qty-pill\") : null;\n  if(__pill){ __pill.classList.toggle(\"active\", next > 0); var __n = __pill.querySelector(\".qty-pill-num\"); if(__n) __n.textContent = next; try{ e.currentTarget.blur(); }catch(_){} }\n  else smoothRenderGridSoon();\n}");
+/* ===== checkout v2: needed fields first, compact time, sticky total + button ===== */
+repIn("renderCheckout", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    try{ scCoBtn(btn, !hotelValid ? \"needHotel\" : \"needPhone\"); }catch(e){}\n    return;");
+repIn("renderCheckout", "  btn.title = \"\";\n", "  btn.title = \"\";\n  try{ scCoBtn(btn, \"\"); }catch(e){}\n");
+repIn("renderCheckout", "  const deliveryDay = document.getElementById(\"deliveryDay\")?.value || \"Today\";", "  try{ scCoSum(itemCount, finalTotal); }catch(e){}\n  const deliveryDay = document.getElementById(\"deliveryDay\")?.value || \"Today\";");
+(function(){
+  const cut = (a, b) => { const i = html.indexOf(a), j = html.indexOf(b, i + 1); if(i < 0 || j < 0){ failures.push("checkout cut: " + a.slice(0, 60)); return null; } return [i, j]; };
+  const A = '<div class="checkout-section">\n      <label id="checkoutHotelLabel">';
+  const G = '<div class="checkout-grid checkout-date-time-grid">';
+  const P = '\n    <div class="checkout-section">\n      <label id="paymentLabel">';
+  const PH = '\n    <div class="checkout-section">\n      <label id="checkoutPhoneLabel">';
+  const N = '\n    <div class="checkout-section note-section">';
+  const TB = '\n    <div class="checkout-total-box" id="checkoutTotalBox"></div>';
+  const END = '\n  </div>\n</div>\n<div id="orderConfirmOverlay"';
+  const i0 = html.indexOf(A), iG = html.indexOf(G, i0), iP = html.indexOf(P, iG), iPH = html.indexOf(PH, iP), iN = html.indexOf(N, iPH), iTB = html.indexOf(TB, iN), iE = html.indexOf(END, iTB);
+  if([i0, iG, iP, iPH, iN, iTB, iE].some(x => x < 0)){ failures.push("checkout v2 anchors " + [i0, iG, iP, iPH, iN, iTB, iE].join(",")); return; }
+  const hotel = html.slice(i0, iG), grid = html.slice(iG, iP), pay = html.slice(iP, iPH), phone = html.slice(iPH, iN), note = html.slice(iN, iTB);
+  let tail = html.slice(iTB, iE);
+  const help = '<div class="checkout-help" id="checkoutConfirmHelp">';
+  const ih = tail.indexOf(help); const ihE = tail.indexOf('</div>', ih) + 6; const helpHtml = tail.slice(ih, ihE); tail = tail.slice(0, ih) + tail.slice(ihE);
+  const ib = tail.indexOf('<a id="finalCheckoutBtn"'), ibE = tail.indexOf('</a>', ib) + 4;
+  tail = tail.slice(0, ib) + '<div class="sc-co-btnwrap" onclick="scCoFocusMissing()">' + tail.slice(ib, ibE) + '</div>' + tail.slice(ibE);
+  const when = '\n    <button type="button" class="sc-co-when" id="scCoWhen" onclick="scToggleWhen()"><span class="sc-co-when-l"><span id="scCoWhenLabel">Delivery time</span><b>📅 <span id="scCoWhenText">Today · 12 PM</span></b></span><span class="sc-co-edit"><span id="scCoWhenEdit">Change</span> ✎</span></button>\n    ';
+  const foot = '\n    <div class="sc-co-foot">\n    <button type="button" class="sc-co-sum" id="scCoSum" onclick="scToggleCoDetails()"><span id="scCoSumText" class="sc-co-sumtext"></span><span class="sc-co-more">▾</span></button>' + tail + '\n    ' + helpHtml + '\n    </div>';
+  html = html.slice(0, i0) + hotel.replace(/\s+$/, '') + phone + note + when + grid.replace(/^\s+/, '') + pay + foot + html.slice(iE);
+})();
 rep("\n</head>\n", `\n<style id="sc-prefs-css">
-.sc-prefs-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;width:calc(100% - 32px);max-width:1200px;margin:12px 16px 0;padding:10px 12px 10px 14px;border:1.5px solid #e4d2e4;border-radius:16px;background:linear-gradient(135deg,#fbf6fb,#fff);color:#3b1d3b;font:inherit;cursor:pointer;box-shadow:0 4px 14px rgba(91,41,90,.07);-webkit-tap-highlight-color:transparent;text-align:left}
-.sc-prefs-bar-label{font-size:11.5px;font-weight:900;color:#8a6b8a;text-transform:uppercase;letter-spacing:.4px;line-height:1.2}
-.sc-prefs-bar-val{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:900;color:#5B295A;white-space:nowrap}
-.sc-prefs-bar-arrow{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#5B295A;color:#fff;font-size:12px}
-@media(max-width:380px){.sc-prefs-bar-label{font-size:10px}.sc-prefs-bar-val{font-size:12.5px}}
+.sc-prefs-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;max-width:none;margin:0;padding:9px 16px;border:0;border-radius:0;background:linear-gradient(135deg,#4e1f4d,#6b2c69);color:#fff;font:inherit;cursor:pointer;box-shadow:0 4px 12px rgba(78,31,77,.18);-webkit-tap-highlight-color:transparent;text-align:left;position:relative;z-index:1}
+.sc-prefs-bar-label{font-size:11px;font-weight:800;color:rgba(255,255,255,.72);text-transform:uppercase;letter-spacing:.5px;line-height:1.2}
+.sc-prefs-bar-val{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:900;color:#fff;white-space:nowrap}
+.sc-prefs-bar-arrow{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:11px}
+@media(max-width:380px){.sc-prefs-bar-label{font-size:9.5px}.sc-prefs-bar-val{font-size:12.5px}}
+@media(min-width:700px){.sc-prefs-bar{justify-content:center;gap:18px}}
 #filters{position:relative}
 #filters .sc-cat-arrow{position:absolute;top:10px;height:88px;width:42px;border:none;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:3;padding:0;-webkit-tap-highlight-color:transparent;font-size:0}
 #filters .sc-cat-arrow span{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#5B295A;color:#fff;font-size:17px;font-weight:900;box-shadow:0 4px 12px rgba(91,41,90,.3)}
@@ -450,6 +476,60 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 
 /* ---------- look: smaller WhatsApp bubble, no version stamp ---------- */
 rep("\n</body>\n", `\n<style id="sc-look-v1">
+/* lighter + / − on product cards */
+#grid .qty-pill{height:36px!important;min-height:36px!important;padding:3px!important;border:0!important;background:#f5eff5!important;box-shadow:none!important;border-radius:999px!important}
+#grid .qty-pill.active{background:#eee0ee!important;box-shadow:none!important}
+#grid .qty-pill-btn{width:30px!important;height:30px!important;min-width:30px!important;box-shadow:none!important;border:0!important}
+#grid .qty-pill-btn:first-child{background:#fff!important;color:#5B295A!important}
+#grid .qty-pill-btn:last-child{background:#5B295A!important}
+#grid .qty-pill-btn .qty-symbol{font-size:17px!important}
+#grid .qty-pill-num{font-size:15px!important;font-weight:900!important}
+#checkoutOverlay .payment-option span{font-size:14px!important;font-weight:900!important}
+
+/* ===== checkout v2 ===== */
+#checkoutOverlay .checkout-sheet{padding:14px 14px 0!important;background:#fff!important}
+#checkoutOverlay .checkout-head{padding:0 2px 8px!important;margin-bottom:4px!important;border-bottom:1px solid #f1e8f1!important}
+#checkoutOverlay .checkout-head h2{font-size:19px!important;color:#3b1d3b!important}
+#checkoutOverlay .checkout-mini{color:#9a7f9a!important}
+#checkoutOverlay .close-checkout{background:#f6eff6!important;color:#5B295A!important;border:0!important}
+#checkoutOverlay .checkout-section{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:10px 2px!important;margin:0!important;border-bottom:1px solid #f3ecf3!important}
+#checkoutOverlay .checkout-section label{text-align:left!important;font-size:12.5px!important;font-weight:800!important;color:#5d4a5d!important;margin-bottom:6px!important}
+#checkoutOverlay .checkout-input{background:#fbf8fb!important;border:1.5px solid #ecdfec!important;border-radius:12px!important;height:44px!important;font-size:15px!important;color:#2b1a2b!important;box-shadow:none!important}
+#checkoutOverlay .checkout-input:focus{border-color:#A94AA7!important;background:#fff!important;outline:none!important;box-shadow:0 0 0 3px rgba(169,74,167,.12)!important}
+#checkoutOverlay .checkout-note-field{text-align:left!important}
+#checkoutOverlay .phone-row{grid-template-columns:104px 1fr!important;gap:8px!important}
+#checkoutOverlay .phone-code{font-size:14px!important}
+#checkoutOverlay .checkout-help{text-align:left!important;color:#8a7a8a!important;opacity:1!important}
+#checkoutOverlay .sc-co-miss{border-color:#D6501B!important;box-shadow:0 0 0 3px rgba(214,80,27,.15)!important}
+.sc-co-when{display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px;background:transparent;border:0;border-bottom:1px solid #f3ecf3;padding:12px 2px;font:inherit;cursor:pointer;text-align:left;color:#2b1a2b}
+.sc-co-when-l{display:flex;flex-direction:column;gap:3px}
+.sc-co-when-l>span{font-size:12.5px;font-weight:800;color:#5d4a5d}
+.sc-co-when-l b{font-size:15px;font-weight:900}
+.sc-co-edit{font-size:13px;font-weight:900;color:#A94AA7;white-space:nowrap}
+.sc-co-when.sc-open .sc-co-edit{opacity:.5}
+#checkoutOverlay .checkout-date-time-grid{display:none!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:4px 0 6px!important;margin:0!important;border-bottom:1px solid #f3ecf3!important;border-radius:0!important}
+#checkoutOverlay .checkout-date-time-grid.sc-open{display:grid!important}
+#checkoutOverlay .checkout-date-time-grid .checkout-section{border:0!important;padding:4px 2px!important}
+#checkoutOverlay .payment-options{display:flex!important;gap:8px!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+#checkoutOverlay .payment-option{flex:1;display:flex!important;align-items:center;justify-content:center;min-height:40px!important;border:1.5px solid #ecdfec!important;border-radius:999px!important;background:#fff!important;font-size:14px!important;font-weight:900!important;color:#5B295A!important;box-shadow:none!important;cursor:pointer}
+#checkoutOverlay .payment-option input{position:absolute;opacity:0;pointer-events:none}
+#checkoutOverlay .payment-option:has(input:checked){background:#5B295A!important;border-color:#5B295A!important;color:#fff!important}
+#checkoutOverlay .payment-note{text-align:left!important;color:#8a7a8a!important}
+.sc-co-foot{position:sticky;bottom:0;z-index:4;background:#fff;margin:6px -14px 0;padding:10px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #f1e8f1;box-shadow:0 -8px 20px rgba(91,41,90,.06)}
+.sc-co-sum{display:flex;align-items:center;width:100%;gap:8px;background:transparent;border:0;padding:0 2px 8px;font:inherit;cursor:pointer;color:#2b1a2b}
+.sc-co-sumtext{flex:1;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sc-co-count{font-size:13px;font-weight:800;color:#7b667b}
+.sc-co-total b{font-size:18px;font-weight:900;color:#3b1d3b}
+.sc-co-total small{font-size:12.5px;font-weight:800;color:#8a7a8a}
+.sc-co-more{font-size:12px;color:#A94AA7;transition:transform .2s}
+.sc-co-sum.sc-open .sc-co-more{transform:rotate(180deg)}
+#checkoutOverlay .checkout-total-box{display:none!important;background:#fbf8fb!important;border:0!important;box-shadow:none!important;margin:0 0 8px!important}
+#checkoutOverlay .checkout-total-box.sc-open{display:block!important}
+#checkoutOverlay .final-checkout-btn{height:50px!important;border-radius:16px!important;font-size:15px!important;opacity:1!important}
+#checkoutOverlay .final-checkout-btn.sc-co-wait{background:#f3e9f3!important;color:#5B295A!important;box-shadow:none!important;border:1.5px dashed #d9bfd8!important}
+.sc-co-btnwrap{cursor:pointer}
+.sc-co-foot .checkout-help{margin-top:6px!important;text-align:center!important;font-size:10.5px!important}
+
 button,a,.card,.card-img-wrap,.qty-pill,.qty-pill-btn{-webkit-tap-highlight-color:transparent!important}
 .qty-pill-btn:focus,.qty-pill-btn:focus-visible,.qty-pill-btn:active{outline:none!important}
 #grid .card-name{max-height:none!important;-webkit-line-clamp:3!important;overflow-wrap:break-word;hyphens:auto}

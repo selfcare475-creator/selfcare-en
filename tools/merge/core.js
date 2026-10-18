@@ -120,7 +120,7 @@ function scApplyStaticTexts(){
   scSetAttr("checkoutPhone", "placeholder", T("phonePh")); scSetText("phoneManualOption", T("phoneOther"));
   scSetText("checkoutPhoneHelp", T("phoneHelp")); scSetText("checkoutNoteLabel", T("noteLabel"));
   scSetAttr("checkoutNote", "placeholder", T("notePh")); scSetText("checkoutConfirmHelp", T("confirmHelp"));
-  var fb = document.getElementById("finalCheckoutBtn"); if(fb && !fb.dataset.submitting && !fb.href) fb.textContent = T("confirmBtn");
+  var fb = document.getElementById("finalCheckoutBtn"); if(fb && !fb.dataset.submitting && !fb.href) fb.textContent = fb.dataset.scNeed ? T(fb.dataset.scNeed) : T("confirmBtn"); scSetText("scCoWhenEdit", T("coChange")); scSetText("scCoWhenLabel", T("coWhen"));
   scSetText("osTitle", T("osTitle")); scSetText("osSub", T("osSub")); scSetText("osNum", T("osNum"));
   scSetText("sc-order-success-copied", T("osTap")); scSetText("osFinal", T("osFinal")); scSetText("osFinalText", T("osFinalText"));
   scSetText("sc-order-success-wa", T("osSend")); scSetText("osContinue", T("osContinue"));
@@ -234,3 +234,31 @@ document.addEventListener("DOMContentLoaded", function(){
   try{ scApplyStaticTexts(); }catch(e){}
   try{ var pc = document.getElementById("checkoutPhoneCode"); if(pc) pc.addEventListener("change", function(){ pc.dataset.touched = "1"; }); }catch(e){}
 });
+
+/* checkout: one summary line next to the button, compact delivery time, button says what is missing */
+function scCoSum(count, total){
+  var el = document.getElementById("scCoSumText"); if(!el) return;
+  el.innerHTML = '<span class="sc-co-count">' + count + ' ' + T("pcs") + '</span><span class="sc-co-total"><b>' + total + ' EGP</b> <small>' + approxText(total) + '</small></span>';
+  scCoWhen();
+}
+function scCoWhen(){
+  try{
+    var d = document.getElementById("deliveryDay"), t = document.getElementById("deliveryTime"), out = document.getElementById("scCoWhenText");
+    if(!d || !t || !out) return;
+    var dt = d.selectedOptions && d.selectedOptions[0] ? d.selectedOptions[0].textContent.trim() : d.value;
+    var tt = t.selectedOptions && t.selectedOptions[0] ? t.selectedOptions[0].textContent.trim() : t.value;
+    out.textContent = dt + " · " + tt;
+  }catch(e){}
+}
+function scToggleWhen(){ var g = document.querySelector("#checkoutOverlay .checkout-date-time-grid"); var w = document.getElementById("scCoWhen"); if(!g) return; var open = g.classList.toggle("sc-open"); if(w) w.classList.toggle("sc-open", open); }
+function scToggleCoDetails(){ var b = document.getElementById("checkoutTotalBox"), s = document.getElementById("scCoSum"); if(!b) return; var open = b.classList.toggle("sc-open"); if(s) s.classList.toggle("sc-open", open); }
+function scCoBtn(btn, need){
+  if(!btn || btn.dataset.submitting) return;
+  if(need){ btn.dataset.scNeed = need; btn.classList.add("sc-co-wait"); btn.style.opacity = ""; btn.textContent = T(need); }
+  else { delete btn.dataset.scNeed; btn.classList.remove("sc-co-wait"); btn.textContent = T("confirmBtn"); }
+}
+function scCoFocusMissing(){
+  var b = document.getElementById("finalCheckoutBtn"); if(!b || !b.dataset.scNeed) return;
+  var el = document.getElementById(b.dataset.scNeed === "needHotel" ? "checkoutHotel" : "checkoutPhone");
+  if(el){ el.classList.add("sc-co-miss"); el.scrollIntoView({block:"center", behavior:"smooth"}); setTimeout(function(){ try{ el.focus({preventScroll:true}); }catch(e){ el.focus(); } }, 250); setTimeout(function(){ el.classList.remove("sc-co-miss"); }, 1600); }
+}
