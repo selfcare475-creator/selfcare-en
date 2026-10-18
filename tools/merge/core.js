@@ -122,7 +122,7 @@ function pName(p){
   try{
     if(l === "cs") return cz;
     if(l === "sk") return scFixCz(productNameSk(cz).replace(/perorální/gi, "perorálna").replace(/injekční pero/gi, "injekčné pero"), SC_SK_FIX);
-    if(l === "pl") var __pl = scFixCz(productNamePl(cz).replace(/injekční pero/gi, "wstrzykiwacz").replace(/perorální/gi, "doustna"), SC_PL_FIX); return SC_PL_FULL[__pl] || __pl;
+    if(l === "pl"){ var __pl = scFixCz(productNamePl(cz).replace(/injekční pero/gi, "wstrzykiwacz").replace(/perorální/gi, "doustna"), SC_PL_FIX); return SC_PL_FULL[__pl] || __pl; }
     if(l === "ru") return productNameRu(p.name || cz);
     if(l === "ua") return productNameUa(p.name || cz);
     if(l === "de") return productNameDe(p.name || cz);
@@ -190,7 +190,7 @@ function scApplyStaticTexts(){
   scSetAttr("checkoutPhone", "placeholder", T("phonePh")); scSetText("phoneManualOption", T("phoneOther"));
   scSetText("checkoutPhoneHelp", T("phoneHelp")); scSetText("checkoutNoteLabel", T("noteLabel"));
   scSetAttr("checkoutNote", "placeholder", T("notePh")); scSetText("checkoutConfirmHelp", T("confirmHelp"));
-  var fb = document.getElementById("finalCheckoutBtn"); if(fb && !fb.dataset.submitting && !fb.href) fb.textContent = fb.dataset.scNeed ? T(fb.dataset.scNeed) : T("confirmBtn"); scSetText("scCoWhenEdit", T("coChange")); scSetText("cardLabel", T("cardDelivery")); try{ document.documentElement.style.setProperty("--sc-browse", JSON.stringify(T("browseCat"))); document.documentElement.style.setProperty("--sc-swipe", JSON.stringify(T("swipeHint"))); }catch(e){} scSetText("scCoWhenLabel", T("coWhen"));
+  var fb = document.getElementById("finalCheckoutBtn"); if(fb && !fb.dataset.submitting && !fb.href) fb.textContent = fb.dataset.scNeed ? T(fb.dataset.scNeed) : T("confirmBtn"); scSetText("scCoWhenEdit", T("coChange")); scSetText("cardLabel", T("cardDelivery")); scSetText("scNavHomeL", T("navHome")); scSetText("scNavSearchL", T("navSearch")); scSetText("scNavOrdersL", T("myOrdersBtn")); scSetText("scNavHelpL", T("navHelp")); scNavUpdate(); try{ document.documentElement.style.setProperty("--sc-browse", JSON.stringify(T("browseCat"))); document.documentElement.style.setProperty("--sc-swipe", JSON.stringify(T("swipeHint"))); }catch(e){} scSetText("scCoWhenLabel", T("coWhen"));
   scSetText("osTitle", T("osTitle")); scSetText("osSub", T("osSub")); scSetText("osNum", T("osNum"));
   scSetText("sc-order-success-copied", T("osTap")); scSetText("osFinal", T("osFinal")); scSetText("osFinalText", T("osFinalText"));
   scSetText("sc-order-success-wa", T("osSend")); scSetText("osContinue", T("osContinue"));
@@ -351,3 +351,16 @@ var SC_USE_FIX = {
  "Sunscreen SPF 30-45":{cs:"Opalovací krém SPF 30–45",sk:"Opaľovací krém SPF 30–45",pl:"Krem z filtrem SPF 30–45",ru:"Солнцезащитный SPF 30–45",ua:"Сонцезахисний SPF 30–45",de:"Sonnenschutz LSF 30–45"}
 };
 function scUseFix(t){ try{ var f = SC_USE_FIX[String(t||"").trim()]; if(f && f[displayLanguage]) return f[displayLanguage]; }catch(e){} return t; }
+
+/* bottom bar: basket count + total */
+function scNavUpdate(){
+  try{
+    var n = 0, sum = 0;
+    for(var k in cart){ var q = parseInt(cart[k]) || 0; if(q > 0 && products[k]){ n += q; sum += (Number(livePrice(products[k])) || 0) * q; } }
+    var b = document.getElementById("scNavBadge"), l = document.getElementById("scNavCartL");
+    if(b){ b.textContent = n; b.classList.toggle("show", n > 0); }
+    if(l){ l.textContent = n > 0 ? (Math.round(sum) + " EGP") : T("basket"); }
+  }catch(e){}
+}
+function scNavSearch(){ var i = document.getElementById("searchInput"); if(!i) return; try{ i.scrollIntoView({block: "center", behavior: "smooth"}); }catch(e){} setTimeout(function(){ try{ i.focus({preventScroll: true}); }catch(e){ i.focus(); } }, 250); }
+function scNavHome(){ try{ window.scrollTo({top: 0, behavior: "smooth"}); }catch(e){ window.scrollTo(0, 0); } }

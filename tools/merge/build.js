@@ -431,6 +431,16 @@ rep("  b.wa = waLink(lines.join('\\n'));", "  S.lang = __scL;\n  b.wa = waLink(l
 }
 /* logo in the header */
 rep("<header>\n  <div class=\"logo\">", "<header>\n  <span class=\"sc-hlogo\" role=\"img\" aria-label=\"Self Care\"></span>\n  <div class=\"logo\">");
+/* bottom navigation bar (mobile): home · basket · my orders · WhatsApp */
+rep('<a class="floating-wa" href="https://wa.me/201501401776"', `<nav class="sc-bnav" aria-label="Menu">
+  <button type="button" class="sc-bn-item sc-bn-active" onclick="scNavHome()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span id="scNavHomeL">Home</span></button>
+  <button type="button" class="sc-bn-item" onclick="scNavSearch()"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span id="scNavSearchL">Search</span></button>
+  <button type="button" class="sc-bn-cart" onclick="openCart()" aria-label="Basket"><span class="sc-bn-circle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 8H6.2"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg><b id="scNavBadge">0</b></span><span id="scNavCartL">Basket</span></button>
+  <button type="button" class="sc-bn-item" onclick="scOpenMyOrders()"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span id="scNavOrdersL">My Orders</span></button>
+  <a class="sc-bn-item sc-bn-wa" href="https://wa.me/201501401776" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 20.5l1.3-4.6A8.5 8.5 0 1 1 8.2 19.3z"/></svg><span id="scNavHelpL">WhatsApp</span></a>
+</nav>
+<a class="floating-wa" href="https://wa.me/201501401776"`);
+repIn("updateStickyCart", "    if(bar){ bar.classList.toggle(\"show\", total > 0); }", "    if(bar){ bar.classList.toggle(\"show\", total > 0); }\n    try{ scNavUpdate(); }catch(_){}");
 /* ===== checkout v2: needed fields first, compact time, sticky total + button ===== */
 repIn("renderCheckout", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;");
 repIn("renderCheckout", "  btn.title = \"\";\n", "  btn.title = \"\";\n");
@@ -507,6 +517,24 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 
 /* ---------- look: smaller WhatsApp bubble, no version stamp ---------- */
 rep("\n</body>\n", `\n<style id="sc-look-v1">
+/* bottom navigation bar (phones and tablets) */
+.sc-bnav{display:none}
+@media(max-width:899px){
+  .sc-bnav{display:grid;grid-template-columns:1fr 1fr 1.15fr 1fr 1fr;align-items:end;position:fixed;left:0;right:0;bottom:0;z-index:950;background:#fff;border-top:1px solid #ece7e3;box-shadow:0 -6px 18px rgba(31,47,82,.07);padding:6px 6px calc(6px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
+  .sc-bnav .sc-bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;padding:4px 0;font:inherit;font-size:10.5px;white-space:nowrap;min-width:0;font-weight:800;color:#7a7f8c;text-decoration:none;cursor:pointer}
+  .sc-bnav .sc-bn-item svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .sc-bnav .sc-bn-active{color:#1f2f52}
+  .sc-bnav .sc-bn-wa{color:#128c7e}
+  .sc-bnav .sc-bn-cart{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;padding:0;font:inherit;font-size:11.5px;font-weight:900;color:#1f2f52;cursor:pointer}
+  .sc-bnav .sc-bn-circle{position:relative;display:flex;align-items:center;justify-content:center;width:56px;height:56px;margin-top:-26px;border-radius:50%;background:linear-gradient(135deg,#c24a17,#dc5a22);border:4px solid #fff;box-shadow:0 6px 16px rgba(194,74,23,.35)}
+  .sc-bnav .sc-bn-circle svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .sc-bnav #scNavBadge{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:#1f2f52;color:#fff;font-size:11px;line-height:20px;text-align:center;border:2px solid #fff;display:none}
+  .sc-bnav #scNavBadge.show{display:block}
+  html body header > div:last-child{display:none!important}
+  html body .floating-wa,html body #stickyCartBar,html body .sticky-cart-bar{display:none!important}
+  html body{padding-bottom:86px!important}
+  body.cart-open .sc-bnav,body:has(#cartPanel.open) .sc-bnav,body:has(#modalOverlay.open) .sc-bnav,body:has(#kitModalOverlay.open) .sc-bnav,body:has(#checkoutOverlay.open) .sc-bnav,body:has(#checkoutOverlay.show) .sc-bnav{display:none!important}
+}
 /* header: logo + a little shorter */
 html body header{padding:9px 14px!important;justify-content:flex-start!important;gap:10px!important;min-height:0!important}
 html body header .sc-hlogo{flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:#fff7f5 url(/icon-192.png) center/118% no-repeat;border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 8px rgba(0,0,0,.15)}
