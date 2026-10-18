@@ -425,7 +425,7 @@ repIn("renderCheckout", "  const deliveryDay = document.getElementById(\"deliver
   tail = tail.slice(0, ib) + '<div class="sc-co-btnwrap" onclick="scCoFocusMissing()">' + tail.slice(ib, ibE) + '</div>' + tail.slice(ibE);
   const when = '\n    <button type="button" class="sc-co-when" id="scCoWhen" onclick="scToggleWhen()"><span class="sc-co-when-l"><span id="scCoWhenLabel">Delivery time</span><b>📅 <span id="scCoWhenText">Today · 12 PM</span></b></span><span class="sc-co-edit"><span id="scCoWhenEdit">Change</span> ✎</span></button>\n    ';
   const foot = '\n    <div class="sc-co-foot">\n    <button type="button" class="sc-co-sum" id="scCoSum" onclick="scToggleCoDetails()"><span id="scCoSumText" class="sc-co-sumtext"></span><span class="sc-co-more">▾</span></button>' + tail + '\n    ' + helpHtml + '\n    </div>';
-  html = html.slice(0, i0) + hotel.replace(/\s+$/, '') + phone + note + when + grid.replace(/^\s+/, '') + pay + foot + html.slice(iE);
+  html = html.slice(0, i0) + hotel.replace(/\s+$/, '') + note + phone + when + grid.replace(/^\s+/, '') + pay + foot + html.slice(iE);
 })();
 rep("\n</head>\n", `\n<style id="sc-prefs-css">
 .sc-prefs-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;max-width:none;margin:0;padding:9px 16px;border:0;border-radius:0;background:linear-gradient(135deg,#4e1f4d,#6b2c69);color:#fff;font:inherit;cursor:pointer;box-shadow:0 4px 12px rgba(78,31,77,.18);-webkit-tap-highlight-color:transparent;text-align:left;position:relative;z-index:1}
