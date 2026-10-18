@@ -507,7 +507,8 @@ rep("\n</body>\n", `\n<style id="sc-look-v1">
 .sc-co-when-l b{font-size:15px;font-weight:900}
 .sc-co-edit{font-size:13px;font-weight:900;color:#A94AA7;white-space:nowrap}
 .sc-co-when.sc-open .sc-co-edit{opacity:.5}
-#checkoutOverlay .checkout-date-time-grid{display:none!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:4px 0 6px!important;margin:0!important;border-bottom:1px solid #f3ecf3!important;border-radius:0!important}
+#checkoutOverlay .sc-co-when{display:none!important}
+#checkoutOverlay .checkout-date-time-grid{display:grid!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:4px 0 6px!important;margin:0!important;border-bottom:1px solid #f3ecf3!important;border-radius:0!important}
 #checkoutOverlay .checkout-date-time-grid.sc-open{display:grid!important}
 #checkoutOverlay .checkout-date-time-grid .checkout-section{border:0!important;padding:4px 2px!important}
 #checkoutOverlay .payment-options{display:flex!important;gap:8px!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
