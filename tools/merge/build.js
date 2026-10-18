@@ -415,15 +415,10 @@ rep("\n</body>\n", `\n<style id="sc-look-v1">
 .floating-wa{width:46px!important;height:46px!important;right:12px!important;bottom:14px!important;font-size:21px!important;border-width:2px!important;box-shadow:0 6px 16px rgba(37,211,102,.32)!important}
 body{padding-bottom:64px}
 .sc-version-stamp{display:none!important}
-#filters .main-filters .main-filter-btn,#filters .main-filters .main-filter-btn.tourist-main{position:relative!important;overflow:hidden!important;padding:0!important;min-height:92px!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;align-items:stretch!important;gap:0!important;background:#fff!important}
-#filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;flex:none!important;margin:0!important;border-radius:0!important;background:none!important;overflow:hidden!important}
-#filters .main-filters .main-filter-btn .cat-icon.cat-img img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:0!important;transform:scale(1.04)}
-#filters .main-filters .main-filter-btn .cat-name,#filters .main-filters .main-filter-btn.tourist-main .cat-name{position:relative!important;z-index:1!important;display:block!important;margin:0!important;padding:5px 3px 6px!important;background:rgba(255,255,255,.93)!important;backdrop-filter:blur(4px);font-size:10.4px!important;line-height:1.1!important;text-align:center!important}
-#filters .main-filters .main-filter-btn .cat-hot,#filters .main-filters .main-filter-btn.tourist-main .cat-hot{z-index:2!important;top:4px!important;right:4px!important;left:auto!important;transform:none!important}
-#filters .main-filters .main-filter-btn.active .cat-name{background:#5B295A!important;color:#fff!important}
-@media(min-width:700px){#filters .main-filters .main-filter-btn,#filters .main-filters .main-filter-btn.tourist-main{min-height:170px!important}#filters .main-filters .main-filter-btn .cat-name{font-size:13px!important;padding:7px 4px!important}}
-@media(max-width:560px){#filters .main-filters .main-filter-btn,#filters .main-filters .main-filter-btn.tourist-main{min-height:88px!important;padding:0!important}#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:100%!important;height:100%!important;flex-basis:auto!important}#filters .main-filters .main-filter-btn.tourist-main .cat-name{font-size:10.4px!important}}
-@media(max-width:380px){#filters .main-filters .main-filter-btn{min-height:84px!important}#filters .main-filters .main-filter-btn .cat-name{font-size:9.6px!important}}
+#filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:68px!important;height:56px!important;flex:0 0 56px!important;margin:0 auto 3px!important;background:none!important;border-radius:0!important;overflow:visible!important}
+#filters .main-filters .main-filter-btn .cat-icon.cat-img img{width:100%!important;height:100%!important;object-fit:contain!important;border-radius:0!important;filter:drop-shadow(0 3px 5px rgba(91,41,90,.12))}
+#filters .main-filters .main-filter-btn,#filters .main-filters .main-filter-btn.tourist-main{min-height:96px!important;padding:7px 4px 8px!important}
+@media(min-width:700px){#filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:96px!important;height:78px!important;flex-basis:78px!important}}
 .final-checkout-btn{background:linear-gradient(135deg,#5B295A,#9A2D98)!important;box-shadow:0 12px 26px rgba(91,41,90,.22)!important}
 </style>
 </body>
@@ -455,10 +450,10 @@ body{padding-bottom:64px}
 }
 
 /* ---------- category icons (files in public/cat, from merge/cat) ---------- */
-replaceDecl("mainCategoryImages", "const mainCategoryImages = {\n" + ["top","medicine","supplements","skin","hair","sun","tourist"].map(k => `  ${k}: "/cat/${k}.webp?v=2"`).join(",\n") + "\n};");
+replaceDecl("mainCategoryImages", "const mainCategoryImages = {\n" + ["top","medicine","supplements","skin","hair","sun","tourist"].map(k => `  ${k}: "/cat/${k}.webp?v=3"`).join(",\n") + "\n};");
 {
   const m = html.match(/mainCategoryImages\.mobility = '[^']*'/);
-  if(!m) failures.push("mobility icon"); else html = html.replace(m[0], "mainCategoryImages.mobility = '/cat/mobility.webp?v=2'");
+  if(!m) failures.push("mobility icon"); else html = html.replace(m[0], "mainCategoryImages.mobility = '/cat/mobility.webp?v=3'");
 }
 
 /* ---------- 5. write ---------- */
