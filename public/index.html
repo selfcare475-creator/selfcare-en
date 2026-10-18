@@ -7142,9 +7142,9 @@ function setDisplayLanguage(l){
   if(l !== "en" && window.__SC_AR && typeof window.__scToggleAR === "function"){ try{ window.__scToggleAR(); }catch(e){} }
   displayLanguage = l;
   try{ localStorage.setItem("sc_lang", l); }catch(e){}
-  /* currency follows the language unless the customer chose one */
-  var chosen = null; try{ chosen = localStorage.getItem("sc_cur"); }catch(e){}
-  if(!chosen) displayCurrency = l === "en" ? "GBP" : "EUR";
+  /* picking a language always sets its currency: English → £, every other language (Czech included) → € ; the customer can still change it after */
+  displayCurrency = l === "en" ? "GBP" : "EUR";
+  try{ localStorage.removeItem("sc_cur"); }catch(e){}
   scApplyStaticTexts();
   scRerenderAll();
   try{ if(window.__scTrack) window.__scTrack("lang_change", {lang:l}); }catch(e){}
