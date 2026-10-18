@@ -377,7 +377,7 @@ rep('onclick="scDismissHotelWarn()">Got it — I understand</button>', 'id="hwOk
 
 /* language + currency row: same look as the English site's buttons */
 rep("\n</head>\n", `\n<style id="sc-prefs-css">
-.sc-prefs{display:flex;flex-direction:column;gap:6px;padding:8px 14px 2px;max-width:1200px;margin:0 auto}
+.sc-prefs{display:flex;flex-direction:column;gap:6px;padding:10px 16px 2px}
 .sc-pref-row{display:flex;align-items:center;gap:8px;min-width:0}
 .sc-pref-label{flex:0 0 auto;min-width:64px;font-size:11.5px;font-weight:800;color:#5b6b7a;text-transform:uppercase;letter-spacing:.4px}
 .sc-pref-opts{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:1px}
