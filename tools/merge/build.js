@@ -442,7 +442,7 @@ rep('<a class="floating-wa" href="https://wa.me/201501401776"', `<nav class="sc-
 repIn("updateStickyCart", "    if(bar){ bar.classList.toggle(\"show\", total > 0); }", "    if(bar){ bar.classList.toggle(\"show\", total > 0); }\n    try{ scNavUpdate(); }catch(_){}");
 /* language + currency: a compact chip inside the orange header */
 rep('  <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch">', '  <button type="button" class="sc-hchip" id="scPrefsChip" onclick="scOpenPrefs()" aria-haspopup="dialog" aria-label="Language &amp; currency"><span id="scPrefsChipText">🇬🇧 EN · £</span><span class="sc-hchip-arrow" aria-hidden="true">▾</span></button>\n  <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch">');
-repIn("renderGrid", "fastLoadMoreHtml(renderedCount,totalMatches);", "fastLoadMoreHtml(renderedCount,totalMatches);\n  try{ scFitNames(); }catch(e){}");
+repIn("renderGrid", "fastLoadMoreHtml(renderedCount,totalMatches);", "fastLoadMoreHtml(renderedCount,totalMatches);\n  try{ scFitNames(); scFoldFix(); }catch(e){}");
 /* ===== checkout v2: needed fields first, compact time, sticky total + button ===== */
 repIn("renderCheckout", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;");
 repIn("renderCheckout", "  btn.title = \"\";\n", "  btn.title = \"\";\n");

@@ -387,3 +387,27 @@ function scFitNames(){
   }catch(e){}
 }
 window.addEventListener("resize", function(){ document.querySelectorAll("#grid .card-name").forEach(function(n){ n.__scFit = null; }); scFitNames(); });
+
+/* first screen ends neatly: if the 2nd product row only peeks above the bottom bar, push it just below the bar (small gap only) */
+var __scFoldVH = 0, __scFoldW = 0;
+var __scFoldT = 0;
+function scFoldFix(){ clearTimeout(__scFoldT); __scFoldT = setTimeout(__scFoldRun, 160); }
+function __scFoldRun(){
+  try{
+    var cards = document.querySelectorAll("#grid > .card");
+    for(var i = 0; i < cards.length && i < 2; i++) cards[i].style.removeProperty("margin-bottom");
+    if(window.innerWidth >= 900 || cards.length < 3) return;
+    var nav = document.querySelector(".sc-bnav"); if(!nav || getComputedStyle(nav).display === "none") return;
+    if(!__scFoldVH || window.innerWidth !== __scFoldW){ __scFoldVH = window.innerHeight; __scFoldW = window.innerWidth; }
+    var fold = __scFoldVH - nav.offsetHeight;
+    var y = window.scrollY || 0;
+    var row2 = cards[2].getBoundingClientRect().top + y;
+    if(cards[2].getBoundingClientRect().top + y === cards[0].getBoundingClientRect().top + y) return;
+    var extra = Math.ceil(fold - row2 + 6);
+    if(extra > 0 && extra <= 130){ cards[0].style.setProperty("margin-bottom", extra + "px", "important"); cards[1].style.setProperty("margin-bottom", extra + "px", "important"); }
+  }catch(e){}
+}
+window.addEventListener("resize", function(){ if(window.innerWidth !== __scFoldW){ __scFoldVH = 0; scFoldFix(); } });
+window.addEventListener("load", function(){ setTimeout(scFoldFix, 50); });
+try{ if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ setTimeout(scFoldFix, 50); }); }catch(e){}
+document.addEventListener("DOMContentLoaded", function(){ try{ var g = document.getElementById("grid"); if(g) new MutationObserver(function(){ scFoldFix(); }).observe(g, {childList: true}); }catch(e){} });
