@@ -305,6 +305,7 @@ function scShowCzkNote(){
 }
 document.addEventListener("DOMContentLoaded", function(){
   try{ scApplyStaticTexts(); }catch(e){}
+  try{ requestAnimationFrame(function(){ document.documentElement.classList.remove("sc-pre"); }); }catch(e){ document.documentElement.classList.remove("sc-pre"); }
   try{ var pc = document.getElementById("checkoutPhoneCode"); if(pc) pc.addEventListener("change", function(){ pc.dataset.touched = "1"; }); }catch(e){}
 });
 

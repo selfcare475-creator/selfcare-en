@@ -635,6 +635,25 @@ replaceDecl("mainCategoryImages", "const mainCategoryImages = {\n" + ["top","med
   if(!m) failures.push("mobility icon"); else html = html.replace(m[0], "mainCategoryImages.mobility = '/cat/mobility.webp?v=3'");
 }
 
+/* ---------- no flash on load: every <style> that sits in the page body moves into <head> (same order, so the cascade is unchanged),
+   and a non-English page stays hidden until its texts are switched (max 1.2 s) ---------- */
+{
+  const headEnd = html.indexOf("\n</head>\n");
+  const hdr = html.indexOf("\n<header>");
+  if(headEnd < 0 || hdr < 0){ failures.push("flash: anchors"); }
+  else {
+    const scripts = []; { const re = /<script\b[^>]*>[\s\S]*?<\/script>/g; let m; while((m = re.exec(html))) scripts.push([m.index, m.index + m[0].length]); }
+    const inScript = i => scripts.some(([a, b]) => i > a && i < b);
+    const moved = []; const re = /\n<style\b[^>]*>[\s\S]*?<\/style>/g; let m; const cut = [];
+    while((m = re.exec(html))){ if(m.index < hdr || inScript(m.index)) continue; moved.push(m[0]); cut.push([m.index, m.index + m[0].length]); }
+    for(let k = cut.length - 1; k >= 0; k--) html = html.slice(0, cut[k][0]) + html.slice(cut[k][1]);
+    const pre = `\n<style id="sc-pre-css">html.sc-pre body{opacity:0}html body{transition:opacity .15s ease}</style>\n<script>(function(){try{var q=(location.search.match(/[?&]lang=([a-z]{2})/i)||[])[1],s=null;try{s=localStorage.getItem("sc_lang")}catch(e){}var l=(q||s||"").toLowerCase();if(!l){var L=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""];for(var i=0;i<L.length;i++){var b=String(L[i]||"").toLowerCase().split("-")[0];if(/^(en|cs|sk|pl|ru|uk|de)$/.test(b)){l=b;break}}}if(!l&&/selfcare-cz\\.com$/.test(location.hostname))l="cs";if(l&&l!=="en"){document.documentElement.classList.add("sc-pre");setTimeout(function(){document.documentElement.classList.remove("sc-pre")},1200)}}catch(e){}})();</script>`;
+    const he = html.indexOf("\n</head>\n");
+    html = html.slice(0, he) + moved.join("") + pre + html.slice(he);
+    if(moved.length < 5) failures.push("flash: moved only " + moved.length);
+  }
+}
+
 /* ---------- 5. write ---------- */
 if(failures.length){ console.error("BUILD FAILED:\n - " + failures.join("\n - ")); process.exit(1); }
 for(const s of inlineScripts(html)){ try{ parse(s.code); }catch(e){ console.error("syntax error in script at", s.start, e.message, s.code.slice(0, 80)); process.exit(1); } }
