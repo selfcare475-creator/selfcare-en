@@ -10082,13 +10082,13 @@ prepareProductCaches();
 
 
 const mainCategoryImages = {
-  top: "https://res.cloudinary.com/de4boyel3/image/upload/f_auto,q_auto,w_120,h_120,c_fit/v1779560001/file_000000004dc472469dde206a60314746_cg7i7h.png",
-  medicine: "https://res.cloudinary.com/de4boyel3/image/upload/f_auto,q_auto,w_120,h_120,c_fit/v1779559998/file_00000000dd08724684c7f510cd2672df_r0cpft.png",
-  supplements: "https://res.cloudinary.com/de4boyel3/image/upload/f_auto,q_auto,w_120,h_120,c_fit/v1779560001/file_0000000085c87246b3d4e82b7f560e70_rgv0bk.png",
-  skin: "https://res.cloudinary.com/de4boyel3/image/upload/f_auto,q_auto,w_120,h_120,c_fit/v1779560004/file_0000000000cc7246b6f30eb5b189013e_zj6fev.png",
-  hair: "https://res.cloudinary.com/de4boyel3/image/upload/f_auto,q_auto,w_120,h_120,c_fit/v1779559995/file_00000000a0e87246931c91aa4b3d35af_arzjh8.png",
-  sun: "https://res.cloudinary.com/de4boyel3/image/upload/f_auto,q_auto,w_120,h_120,c_fit/v1779560002/file_000000006c4472468781aee2f9991d27_eveopr.png",
-  tourist: "https://res.cloudinary.com/de4boyel3/image/upload/f_auto,q_auto,w_120,h_120,c_fit/v1779560000/file_0000000083fc72468829e29496de8bb1_sotucp.png"
+  top: "/cat/top.webp?v=1",
+  medicine: "/cat/medicine.webp?v=1",
+  supplements: "/cat/supplements.webp?v=1",
+  skin: "/cat/skin.webp?v=1",
+  hair: "/cat/hair.webp?v=1",
+  sun: "/cat/sun.webp?v=1",
+  tourist: "/cat/tourist.webp?v=1"
 };
 
 const touristNeedCodes = {"Diarrhea & stomach":["SC031","SC008","SC073","SC071","SC095","SC092","SC083","SC084","SC075","SC047","SC195","SC202","SC205","SC203","SC215","SC037","SC218","SC186","SC187","SC064","SC211","SC183","SC208","SC184","SC359","SC360","SC362","SC180","SC417","SC396","SC393","SC426","SC418","SC425","SC390","SC409","SC428","SC430","SC420"],"Sunburn & SPF":["SC077","SC305","SC283","SC284","SC285","SC287","SC322","SC323","SC324","SC325","SC326","SC331","SC332","SC333","SC334","SC238","SC240","SC245","SC246","SC237","SC239","SC342","SC344","SC258","SC343","SC338","SC171","SC247","SC302","SC299","SC276","SC241","SC242","SC243","SC244","SC310"],"Cold & sore throat":["SC001","SC036","SC006","SC002","SC067","SC070","SC068","SC087","SC090","SC209","SC046","SC089","SC182","SC185","SC093","SC303","SC398","SC424","SC419","SC423","SC421"],"Pain & fever":["SC020","SC053","SC082","SC021","SC078","SC025","SC033","SC029","SC049","SC032","SC219","SC054","SC181","SC199","SC197","SC198","SC200","SC097","SC099","SC154","SC158","SC159","SC058","SC151","SC145","SC289","SC290","SC293","SC422","SC414"],"Allergy":["SC030","SC041","SC079","SC091","SC081","SC088","SC006","SC201","SC416","SC408"],"Eye drops":["SC005","SC213","SC222","SC402","SC410"],"Mosquito protection":["SC040"],"Sleep support":["SC014","SC015","SC107","SC371","SC384","SC394"],"Antibiotics":["SC010","SC039","SC038","SC050","SC051","SC034","SC161","SC065","SC429","SC407","SC397"],"Cosmetics":["SC112","SC113","SC114","SC115","SC116","SC117","SC118","SC119","SC120","SC121","SC122","SC123","SC127","SC130","SC132","SC133","SC134","SC135","SC136","SC137","SC138","SC139","SC144","SC146","SC147","SC149","SC150","SC172","SC173","SC174","SC175","SC233","SC234","SC235","SC236","SC248","SC249","SC250","SC251","SC252","SC253","SC254","SC255","SC256","SC257","SC259","SC260","SC261","SC262","SC263","SC264","SC265","SC266","SC267","SC268","SC269","SC270","SC271","SC272","SC273","SC274","SC275","SC276","SC277","SC278","SC279","SC280","SC281","SC282","SC286","SC288","SC291","SC292","SC294","SC295","SC296","SC297","SC299","SC300","SC301","SC302","SC306","SC307","SC308","SC309","SC311","SC312","SC314","SC315","SC316","SC317","SC318","SC319","SC320","SC321","SC327","SC328","SC329","SC330","SC335","SC336","SC337","SC338","SC339","SC341","SC343","SC345","SC346","SC347","SC348","SC349","SC350","SC351","SC352","SC353","SC355","SC356","SC399"]};
@@ -13922,7 +13922,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   if (typeof categoryGroups === 'undefined' || typeof renderGrid !== 'function') return;
   categoryGroups.mobility = { label: '🛵 Mobility rental', subs: ['Mobility rental'] };
   if (typeof mainCategoryImages !== 'undefined')
-    mainCategoryImages.mobility = 'https://res.cloudinary.com/de4boyel3/image/upload/f_auto,q_auto,w_120,h_120,c_fill,g_auto/v1783504784/ChatGPT_Image_Jul_8_2026_12_58_24_PM_1_px842a.png';
+    mainCategoryImages.mobility = '/cat/mobility.webp?v=1';
   const host = document.getElementById('mobSection');
   const baseRenderGrid = renderGrid;
   renderGrid = function () {
@@ -14142,6 +14142,8 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 .floating-wa{width:46px!important;height:46px!important;right:12px!important;bottom:14px!important;font-size:21px!important;border-width:2px!important;box-shadow:0 6px 16px rgba(37,211,102,.32)!important}
 body{padding-bottom:64px}
 .sc-version-stamp{display:none!important}
+#filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:52px!important;height:52px!important;flex:0 0 52px!important;border-radius:13px!important;overflow:hidden!important;background:none!important;margin-bottom:4px!important}
+#filters .main-filters .main-filter-btn .cat-icon.cat-img img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:13px!important}
 .final-checkout-btn{background:linear-gradient(135deg,#5B295A,#9A2D98)!important;box-shadow:0 12px 26px rgba(91,41,90,.22)!important}
 </style>
 </body>

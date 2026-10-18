@@ -415,6 +415,8 @@ rep("\n</body>\n", `\n<style id="sc-look-v1">
 .floating-wa{width:46px!important;height:46px!important;right:12px!important;bottom:14px!important;font-size:21px!important;border-width:2px!important;box-shadow:0 6px 16px rgba(37,211,102,.32)!important}
 body{padding-bottom:64px}
 .sc-version-stamp{display:none!important}
+#filters .main-filters .main-filter-btn .cat-icon.cat-img,#filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:52px!important;height:52px!important;flex:0 0 52px!important;border-radius:13px!important;overflow:hidden!important;background:none!important;margin-bottom:4px!important}
+#filters .main-filters .main-filter-btn .cat-icon.cat-img img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:13px!important}
 .final-checkout-btn{background:linear-gradient(135deg,#5B295A,#9A2D98)!important;box-shadow:0 12px 26px rgba(91,41,90,.22)!important}
 </style>
 </body>
@@ -445,6 +447,13 @@ body{padding-bottom:64px}
   if(n < 100) failures.push("green → purple count " + n);
 }
 
+/* ---------- category icons (files in public/cat, from merge/cat) ---------- */
+replaceDecl("mainCategoryImages", "const mainCategoryImages = {\n" + ["top","medicine","supplements","skin","hair","sun","tourist"].map(k => `  ${k}: "/cat/${k}.webp?v=1"`).join(",\n") + "\n};");
+{
+  const m = html.match(/mainCategoryImages\.mobility = '[^']*'/);
+  if(!m) failures.push("mobility icon"); else html = html.replace(m[0], "mainCategoryImages.mobility = '/cat/mobility.webp?v=1'");
+}
+
 /* ---------- 5. write ---------- */
 if(failures.length){ console.error("BUILD FAILED:\n - " + failures.join("\n - ")); process.exit(1); }
 for(const s of inlineScripts(html)){ try{ parse(s.code); }catch(e){ console.error("syntax error in script at", s.start, e.message, s.code.slice(0, 80)); process.exit(1); } }
@@ -452,4 +461,6 @@ fs.mkdirSync(OUT_DIR, {recursive: true});
 for(const f of fs.readdirSync(EN_DIR)) if(f !== "index.html") fs.copyFileSync(path.join(EN_DIR, f), path.join(OUT_DIR, f));
 fs.writeFileSync(path.join(OUT_DIR, "index.html"), html);
 fs.writeFileSync(path.join(OUT_DIR, "products-en.json"), JSON.stringify(enProducts));
+fs.mkdirSync(path.join(OUT_DIR, "cat"), {recursive: true});
+for(const f of fs.readdirSync(path.join(__dirname, "cat"))) fs.copyFileSync(path.join(__dirname, "cat", f), path.join(OUT_DIR, "cat", f));
 console.log("ok", html.length, "bytes");
