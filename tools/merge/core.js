@@ -136,18 +136,23 @@ function pDesc(p){
   if(!p) return "";
   var l = displayLanguage;
   if(l === "en") return p.desc || "";
-  if(!p.desc_cz) return productUseFor(p);
-  if(l === "cs") return p.desc_cz;
-  /* antiparasitics: the keyword descriptions call them antibiotics / diarrhoea medicine → the short line */
-  if(p.subcategory === "Antiparasitic") return productUseFor(p);
-  var shim = {name: p.name_cz || p.name, desc: p.desc_cz, cat: p.cat_cz || p.cat, subcategory: p.subcategory};
-  try{
-    var __d = l === "sk" ? productDescSk(shim) : l === "pl" ? productDescPl(shim) : l === "ru" ? productDescRu(shim) : l === "ua" ? productDescUa(shim) : l === "de" ? productDescDe(shim) : "";
-    /* a description that came back in Czech (ř ě ů, or the Czech text itself) → the short line in the customer's language instead */
-    if(__d && __d !== p.desc_cz && !/[řěůŘĚŮ]/.test(__d)) return __d;
-  }catch(e){}
-  return productUseFor(p);
+  if(l === "cs") return p.desc_cz || "";
+  /* real translations of each product's own description (desc-<lang>.json, loaded on demand).
+     The old keyword sentences (gel/krém → "muscles & joints", oko → "eye drops"…) are no longer used.
+     No translation → no description; the short "use for" line under it is still shown. */
+  var tx = SC_DESC[l]; if(!tx){ scLoadDesc(l); return ""; }
+  return tx[String(p.code || p.pharmacy_code || "").trim()] || "";
 }
+var SC_DESC = {}, __scDescBusy = {}, SC_DESC_VER = typeof SC_DESC_VERSION !== "undefined" ? SC_DESC_VERSION : "1";
+function scLoadDesc(l){
+  if(!/^(ru|ua|de|pl|sk)$/.test(l) || SC_DESC[l] || __scDescBusy[l] || typeof fetch !== "function") return;
+  __scDescBusy[l] = 1;
+  fetch("desc-" + l + ".json?v=" + SC_DESC_VER).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){
+    SC_DESC[l] = j || {};
+    try{ var m = document.getElementById("mDesc"); if(m && typeof currentModalIdx !== "undefined" && currentModalIdx != null && products[currentModalIdx] && displayLanguage === l) m.textContent = pDesc(products[currentModalIdx]); }catch(e){}
+  }).catch(function(){ __scDescBusy[l] = 0; });
+}
+window.addEventListener("load", function(){ setTimeout(function(){ try{ scLoadDesc(displayLanguage); }catch(e){} }, 300); });
 /* category labels: English key → label in the chosen language */
 function catLabel(sub){
   if(displayLanguage === "en") return sub;
@@ -294,6 +299,7 @@ function setDisplayLanguage(l, opts){
   scApplyStaticTexts();
   scRerenderAll();
   try{ if(typeof loadStockStatus === "function") loadStockStatus(); }catch(e){}
+  try{ scLoadDesc(l); }catch(e){}
   try{ if(window.__scTrack) window.__scTrack("lang_change", {lang:l}); }catch(e){}
 }
 function setDisplayCurrency(c){
