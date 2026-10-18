@@ -486,12 +486,12 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 /* ---------- look: smaller WhatsApp bubble, no version stamp ---------- */
 rep("\n</body>\n", `\n<style id="sc-look-v1">
 /* option A: purple is the main colour, orange only for accents */
-header{background:linear-gradient(135deg,#4a1c49 0%,#6b2c69 100%)!important;box-shadow:none!important;border-bottom:0!important}
+header{background:linear-gradient(135deg,#7b3a78 0%,#a0559c 100%)!important;box-shadow:none!important;border-bottom:0!important}
 header .logo{color:#fff!important}
 header .logo span{color:#ffb38a!important}
 header .cart-btn{background:rgba(255,255,255,.12)!important;border:1.5px solid rgba(255,255,255,.26)!important;color:#fff!important;box-shadow:none!important}
 header .cart-badge{background:#D6501B!important;border-color:#fff!important;color:#fff!important}
-.sc-prefs-bar{background:#7a3478!important;box-shadow:0 6px 16px rgba(74,28,73,.18)!important;border-top:1px solid rgba(255,255,255,.1)!important}
+.sc-prefs-bar{background:#8a4686!important;box-shadow:0 6px 16px rgba(123,58,120,.16)!important;border-top:1px solid rgba(255,255,255,.1)!important}
 .sc-prefs-bar-arrow{background:rgba(255,255,255,.2)!important}
 /* lighter + / − on product cards */
 #grid .qty-pill{height:36px!important;min-height:36px!important;padding:3px!important;border:0!important;background:#f5eff5!important;box-shadow:none!important;border-radius:999px!important}
