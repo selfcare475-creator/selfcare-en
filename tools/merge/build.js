@@ -331,10 +331,10 @@ rep('<header>\n  <div class="logo">Self Care <span>Pharmacy</span></div>', '<hea
 rep("🛒 Basket\n    <span class=\"cart-badge", "🛒 <span id=\"cartBtnText\">Basket</span>\n    <span class=\"cart-badge");
 rep('<div class="controls">\n  <div class="search-wrap">', `<div class="sc-prefs" aria-label="Language and currency">
   <div class="sc-pref-row" role="group" aria-labelledby="prefLangLabel"><span class="sc-pref-label" id="prefLangLabel">Language</span><div class="sc-pref-opts">${
-    ["en","cs","sk","pl","ru","ua","de"].map(l => `<button type="button" class="sc-pref-btn" data-sc-lang="${l}" onclick="setDisplayLanguage('${l}')">${({en:"EN",cs:"CZ",sk:"SK",pl:"PL",ru:"RU",ua:"UA",de:"DE"})[l]}</button>`).join("")
+    ["en","cs","sk","pl","ru","ua","de"].map(l => `<button type="button" class="sc-pref-btn" data-sc-lang="${l}" onclick="setDisplayLanguage('${l}');this.blur()">${({en:"EN",cs:"CZ",sk:"SK",pl:"PL",ru:"RU",ua:"UA",de:"DE"})[l]}</button>`).join("")
   }</div></div>
   <div class="sc-pref-row" role="group" aria-labelledby="prefCurLabel"><span class="sc-pref-label" id="prefCurLabel">Currency</span><div class="sc-pref-opts">${
-    [["GBP","£"],["EUR","€"],["USD","$"],["CZK","Kč"]].map(([c, s]) => `<button type="button" class="sc-pref-btn" data-sc-cur="${c}" onclick="setDisplayCurrency('${c}')">${s}</button>`).join("")
+    [["GBP","£"],["EUR","€"],["USD","$"],["CZK","Kč"]].map(([c, s]) => `<button type="button" class="sc-pref-btn" data-sc-cur="${c}" onclick="setDisplayCurrency('${c}');this.blur()">${s}</button>`).join("")
   }</div></div>
 </div>
 <div class="controls">
@@ -391,7 +391,7 @@ rep("\n</head>\n", `\n<style id="sc-prefs-css">
 .sc-pref-btn{flex:0 0 auto;min-width:38px;height:30px;padding:0 9px;border-radius:999px;border:1px solid #d5e4e1;background:#fff;color:#17324d;font:inherit;font-size:12.5px;font-weight:800;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
 .sc-pref-btn.active{background:#0f766e;border-color:#0f766e;color:#fff}
 header .cart-btn{white-space:nowrap;max-width:118px;overflow:hidden;text-overflow:ellipsis}
-.sc-pref-btn:focus-visible{outline:2px solid #14b8a6;outline-offset:2px}
+.sc-pref-btn,.sc-pref-btn:focus,.sc-pref-btn:focus-visible,.sc-pref-btn:active{-webkit-tap-highlight-color:transparent;outline:none;box-shadow:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 @media (max-width:430px){.sc-prefs{padding:8px 12px 2px}.sc-pref-row{gap:6px}.sc-pref-opts{gap:4px}.sc-pref-label{min-width:52px;font-size:10.5px}.sc-pref-btn{min-width:33px;height:29px;padding:0 6px;font-size:12px}}
 </style>
 </head>
