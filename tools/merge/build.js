@@ -510,6 +510,14 @@ const enProducts = JSON.parse(read(path.join(EN_DIR, "products-en.json")));
 let matched = 0;
 for(const p of enProducts){ const c = czByCode.get(p.code); if(!c) continue; matched++; p.name_cz = c.name; p.desc_cz = c.desc; p.cat_cz = c.cat; }
 if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " + matched);
+/* data fixes (18/10, T): SC301 / SC294 are black seed (Czech said "Hadí olej" = snake oil); 2649 English name was Czech */
+{
+  const fx = { "SC301": { name_cz: "Egy Bio olej z černého kmínu" },
+               "SC294": { name_cz: "Lotus vlasové ampule s černým kmínem", desc_cz: "Vlasové ampule s černým kmínem pro intenzivní péči o oslabené vlasy a podporu zdravějšího vzhledu." },
+               "2649":  { name: "Rani-F Famotidine 20 mg 6 effervescent sachets" } };
+  let n = 0; for(const p of enProducts){ const f = fx[p.code]; if(f){ Object.assign(p, f); n++; } }
+  if(n !== 3) failures.push("data fixes: " + n);
+}
 {
   const m = html.match(/CATALOG_PRODUCTS_URL = "products-en\.json\?v=(\d+)"/);
   if(!m) failures.push("catalog url"); else html = html.replace(m[0], `CATALOG_PRODUCTS_URL = "products-en.json?v=${m[1]}m1"`);
@@ -733,6 +741,15 @@ repIn("getOrderDetails", 'const room = document.getElementById("checkoutRoom")?.
 /* phone number: Russian "8 9xx…" → 7 9xx…; a typed number counts as already-international only when it is long enough (fixes +7 / +48 short local numbers) */
 repIn("renderCheckout", '  else if(phoneLocal.indexOf(phoneCode) === 0 && phoneLocal.length >= phoneCode.length + 6) phoneRaw = phoneLocal;',
  '  else if(phoneCode === "7" && /^8\\d{10}$/.test(phoneLocal)) phoneRaw = "7" + phoneLocal.slice(1);\n  else if(phoneLocal.indexOf(phoneCode) === 0 && phoneLocal.length >= (phoneCode === "7" ? 11 : phoneCode.length + 9)) phoneRaw = phoneLocal;');
+
+/* description keywords: short words (≤4 letters, e.g. "oko", "oči", "nos", "krk") must start a word — before, "oko" inside "pokožku" or "oči" inside "pomoci" turned creams, vitamins and tablets into "eye drops" in ru/ua/de/pl/sk */
+rep("  const has = arr => arr.some(w => text.includes(normalizeText(w)));", "  const has = arr => arr.some(w => scKwIn(text, w));", 3);
+rep("  const has = (arr) => arr.some(w => text.includes(normalizeText(w)));", "  const has = (arr) => arr.some(w => scKwIn(text, w));", 1);
+rep("  const has = (words) => words.some(w => name.includes(normalizeText(w)) || desc.includes(normalizeText(w)));", "  const has = (words) => words.some(w => scKwIn(name, w) || scKwIn(desc, w));", 1);
+rep("function normalizeText(value){", "function scKwIn(text, w){ var k = normalizeText(w); if(!k) return false; if(k.length > 4) return text.indexOf(k) >= 0; var whole = k === 'aft' || k === 'ors' || k === 'oko'; var i = text.indexOf(k); while(i >= 0){ if((i === 0 || !/[a-z0-9Ѐ-ӿ]/.test(text.charAt(i - 1))) && (!whole || !/[a-z0-9]/.test(text.charAt(i + k.length) || ''))) return true; i = text.indexOf(k, i + 1); } return false; }\nfunction normalizeText(value){", 1);
+
+/* names per language for the fixed products (beat the Czech name coming back from the database) */
+rep("var SC_NAME_I18N = {", 'var SC_NAME_I18N = {"SC301": {"cs": "Egy Bio olej z černého kmínu", "sk": "Egy Bio olej z čiernej rasce", "pl": "Egy Bio olej z czarnuszki", "ru": "Egy Bio масло черного тмина", "ua": "Egy Bio олія чорного кмину", "de": "Egy Bio Schwarzkümmelöl"}, "SC294": {"cs": "Lotus vlasové ampule s černým kmínem", "sk": "Lotus vlasové ampulky s čiernou rascou", "pl": "Lotus ampułki do włosów z czarnuszką", "ru": "Lotus ампулы для волос с черным тмином", "ua": "Lotus ампули для волосся з чорним кмином", "de": "Lotus Haarampullen mit Schwarzkümmel"}, "2649": {"ru": "Rani-F Famotidin 20 мг 6 шипучих саше", "ua": "Rani-F Famotidin 20 мг 6 шипучих саше", "de": "Rani-F Famotidin 20 mg 6 Brausebeutel"}, ');
 
 /* ---------- no flash on load: every <style> that sits in the page body moves into <head> (same order, so the cascade is unchanged),
    and a non-English page stays hidden until its texts are switched (max 1.2 s) ---------- */

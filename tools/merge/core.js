@@ -138,13 +138,13 @@ function pDesc(p){
   if(l === "en") return p.desc || "";
   if(!p.desc_cz) return productUseFor(p);
   if(l === "cs") return p.desc_cz;
+  /* antiparasitics: the keyword descriptions call them antibiotics / diarrhoea medicine → the short line */
+  if(p.subcategory === "Antiparasitic") return productUseFor(p);
   var shim = {name: p.name_cz || p.name, desc: p.desc_cz, cat: p.cat_cz || p.cat, subcategory: p.subcategory};
   try{
-    if(l === "sk") return productDescSk(shim);
-    if(l === "pl") return productDescPl(shim);
-    if(l === "ru") return productDescRu(shim);
-    if(l === "ua") return productDescUa(shim);
-    if(l === "de") return productDescDe(shim);
+    var __d = l === "sk" ? productDescSk(shim) : l === "pl" ? productDescPl(shim) : l === "ru" ? productDescRu(shim) : l === "ua" ? productDescUa(shim) : l === "de" ? productDescDe(shim) : "";
+    /* a description that came back in Czech (ř ě ů, or the Czech text itself) → the short line in the customer's language instead */
+    if(__d && __d !== p.desc_cz && !/[řěůŘĚŮ]/.test(__d)) return __d;
   }catch(e){}
   return productUseFor(p);
 }
