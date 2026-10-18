@@ -557,6 +557,7 @@ body{padding-bottom:64px}
 .sc-version-stamp{display:none!important}
 #filters .main-filters{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;overflow:visible!important;gap:12px 6px!important;padding:10px 0 6px!important}
 #filters .sc-cat-arrow{display:none!important}
+@media(max-width:699px){html #filters .main-filters{grid-auto-flow:row dense!important}html #filters .main-filters .main-filter-btn.tourist-main{grid-column:4/5!important;grid-row:1/2!important}html #filters .main-filters .main-filter-btn[onclick*="mobility"]{grid-column:4/5!important;grid-row:2/3!important}}
 html:not(.sc-ar) .sub-filter-panel::before{content:var(--sc-browse,"Browse by category")!important}
 html:not(.sc-ar) .sub-filter-panel::after{content:var(--sc-swipe,"Swipe →")!important}
 #filters .main-filters::-webkit-scrollbar{display:none}
