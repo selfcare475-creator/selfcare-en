@@ -135,6 +135,7 @@ function scUpdatePrefButtons(){
   document.querySelectorAll("[data-sc-cur]").forEach(function(b){ var on = b.getAttribute("data-sc-cur") === displayCurrency; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
 }
 function scRerenderAll(){
+  try{ if(typeof window.__scMobSync === "function") window.__scMobSync(); }catch(e){}
   try{ (window.products || (typeof products !== "undefined" ? products : [])).forEach(function(p){ p._searchText = null; p._searchName = null; p._sortKey = null; }); }catch(e){}
   try{ if(typeof searchDataCache !== "undefined") searchDataCache = { raw: null, data: null }; }catch(e){}
   try{ if(typeof buildFilters === "function") buildFilters(); }catch(e){}

@@ -316,7 +316,11 @@ for(const id of ["selfcare-min-order-popup-actions-fixed-v3-js", "cart-prune-loc
 /* Arabic (staff/local) option works on top of the English texts */
 rep("window.__SC_AR=!window.__SC_AR;\n   if(window.__SC_AR){", "window.__SC_AR=!window.__SC_AR;\n   if(window.__SC_AR && typeof displayLanguage!==\"undefined\" && displayLanguage!==\"en\"){ try{ setDisplayLanguage(\"en\"); }catch(e){} }\n   if(window.__SC_AR){");
 /* scooter booking: German texts exist, everything else stays English; currency follows the page */
-rep("S.lang = 'en'; S.cur = 'GBP'; S.custom = true;", "S.lang = (typeof displayLanguage !== 'undefined' && displayLanguage === 'de') ? 'de' : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : 'GBP'; S.custom = true;");
+rep("S.lang = 'en'; S.cur = 'GBP'; S.custom = true;", "S.lang = (typeof displayLanguage !== 'undefined' && displayLanguage === 'de') ? 'de' : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : (typeof displayCurrency !== 'undefined' && displayCurrency === 'CZK' ? 'EUR' : 'GBP'); S.custom = true;");
+/* scooter booking: no currency picker of its own — it follows the site's currency buttons (Kč → €, the booking has no Kč rate) */
+rep("  let seg = root.getElementById('curSeg');\n  if (!seg) {\n    seg = document.createElement('div'); seg.className = 'curseg'; seg.id = 'curSeg';", "  let seg = null;\n  if (false) {\n    seg = document.createElement('div'); seg.className = 'curseg'; seg.id = 'curSeg';");
+rep("  seg.querySelectorAll('[data-cur]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cur === S.cur));\n", "");
+rep("S.custom = true; S.end = ''; S.step = 2;", "S.custom = true; S.end = ''; S.step = 2;\nwindow.__scMobSync = function(){ S.lang = (typeof displayLanguage !== 'undefined' && displayLanguage === 'de') ? 'de' : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : (typeof displayCurrency !== 'undefined' && displayCurrency === 'CZK' ? 'EUR' : 'GBP'); try{ if (DB) renderAll(); }catch(e){} };");
 /* funnel: site = domain the customer came from, plus the language */
 rep('var SITE = ("en" || (cz ? "cz" : "en"))', 'var SITE = ((/selfcare-cz/.test(host) ? "cz" : "en"))');
 

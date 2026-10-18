@@ -7111,6 +7111,7 @@ function scUpdatePrefButtons(){
   document.querySelectorAll("[data-sc-cur]").forEach(function(b){ var on = b.getAttribute("data-sc-cur") === displayCurrency; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
 }
 function scRerenderAll(){
+  try{ if(typeof window.__scMobSync === "function") window.__scMobSync(); }catch(e){}
   try{ (window.products || (typeof products !== "undefined" ? products : [])).forEach(function(p){ p._searchText = null; p._searchName = null; p._sortKey = null; }); }catch(e){}
   try{ if(typeof searchDataCache !== "undefined") searchDataCache = { raw: null, data: null }; }catch(e){}
   try{ if(typeof buildFilters === "function") buildFilters(); }catch(e){}
@@ -13593,7 +13594,8 @@ async function start() {
 /* ============================================================================
    INSIDE THE STOREFRONT: the pieces that differ from the standalone booking site
    ========================================================================== */
-S.lang = (typeof displayLanguage !== 'undefined' && displayLanguage === 'de') ? 'de' : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : 'GBP'; S.custom = true; S.end = ''; S.step = 2;
+S.lang = (typeof displayLanguage !== 'undefined' && displayLanguage === 'de') ? 'de' : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : (typeof displayCurrency !== 'undefined' && displayCurrency === 'CZK' ? 'EUR' : 'GBP'); S.custom = true; S.end = ''; S.step = 2;
+window.__scMobSync = function(){ S.lang = (typeof displayLanguage !== 'undefined' && displayLanguage === 'de') ? 'de' : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : (typeof displayCurrency !== 'undefined' && displayCurrency === 'CZK' ? 'EUR' : 'GBP'); try{ if (DB) renderAll(); }catch(e){} };
 Object.assign(T.en, { mTitle: 'Mobility scooter rental', mSub: 'Delivered to your hotel in Hurghada. You pay in cash when it arrives.', pricesIn: 'Prices in' });
 
 // Exchange rates: the storefront's own (settings.rate_gbp / rate_eur / rate_usd).
@@ -13618,14 +13620,13 @@ function renderInfo() {
   if (!p) return;
   $('#mheadImg').innerHTML = imgOrIcon(p).replace(/\/upload\/([^/]*)w_\d+/, '/upload/$1w_160');
   $('#mheadName').textContent = L(p, 'name');
-  let seg = root.getElementById('curSeg');
-  if (!seg) {
+  let seg = null;
+  if (false) {
     seg = document.createElement('div'); seg.className = 'curseg'; seg.id = 'curSeg'; seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', t('pricesIn'));
     seg.innerHTML = [['GBP', '£ GBP'], ['EUR', '€ EUR'], ['USD', '$ USD'], ['EGP', 'EGP']].map(([c, l]) => `<button type="button" data-cur="${c}">${l}</button>`).join('');
     $('#mhead').after(seg);
     seg.addEventListener('click', e => { const b = e.target.closest('[data-cur]'); if (!b || b.dataset.cur === S.cur) return; S.cur = b.dataset.cur; $('#mcur').value = S.cur; renderAll(); });
   }
-  seg.querySelectorAll('[data-cur]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cur === S.cur));
   const box = root.querySelector('.mhead-txt'); let fp = root.getElementById('mheadFrom');
   if (!fp) { fp = document.createElement('p'); fp.id = 'mheadFrom'; box.appendChild(fp); }
   fp.textContent = tr ? t('from', { price: money(unitPrice(p.id, tr.days)), days: tr.days }) : '';
