@@ -14449,7 +14449,7 @@ html:not(.sc-ar) .sub-filter-panel::after{content:var(--sc-swipe,"Swipe →")!im
   ["Add more items","أضِف أصناف أكتر"],["View ready kits","شوف الباقات الجاهزة"],["Continue shopping","مواصلة التسوق"],
   ["Got it — I understand","تمام، فهمت"],["Browse by category","تصفّح حسب القسم"],["Swipe →","اسحب ←"],["View basket","عرض السلة"],
   ["🏨 Hotel","🏨 الفندق"],["📅 Delivery","📅 التوصيل"],["🕒 Time","🕒 الوقت"],["💳 Payment method","💳 طريقة الدفع"],
-  ["Cash","كاش"],["📱 WhatsApp number (required)","📱 رقم واتساب (مطلوب)"],["🚪 Room / note","🚪 الغرفة / ملاحظة"],
+  ["Cash","كاش"],["🚪 Room number","🚪 رقم الغرفة"],["Room number","رقم الغرفة"],["📱 WhatsApp number","📱 رقم واتساب"],["Card on delivery","كارت عند التوصيل"],["Language & currency","اللغة والعملة"],["Mobility rental","تأجير الكراسي المتحركة"],["Confirm order & send WhatsApp","تأكيد الطلب وإرسال واتساب"],["Bestsellery","الأكثر مبيعاً"],["📱 WhatsApp number (required)","📱 رقم واتساب (مطلوب)"],["🚪 Room / note","🚪 الغرفة / ملاحظة"],
   ["Today","النهاردة"],["Tomorrow","بكرة"],["🌍 Other / manual code","🌍 كود آخر / يدوي"],
   ["Search by product or symptom...","ابحث بالمنتج أو العرض..."],["Select hotel","اختر الفندق"],["WhatsApp number","رقم واتساب"],["Room number or delivery note","رقم الغرفة أو ملاحظة التوصيل"],
   ["How to order","طريقة الطلب"],["🛒 Your basket","🛒 سلتك"],["Order details","تفاصيل الطلب"],
@@ -14461,6 +14461,7 @@ html:not(.sc-ar) .sub-filter-panel::after{content:var(--sc-swipe,"Swipe →")!im
  ];
  var D={}; P.forEach(function(p){D[p[0]]=p[1];});
  var REGEX=[
+   [/^(\d+) pcs$/, "$1 قطعة"],
    [/^Minimum delivery time is (\d+) minutes\. Earliest possible today is after (.+)\.$/, "أقل وقت للتوصيل $1 دقيقة. أقرب ميعاد متاح النهاردة بعد $2."]
  ];
  var STORE=new Map();

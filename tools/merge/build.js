@@ -403,6 +403,8 @@ rep('<div class="card-name" onclick="openModal(${idx})">${pName(p)}</div>', '<di
 repIn("changeCardQty", "  smoothRenderGridSoon();\n}", "  var __pill = e && e.currentTarget && e.currentTarget.closest ? e.currentTarget.closest(\".qty-pill\") : null;\n  if(__pill){ __pill.classList.toggle(\"active\", next > 0); var __n = __pill.querySelector(\".qty-pill-num\"); if(__n) __n.textContent = next; try{ e.currentTarget.blur(); }catch(_){} }\n  else smoothRenderGridSoon();\n}");
 rep("<span>Visa</span>", "<span id=\"cardLabel\">Card on delivery</span>");
 repIn("renderCheckout", "<span>${paymentMethod === \"visa\" ? \"Visa\" : T(\"cash\")}</span>", "<span>${paymentMethod === \"visa\" ? T(\"cardDelivery\") : T(\"cash\")}</span>");
+rep('["Cash","كاش"],', '["Cash","كاش"],["🚪 Room number","🚪 رقم الغرفة"],["Room number","رقم الغرفة"],["📱 WhatsApp number","📱 رقم واتساب"],["Card on delivery","كارت عند التوصيل"],["Language & currency","اللغة والعملة"],["Mobility rental","تأجير الكراسي المتحركة"],["Confirm order & send WhatsApp","تأكيد الطلب وإرسال واتساب"],["Bestsellery","الأكثر مبيعاً"],');
+rep('   [/^Minimum delivery time is', '   [/^(\\d+) pcs$/, "$1 قطعة"],\n   [/^Minimum delivery time is');
 /* ===== checkout v2: needed fields first, compact time, sticky total + button ===== */
 repIn("renderCheckout", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;");
 repIn("renderCheckout", "  btn.title = \"\";\n", "  btn.title = \"\";\n");
