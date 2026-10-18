@@ -164,7 +164,15 @@ function scSetText(id, v){ var el = document.getElementById(id); if(el) el.textC
 function scSetHtml(id, v){ var el = document.getElementById(id); if(el) el.innerHTML = v; }
 function scSetAttr(id, a, v){ var el = document.getElementById(id); if(el) el.setAttribute(a, v); }
 var SC_PHONE_BY_LANG = {en:"44",cs:"420",sk:"421",pl:"48",ru:"7",ua:"380",de:"49"};
+function scApplySeo(){
+  try{
+    var m = (typeof SC_SEO !== "undefined") && (SC_SEO[displayLanguage] || SC_SEO.en); if(!m) return;
+    document.title = m.title;
+    var d = document.querySelector('meta[name="description"]'); if(d) d.setAttribute("content", m.desc);
+  }catch(e){}
+}
 function scApplyStaticTexts(){
+  scApplySeo();
   document.documentElement.lang = SC_HTML_LANG[displayLanguage] || "en";
   scSetText("prefLangLabel", T("language")); scSetText("prefCurLabel", T("currency")); scSetText("scPrefsDone", T("done"));
   scSetText("cartBtnText", T("basket"));

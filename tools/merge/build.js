@@ -109,6 +109,8 @@ const coreScript = [
   "var SC_CAT_I18N = " + JSON.stringify(SC_CAT_I18N) + ";",
   "var SC_MAIN_I18N = " + JSON.stringify(SC_MAIN_I18N) + ";",
   read(path.join(__dirname, "core.js")),
+  read(path.join(__dirname, "mob_tx.js")),
+  read(path.join(__dirname, "seo.js")),
   czHelpers,
   czAutoCard
 ].join("\n");
@@ -325,11 +327,11 @@ rep('if(t) t.textContent = scMyOrdersLabel();', 'if(t) t.textContent = (typeof T
 /* Arabic (staff/local) option works on top of the English texts */
 rep("window.__SC_AR=!window.__SC_AR;\n   if(window.__SC_AR){", "window.__SC_AR=!window.__SC_AR;\n   if(window.__SC_AR && typeof displayLanguage!==\"undefined\" && displayLanguage!==\"en\"){ try{ setDisplayLanguage(\"en\", {keepAr:true}); }catch(e){} }\n   if(window.__SC_AR){\n     try{ scUpdatePrefButtons(); }catch(e){}");
 /* scooter booking: German texts exist, everything else stays English; currency follows the page */
-rep("S.lang = 'en'; S.cur = 'GBP'; S.custom = true;", "S.lang = (typeof displayLanguage !== 'undefined' && displayLanguage === 'de') ? 'de' : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : (typeof displayCurrency !== 'undefined' && displayCurrency === 'CZK' ? 'EUR' : 'GBP'); S.custom = true;");
+rep("S.lang = 'en'; S.cur = 'GBP'; S.custom = true;", "S.lang = (typeof displayLanguage !== 'undefined' && T[displayLanguage]) ? displayLanguage : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : (typeof displayCurrency !== 'undefined' && displayCurrency === 'CZK' ? 'EUR' : 'GBP'); S.custom = true;");
 /* scooter booking: no currency picker of its own — it follows the site's currency buttons (Kč → €, the booking has no Kč rate) */
 rep("  let seg = root.getElementById('curSeg');\n  if (!seg) {\n    seg = document.createElement('div'); seg.className = 'curseg'; seg.id = 'curSeg';", "  let seg = null;\n  if (false) {\n    seg = document.createElement('div'); seg.className = 'curseg'; seg.id = 'curSeg';");
 rep("  seg.querySelectorAll('[data-cur]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cur === S.cur));\n", "");
-rep("S.custom = true; S.end = ''; S.step = 2;", "S.custom = true; S.end = ''; S.step = 2;\nwindow.__scMobSync = function(){ S.lang = (typeof displayLanguage !== 'undefined' && displayLanguage === 'de') ? 'de' : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : (typeof displayCurrency !== 'undefined' && displayCurrency === 'CZK' ? 'EUR' : 'GBP'); try{ if (DB) renderAll(); }catch(e){} };");
+rep("S.custom = true; S.end = ''; S.step = 2;", "S.custom = true; S.end = ''; S.step = 2;\nwindow.__scMobSync = function(){ S.lang = (typeof displayLanguage !== 'undefined' && T[displayLanguage]) ? displayLanguage : 'en'; S.cur = (typeof displayCurrency !== 'undefined' && ['GBP','EUR','USD'].indexOf(displayCurrency) >= 0) ? displayCurrency : (typeof displayCurrency !== 'undefined' && displayCurrency === 'CZK' ? 'EUR' : 'GBP'); try{ if (DB) renderAll(); }catch(e){} };");
 /* funnel: site = domain the customer came from, plus the language */
 rep('var SITE = ("en" || (cz ? "cz" : "en"))', 'var SITE = ((/selfcare-cz/.test(host) ? "cz" : "en"))');
 
@@ -409,6 +411,24 @@ rep('   [/^Minimum delivery time is', '   [/^(\\d+) pcs$/, "$1 قطعة"],\n   [
 rep('<html lang="en">', '<html lang="en" translate="no">');
 rep('<html lang="en" translate="no">\n<head>\n', '<html lang="en" translate="no">\n<head>\n<meta name="google" content="notranslate">\n');
 rep("  document.documentElement.lang = S.lang;\n", "");
+/* scooter booking in every site language */
+rep("const prefs = store.get('scm_prefs') || {};", "Object.assign(T, SC_MOB_TX);\nconst prefs = store.get('scm_prefs') || {};");
+rep("S.lang === 'de' ? 'de-DE' : 'en-GB'", "(SC_MOB_LOC[S.lang] || 'en-GB')", 4);
+rep("if (S.lang === 'de') return s +", "if (S.lang !== 'en') return s +");
+rep("(S.lang === 'de' ? ' oder ' : ' or ')", "(SC_MOB_OR[S.lang] || ' or ')");
+rep("return S.lang === 'de' ? `${h}:00 Uhr` :", "return S.lang === 'de' ? `${h}:00 Uhr` : S.lang !== 'en' ? `${h}:00` :");
+rep("let calMode = '', sheetPrev = null, sumShown = false;", "try{ Object.keys(SC_MOB_TX2).forEach(function(l){ if(T[l]) Object.assign(T[l], SC_MOB_TX2[l]); }); }catch(e){}\nlet calMode = '', sheetPrev = null, sumShown = false;");
+/* the booking message the pharmacy receives stays English (German stays German) */
+rep("  const lines = [t('waBooking'), '', b.code,", "  const __scL = S.lang; if (S.lang !== 'de') S.lang = 'en';\n  const lines = [t('waBooking'), '', b.code,");
+rep("  b.wa = waLink(lines.join('\\n'));", "  S.lang = __scL;\n  b.wa = waLink(lines.join('\\n'));");
+/* Google title + description: English in the file; the server (functions/_middleware.js) swaps them per domain / ?lang, the browser per chosen language */
+{
+  const SEO = (new Function(read(path.join(__dirname, "seo.js")) + "; return SC_SEO;"))();
+  const esc = v => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  rep("<title>Self Care Pharmacy – Product Catalogue</title>", "<title>" + esc(SEO.en.title) + "</title>");
+  const m = html.match(/<meta name="description" content="[^"]*">/);
+  if(!m) failures.push("seo: description"); else html = html.replace(m[0], '<meta name="description" content="' + esc(SEO.en.desc) + '">');
+}
 /* ===== checkout v2: needed fields first, compact time, sticky total + button ===== */
 repIn("renderCheckout", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;", "    btn.title = !hotelValid ? T(\"hotelInvalid\") : T(\"phoneInvalid\");\n    return;");
 repIn("renderCheckout", "  btn.title = \"\";\n", "  btn.title = \"\";\n");
@@ -661,6 +681,14 @@ fs.mkdirSync(OUT_DIR, {recursive: true});
 for(const f of fs.readdirSync(EN_DIR)) if(f !== "index.html") fs.copyFileSync(path.join(EN_DIR, f), path.join(OUT_DIR, f));
 fs.writeFileSync(path.join(OUT_DIR, "index.html"), html);
 fs.writeFileSync(path.join(OUT_DIR, "products-en.json"), JSON.stringify(enProducts));
+/* Czech-only static pages keep working on the merged site */
+for(const f of ["ochrana-osobnich-udaju.html"]) if(fs.existsSync(path.join(CZ_DIR, f))) fs.copyFileSync(path.join(CZ_DIR, f), path.join(OUT_DIR, f));
+/* server side: per-domain / per-language <title>, description, html lang, canonical + hreflang (Cloudflare Pages Function, only for the page itself) */
+{
+  const fnDir = path.join(OUT_DIR, "..", "functions"); fs.mkdirSync(fnDir, {recursive: true});
+  fs.writeFileSync(path.join(fnDir, "_middleware.js"), read(path.join(__dirname, "seo.js")).replace("var SC_SEO", "const SC_SEO") + "\n" + read(path.join(__dirname, "middleware.js")));
+  fs.writeFileSync(path.join(OUT_DIR, "_routes.json"), JSON.stringify({version: 1, include: ["/", "/index.html"], exclude: []}));
+}
 fs.mkdirSync(path.join(OUT_DIR, "cat"), {recursive: true});
 for(const f of fs.readdirSync(path.join(__dirname, "cat"))) fs.copyFileSync(path.join(__dirname, "cat", f), path.join(OUT_DIR, "cat", f));
 console.log("ok", html.length, "bytes");
