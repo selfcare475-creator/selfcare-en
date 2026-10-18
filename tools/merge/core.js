@@ -56,8 +56,8 @@ function pName(p){
   var cz = String(p.name_cz || "").trim() || p.name || "";
   try{
     if(l === "cs") return cz;
-    if(l === "sk") return productNameSk(cz);
-    if(l === "pl") return productNamePl(cz);
+    if(l === "sk") return productNameSk(cz).replace(/perorální/gi, "perorálna").replace(/injekční pero/gi, "injekčné pero");
+    if(l === "pl") return productNamePl(cz).replace(/injekční pero/gi, "wstrzykiwacz").replace(/perorální/gi, "doustna");
     if(l === "ru") return productNameRu(p.name || cz);
     if(l === "ua") return productNameUa(p.name || cz);
     if(l === "de") return productNameDe(p.name || cz);
@@ -141,7 +141,22 @@ function scFitHeaderButtons(){
     });
   }catch(e){}
 }
-window.addEventListener("resize", function(){ scFitHeaderButtons(); });
+window.addEventListener("resize", function(){ scFitHeaderButtons(); scCatHint(); });
+/* categories row: fade + arrow on the side while more categories are hidden; a small nudge the first time */
+function scCatHint(){
+  var row = document.querySelector("#filters .main-filters"); var box = document.getElementById("filters");
+  if(!row || !box) return;
+  var more = row.scrollWidth - row.clientWidth - row.scrollLeft > 8, back = row.scrollLeft > 8;
+  box.classList.toggle("sc-cat-more", more); box.classList.toggle("sc-cat-back", back);
+  if(!row.__scHint){
+    row.__scHint = true;
+    row.addEventListener("scroll", scCatHint, {passive:true});
+    var nudged = false; try{ nudged = sessionStorage.getItem("sc_cat_nudge") === "1"; }catch(e){}
+    if(more && !nudged){ try{ sessionStorage.setItem("sc_cat_nudge","1"); }catch(e){}
+      setTimeout(function(){ row.scrollTo({left:70, behavior:"smooth"}); setTimeout(function(){ row.scrollTo({left:0, behavior:"smooth"}); }, 650); }, 900); }
+  }
+}
+function scCatScroll(dir){ var row = document.querySelector("#filters .main-filters"); if(row) row.scrollBy({left: dir * Math.round(row.clientWidth * 0.7), behavior:"smooth"}); }
 var SC_CUR_SYM = {GBP:"£",EUR:"€",USD:"$",CZK:"Kč"};
 function scOpenPrefs(){ var s = document.getElementById("scPrefsSheet"); if(!s) return; scUpdatePrefButtons(); s.classList.add("show"); s.setAttribute("aria-hidden","false"); }
 function scClosePrefs(){ var s = document.getElementById("scPrefsSheet"); if(!s) return; s.classList.remove("show"); s.setAttribute("aria-hidden","true"); }
@@ -154,8 +169,11 @@ function scPickArabic(){
 document.addEventListener("keydown", function(e){ if(e.key === "Escape") scClosePrefs(); });
 function scUpdatePrefButtons(){
   var ar = !!window.__SC_AR;
+  var SC_FLAG = {en:"🇬🇧",cs:"🇨🇿",sk:"🇸🇰",pl:"🇵🇱",ru:"🇷🇺",ua:"🇺🇦",de:"🇩🇪"};
+  var SC_NAME = {en:"English",cs:"Čeština",sk:"Slovenčina",pl:"Polski",ru:"Русский",ua:"Українська",de:"Deutsch"};
   var chip = document.getElementById("scPrefsChipText");
-  if(chip) chip.textContent = (ar ? "ع" : (SC_LANG_BTN[displayLanguage] || "EN")) + " · " + (SC_CUR_SYM[displayCurrency] || "£");
+  if(chip) chip.textContent = (ar ? "🇪🇬 العربية" : (SC_FLAG[displayLanguage] + " " + SC_NAME[displayLanguage])) + "  ·  " + (SC_CUR_SYM[displayCurrency] || "£") + " " + displayCurrency;
+  scSetText("scPrefsBarLabel", T("langCur"));
   document.querySelectorAll("[data-sc-ar]").forEach(function(b){ b.classList.toggle("active", ar); b.setAttribute("aria-pressed", ar ? "true" : "false"); });
   document.querySelectorAll("[data-sc-lang]").forEach(function(b){ var on = !ar && b.getAttribute("data-sc-lang") === displayLanguage; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
   document.querySelectorAll("[data-sc-cur]").forEach(function(b){ var on = b.getAttribute("data-sc-cur") === displayCurrency; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });

@@ -176,6 +176,7 @@ replaceDecl("normalizeText", declSrc(CZ, "normalizeText"));
 /* category buttons */
 repIn("buildFilters", "const label = parts.slice(1).join(\" \");", "const label = mainLabel(key, parts.slice(1).join(\" \"));");
 repIn("buildFilters", "<span class=\"cat-hot\">Most requested</span>", "<span class=\"cat-hot\">${T(\"mostRequested\")}</span>");
+repIn("buildFilters", "  renderKits();\n}", "  try{ var fb = document.getElementById(\"filters\"); if(fb && !fb.querySelector(\".sc-cat-next\")){ fb.insertAdjacentHTML(\"beforeend\", '<button type=\"button\" class=\"sc-cat-arrow sc-cat-prev\" aria-label=\"Back\" onclick=\"scCatScroll(-1)\"><span>‹</span></button><button type=\"button\" class=\"sc-cat-arrow sc-cat-next\" aria-label=\"More\" onclick=\"scCatScroll(1)\"><span>›</span></button>'); } setTimeout(scCatHint, 0); setTimeout(scCatHint, 400); }catch(e){}\n  renderKits();\n}");
 repIn("cleanCatLabel", "return map[cat] || cat;", "return catLabel(map[cat] || cat);");
 
 /* product grid + modal */
@@ -347,10 +348,9 @@ rep('<div class="controls">\n  <div class="search-wrap">', `<div class="sc-sheet
     <button type="button" class="sc-sheet-done" id="scPrefsDone" onclick="scClosePrefs()">OK</button>
   </div>
 </div>
+<button type="button" class="sc-prefs-bar" id="scPrefsChip" onclick="scOpenPrefs()" aria-haspopup="dialog"><span class="sc-prefs-bar-label" id="scPrefsBarLabel">Language &amp; currency</span><span class="sc-prefs-bar-val"><span id="scPrefsChipText">🇬🇧 English · £ GBP</span><span class="sc-prefs-bar-arrow" aria-hidden="true">▾</span></span></button>
 <div class="controls">
   <div class="search-wrap">`);
-/* header: My Orders becomes an icon next to the language chip */
-rep('<button class="cart-btn" id="myOrdersBtn" onclick="scOpenMyOrders()">\n    🧾 <span id="myOrdersBtnText">My Orders</span>\n  </button>', '<div class="sc-hdr-row"><button class="cart-btn sc-icon-btn" id="myOrdersBtn" onclick="scOpenMyOrders()" aria-labelledby="myOrdersBtnText">🧾<span id="myOrdersBtnText" class="sc-vh">My Orders</span></button><button type="button" class="cart-btn sc-prefs-chip" id="scPrefsChip" onclick="scOpenPrefs()" aria-haspopup="dialog">🌐 <span id="scPrefsChipText">EN · £</span></button></div>');
 rep("<h2>How to order</h2>", "<h2 id=\"howTitle\">How to order</h2>");
 rep("<div><b>1.</b> Choose your product.</div>", "<div><b>1.</b> <span id=\"howStep1\">Choose your product.</span></div>");
 rep("<div><b>2.</b> Add it to your basket.</div>", "<div><b>2.</b> <span id=\"howStep2\">Add it to your basket.</span></div>");
@@ -395,9 +395,20 @@ rep('onclick="scDismissHotelWarn()">Got it — I understand</button>', 'id="hwOk
 
 /* language + currency row: same look as the English site's buttons */
 rep("\n</head>\n", `\n<style id="sc-prefs-css">
-.sc-hdr-row{display:flex;gap:6px}
-header .cart-btn.sc-icon-btn{flex:0 0 auto;width:40px;min-width:40px;padding:0!important;justify-content:center;font-size:16px}
-header .cart-btn.sc-prefs-chip{flex:1 1 auto;min-width:0;padding:0 8px!important;justify-content:center;gap:4px;font-size:12.5px;letter-spacing:.2px}
+.sc-prefs-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;width:calc(100% - 32px);max-width:1200px;margin:12px 16px 0;padding:10px 12px 10px 14px;border:1.5px solid #e4d2e4;border-radius:16px;background:linear-gradient(135deg,#fbf6fb,#fff);color:#3b1d3b;font:inherit;cursor:pointer;box-shadow:0 4px 14px rgba(91,41,90,.07);-webkit-tap-highlight-color:transparent;text-align:left}
+.sc-prefs-bar-label{font-size:11.5px;font-weight:900;color:#8a6b8a;text-transform:uppercase;letter-spacing:.4px;line-height:1.2}
+.sc-prefs-bar-val{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:900;color:#5B295A;white-space:nowrap}
+.sc-prefs-bar-arrow{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#5B295A;color:#fff;font-size:12px}
+@media(max-width:380px){.sc-prefs-bar-label{font-size:10px}.sc-prefs-bar-val{font-size:12.5px}}
+#filters{position:relative}
+#filters .sc-cat-arrow{position:absolute;top:10px;height:88px;width:42px;border:none;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:3;padding:0;-webkit-tap-highlight-color:transparent;font-size:0}
+#filters .sc-cat-arrow span{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#5B295A;color:#fff;font-size:17px;font-weight:900;box-shadow:0 4px 12px rgba(91,41,90,.3)}
+#filters .sc-cat-next{right:0;background:linear-gradient(90deg,rgba(247,242,247,0),rgba(247,242,247,.96) 55%)}
+#filters .sc-cat-prev{left:0;background:linear-gradient(270deg,rgba(247,242,247,0),rgba(247,242,247,.96) 55%)}
+#filters.sc-cat-more .sc-cat-next,#filters.sc-cat-back .sc-cat-prev{display:flex}
+#filters .sc-cat-next span{animation:scNudge 1.4s ease-in-out infinite}
+@keyframes scNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@media(min-width:700px){#filters .sc-cat-arrow{height:110px}}
 .sc-vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .sc-sheet-backdrop{position:fixed;inset:0;z-index:100000;background:rgba(30,12,30,.42);display:none;align-items:flex-end;justify-content:center}
 .sc-sheet-backdrop.show{display:flex}
