@@ -304,6 +304,8 @@ for(const id of ["selfcare-min-order-popup-actions-fixed-v3-js", "cart-prune-loc
   if(/201213444083/.test(code)) failures.push("order-history: other Czech number left");
   replaceScriptBodyById("order-history-v1", code);
 }
+/* header "My Orders" button: short word so the button stays the English size (the panel title keeps the full words) */
+rep('if(t) t.textContent = scMyOrdersLabel();', 'if(t) t.textContent = (typeof T === "function") ? T("myOrdersBtn") : scMyOrdersLabel();');
 /* order success popup: copy hints in the customer's language */
 {
   const s = scriptStartingWith(html, "window.showOrderSuccessModal = function(");
@@ -388,6 +390,7 @@ rep("\n</head>\n", `\n<style id="sc-prefs-css">
 .sc-pref-opts::-webkit-scrollbar{display:none}
 .sc-pref-btn{flex:0 0 auto;min-width:38px;height:30px;padding:0 9px;border-radius:999px;border:1px solid #d5e4e1;background:#fff;color:#17324d;font:inherit;font-size:12.5px;font-weight:800;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
 .sc-pref-btn.active{background:#0f766e;border-color:#0f766e;color:#fff}
+header .cart-btn{white-space:nowrap;max-width:118px;overflow:hidden;text-overflow:ellipsis}
 .sc-pref-btn:focus-visible{outline:2px solid #14b8a6;outline-offset:2px}
 @media (max-width:430px){.sc-prefs{padding:8px 12px 2px}.sc-pref-row{gap:6px}.sc-pref-opts{gap:4px}.sc-pref-label{min-width:52px;font-size:10.5px}.sc-pref-btn{min-width:33px;height:29px;padding:0 6px;font-size:12px}}
 </style>

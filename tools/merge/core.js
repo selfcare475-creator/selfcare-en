@@ -129,7 +129,19 @@ function scApplyStaticTexts(){
     if(pc && !pc.dataset.touched){ pc.value = SC_PHONE_BY_LANG[displayLanguage] || "44"; }
   }catch(e){}
   scUpdatePrefButtons();
+  scFitHeaderButtons();
 }
+/* header buttons keep the English width: long words get a slightly smaller font instead of a wider button */
+function scFitHeaderButtons(){
+  try{
+    document.querySelectorAll("header .cart-btn").forEach(function(b){
+      b.style.fontSize = "";
+      var fs = parseFloat(getComputedStyle(b).fontSize) || 13, n = 0;
+      while(b.scrollWidth > b.clientWidth + 1 && fs > 10 && n++ < 8){ fs -= 0.5; b.style.fontSize = fs + "px"; }
+    });
+  }catch(e){}
+}
+window.addEventListener("resize", function(){ scFitHeaderButtons(); });
 function scUpdatePrefButtons(){
   document.querySelectorAll("[data-sc-lang]").forEach(function(b){ var on = b.getAttribute("data-sc-lang") === displayLanguage; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
   document.querySelectorAll("[data-sc-cur]").forEach(function(b){ var on = b.getAttribute("data-sc-cur") === displayCurrency; b.classList.toggle("active", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
