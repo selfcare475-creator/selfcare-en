@@ -401,54 +401,54 @@ window.addEventListener("resize", function(){ if(window.innerWidth === __scFitW)
 
 /* first screen: a small, even part of the 2nd product row shows above the bottom bar (scroll hint) */
 var __scFoldVH = 0, __scFoldW = 0;
-var __scFoldT = 0;
+var __scFoldT = 0, __scFoldMB = null, __scFoldKey = "";
 function scFoldFix(){
   var g = document.getElementById("grid");
   if(g && (window.scrollY || 0) < 40 && window.innerWidth < 900) g.classList.add("sc-fold-wait");
-  __scFoldRun(true);
+  __scFoldApply();
   clearTimeout(__scFoldT); __scFoldT = setTimeout(function(){ __scFoldRun(); var g2 = document.getElementById("grid"); if(g2) g2.classList.remove("sc-fold-wait"); }, 180);
+}
+/* re-render (stock, rates, language…): put back the same space at once, so the 2nd row never jumps */
+function __scFoldApply(){
+  try{
+    /* cards use content-visibility:auto with a placeholder height (290px) — on every re-render they first drew at that height and then grew
+       (the "jumping" cards). First 8 cards are drawn normally; the rest use the real card height measured here. */
+    var c0 = document.querySelector("#grid > .card:not(.kit-card)"), gg = document.getElementById("grid");
+    if(c0 && gg && c0.offsetHeight > 150) gg.style.setProperty("--sc-card-h", c0.offsetHeight + "px");
+  }catch(e){}
+  try{
+    var cards = document.querySelectorAll("#grid > .card");
+    for(var i = 0; i < cards.length && i < 2; i++){
+      if(__scFoldMB && __scFoldKey === window.innerWidth + "x" + __scFoldVH) cards[i].style.setProperty("margin-bottom", __scFoldMB + "px", "important");
+      else cards[i].style.removeProperty("margin-bottom");
+    }
+  }catch(e){}
 }
 function __scFoldRun(){
   try{
     var cards = document.querySelectorAll("#grid > .card");
-    var g = document.getElementById("grid");
     for(var i = 0; i < cards.length && i < 2; i++) cards[i].style.removeProperty("margin-bottom");
-    if(g){ g.style.removeProperty("padding-top"); g.style.removeProperty("margin-top"); }
+    __scFoldMB = null;
     if(window.innerWidth >= 900 || cards.length < 3) return;
     var nav = document.querySelector(".sc-bnav"); if(!nav || getComputedStyle(nav).display === "none") return;
     if(!__scFoldVH || window.innerWidth !== __scFoldW){ __scFoldVH = window.innerHeight; __scFoldW = window.innerWidth; }
+    __scFoldKey = window.innerWidth + "x" + __scFoldVH;
     var fold = __scFoldVH - nav.offsetHeight;
     var y = window.scrollY || 0;
     var row2 = cards[2].getBoundingClientRect().top + y;
     if(row2 === cards[0].getBoundingClientRect().top + y) return;
-    /* the top of the 2nd row (card edge + its badge) peeks SC_PEEK px above the bottom bar, so the customer sees there is more to scroll */
-    var SC_PEEK = 44, v = fold - row2;
-    if(v > SC_PEEK){
-      var extra = Math.floor(v - SC_PEEK);
-      if(extra <= 130){ cards[0].style.setProperty("margin-bottom", extra + "px", "important"); cards[1].style.setProperty("margin-bottom", extra + "px", "important"); }
-    } else if(v < SC_PEEK && g){
-      /* short screen: take up to 12px from the space above the grid */
-      var cs = getComputedStyle(g), pt = parseFloat(cs.paddingTop) || 0, mt = parseFloat(cs.marginTop) || 0;
-      var take = Math.min(SC_PEEK - v, 12), t1 = Math.min(take, Math.max(pt - 2, 0)), t2 = Math.min(take - t1, Math.max(mt, 0));
-      if(t1) g.style.setProperty("padding-top", (pt - t1) + "px", "important");
-      if(t2) g.style.setProperty("margin-top", (mt - t2) + "px", "important");
-      v += t1 + t2;
-      /* still short: slightly smaller category tiles (decided once per screen size, so nothing moves while scrolling) */
-      var R = document.documentElement;
-      if(v < SC_PEEK && !R.classList.contains("sc-short")){
-        R.classList.add("sc-short");
-        g.style.removeProperty("padding-top"); g.style.removeProperty("margin-top");
-        return __scFoldRun();
-      }
-      /* still only a thin line showing → keep the old behaviour: 2nd row starts just below the bar */
-      if(v < 22){ var ex = Math.ceil(v + 6); if(ex > 0 && ex <= 130){ cards[0].style.setProperty("margin-bottom", ex + "px", "important"); cards[1].style.setProperty("margin-bottom", ex + "px", "important"); } }
-    }
+    /* only the top edge of the 2nd row (card edge + its badge, SC_PEEK px) shows above the bottom bar → the customer sees there is more.
+       The category tiles and the first row never move or shrink; if even that small edge cannot show, the 2nd row starts just below the bar. */
+    var SC_PEEK = 30, v = fold - row2, mb = 0;
+    if(v > SC_PEEK) mb = Math.floor(v - SC_PEEK);
+    else if(v < 16) mb = Math.ceil(v + 6);
+    if(mb > 0 && mb <= 130){ __scFoldMB = mb; for(var j = 0; j < 2; j++) cards[j].style.setProperty("margin-bottom", mb + "px", "important"); }
   }catch(e){}
 }
-window.addEventListener("resize", function(){ if(window.innerWidth !== __scFoldW){ __scFoldVH = 0; document.documentElement.classList.remove("sc-short"); scFoldFix(); } });
-try{ var __scShortCss = document.createElement("style"); __scShortCss.id = "sc-short-css";
-  __scShortCss.textContent = "html.sc-short body #filters .main-filters .main-filter-btn,html.sc-short body #filters .main-filters .main-filter-btn.tourist-main,html.sc-short body #filters .main-filters .main-filter-btn[onclick*=\"mobility\"]{min-height:64px!important;padding:3px 2px 4px!important}html.sc-short body #filters .main-filters .main-filter-btn .cat-icon.cat-img,html.sc-short body #filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{height:31px!important;flex:0 0 31px!important;margin:0 auto 2px!important}";
-  document.head.appendChild(__scShortCss); }catch(e){}
+window.addEventListener("resize", function(){ if(window.innerWidth !== __scFoldW){ __scFoldVH = 0; __scFoldMB = null; scFoldFix(); } });
+try{ var __scCvCss = document.createElement("style"); __scCvCss.id = "sc-cv-css";
+  __scCvCss.textContent = "#grid > .card:not(.kit-card){contain-intrinsic-size:auto var(--sc-card-h,305px)!important}#grid > .card:nth-child(-n+8){content-visibility:visible!important}";
+  document.head.appendChild(__scCvCss); }catch(e){}
 window.addEventListener("load", function(){ setTimeout(scFoldFix, 50); });
 try{ if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ setTimeout(scFoldFix, 50); }); }catch(e){}
 document.addEventListener("DOMContentLoaded", function(){ try{ var g = document.getElementById("grid"); if(g) new MutationObserver(function(){ scFoldFix(); }).observe(g, {childList: true}); }catch(e){} });

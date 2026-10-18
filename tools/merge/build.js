@@ -518,9 +518,17 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 {
   const fx = { "SC301": { name_cz: "Egy Bio olej z černého kmínu" },
                "SC294": { name_cz: "Lotus vlasové ampule s černým kmínem", desc_cz: "Vlasové ampule s černým kmínem pro intenzivní péči o oslabené vlasy a podporu zdravějšího vzhledu." },
+               "SC207": {"desc": "Capsules used for cramps, bloating and abdominal pain related to indigestion.", "desc_cz": "Kapsle pro úlevu od křečí, nadýmání a bolestí břicha spojených s podrážděným trávením."},
+               "SC384": {"desc": "Melatonin 3 mg oral films used for short-term sleep support and jet lag-related sleep difficulty."},
+               "SC420": {"desc": "Antispasmodic oral films used for abdominal cramps and intestinal spasms.", "desc_cz": "Orální filmy proti křečím břicha, nadýmání a střevnímu diskomfortu. Užívejte dle doporučení lékárníka."},
+               "SC310": {"desc": "SPF 6 bronzing body lotion used to support tanning with very low protection."},
+               "SC336": {"desc": "Bobana marine collagen and vitamin C cream used to brighten dull skin and support an even-looking tone."},
+               "SC356": {"desc": "Bobana charcoal scrub used to cleanse pores, reduce excess oil and refresh skin."},
+               "SC249": {"desc": "Moroccan olive soap used to cleanse the skin with a gentle exfoliating effect for a smoother feel after bathing."},
+               "SC250": {"desc": "Moroccan argan soap used to cleanse, soften and care for the skin in the shower or during a hammam ritual."},
                "2649":  { name: "Rani-F Famotidine 20 mg 6 effervescent sachets" } };
   let n = 0; for(const p of enProducts){ const f = fx[p.code]; if(f){ Object.assign(p, f); n++; } }
-  if(n !== 3) failures.push("data fixes: " + n);
+  if(n !== 11) failures.push("data fixes: " + n);
 }
 {
   const m = html.match(/CATALOG_PRODUCTS_URL = "products-en\.json\?v=(\d+)"/);
@@ -754,6 +762,11 @@ rep("function normalizeText(value){", "function scKwIn(text, w){ var k = normali
 
 /* names per language for the fixed products (beat the Czech name coming back from the database) */
 rep("var SC_NAME_I18N = {", 'var SC_NAME_I18N = {"SC301": {"cs": "Egy Bio olej z černého kmínu", "sk": "Egy Bio olej z čiernej rasce", "pl": "Egy Bio olej z czarnuszki", "ru": "Egy Bio масло черного тмина", "ua": "Egy Bio олія чорного кмину", "de": "Egy Bio Schwarzkümmelöl"}, "SC294": {"cs": "Lotus vlasové ampule s černým kmínem", "sk": "Lotus vlasové ampulky s čiernou rascou", "pl": "Lotus ampułki do włosów z czarnuszką", "ru": "Lotus ампулы для волос с черным тмином", "ua": "Lotus ампули для волосся з чорним кмином", "de": "Lotus Haarampullen mit Schwarzkümmel"}, "2649": {"ru": "Rani-F Famotidin 20 мг 6 шипучих саше", "ua": "Rani-F Famotidin 20 мг 6 шипучих саше", "de": "Rani-F Famotidin 20 mg 6 Brausebeutel"}, ');
+
+/* exchange rates: start from the last live rates seen on this phone (then today's defaults), so "≈ $" does not jump on every refresh */
+rep("let GBP_RATE = 70;\nlet USD_RATE_EN = 50;\nlet EUR_RATE_EN = 60;", "let GBP_RATE = 65;\nlet USD_RATE_EN = 45;\nlet EUR_RATE_EN = 55;\ntry{ (function(){ var c = JSON.parse(localStorage.getItem('scRatesV1') || 'null'); if(c){ if(c.g > 0) GBP_RATE = c.g; if(c.u > 0) USD_RATE_EN = c.u; if(c.e > 0) EUR_RATE_EN = c.e; } })(); }catch(e){}");
+repIn("loadSharedCurrencyRates", "    const gbp=Number(map.rate_gbp);", "    const __before=[GBP_RATE,USD_RATE_EN,EUR_RATE_EN].join('|');\n    const gbp=Number(map.rate_gbp);");
+repIn("loadSharedCurrencyRates", "    if(typeof requestGridRender===\"function\")smoothRenderGridSoon();", "    try{ localStorage.setItem('scRatesV1', JSON.stringify({g:GBP_RATE,u:USD_RATE_EN,e:EUR_RATE_EN})); }catch(e){}\n    if([GBP_RATE,USD_RATE_EN,EUR_RATE_EN].join('|')===__before) return;\n    if(typeof requestGridRender===\"function\")smoothRenderGridSoon();");
 
 /* ---------- no flash on load: every <style> that sits in the page body moves into <head> (same order, so the cascade is unchanged),
    and a non-English page stays hidden until its texts are switched (max 1.2 s) ---------- */
