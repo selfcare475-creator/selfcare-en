@@ -28,7 +28,7 @@ export async function onRequest(context){
     if(!(res.headers.get("content-type") || "").includes("text/html")) return res;
     let q = (url.searchParams.get("lang") || "").toLowerCase(); if(q === "cz") q = "cs"; if(q === "uk") q = "ua";
     const hostLang = /(^|\.)selfcare-cz\.com$/.test(url.hostname) ? "cs" : "en";
-    const lang = SC_SEO[q] ? q : hostLang;
+    const lang = SC_ORDER.indexOf(q) >= 0 ? q : hostLang;
     const m = SC_SEO[lang];
     const esc = v => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
     const links = '<link rel="canonical" href="' + esc(scLangUrl(lang)) + '">' +

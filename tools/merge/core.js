@@ -75,7 +75,8 @@ var displayLanguage = (function(){
     if(q && SC_LANGS.indexOf(q) >= 0){ try{ localStorage.setItem("sc_lang", q); }catch(e){} return q; }
     var s = null; try{ s = localStorage.getItem("sc_lang"); }catch(e){}
     if(s && SC_LANGS.indexOf(s) >= 0) return s;
-    var p = scPhoneLang(); if(p) return p;
+    /* phone language only on the English domain; selfcare-cz.com always opens in Czech unless the customer picks another */
+    if(scHostLang() === "en"){ var p = scPhoneLang(); if(p) return p; }
   }catch(e){}
   return scHostLang();
 })();
@@ -94,6 +95,8 @@ function T(key, vars){
 }
 /* order code per language: English 61, Slovak 51, every other language 72 (as on the Czech site) */
 function scSiteCode(){ return displayLanguage === "en" ? 61 : (displayLanguage === "sk" ? 51 : 72); }
+/* branch label = same as the two old sites: English orders → "Self Care 2", every other language → "Self Care" (orders + stock locks) */
+function scBranch(){ return displayLanguage === "en" ? "Self Care 2" : "Self Care"; }
 /* a pick() helper for {lang:text} packs */
 function scPick(pack){ return (pack && (pack[displayLanguage] != null ? pack[displayLanguage] : (pack.en != null ? pack.en : pack.cs))) || ""; }
 
@@ -290,6 +293,7 @@ function setDisplayLanguage(l, opts){
   try{ localStorage.removeItem("sc_cur"); }catch(e){}
   scApplyStaticTexts();
   scRerenderAll();
+  try{ if(typeof loadStockStatus === "function") loadStockStatus(); }catch(e){}
   try{ if(window.__scTrack) window.__scTrack("lang_change", {lang:l}); }catch(e){}
 }
 function setDisplayCurrency(c){
@@ -386,7 +390,8 @@ function scFitNames(){
     });
   }catch(e){}
 }
-window.addEventListener("resize", function(){ document.querySelectorAll("#grid .card-name").forEach(function(n){ n.__scFit = null; }); scFitNames(); });
+var __scFitW = window.innerWidth, __scFitRaf = 0;
+window.addEventListener("resize", function(){ if(window.innerWidth === __scFitW) return; __scFitW = window.innerWidth; cancelAnimationFrame(__scFitRaf); __scFitRaf = requestAnimationFrame(function(){ document.querySelectorAll("#grid .card-name").forEach(function(n){ n.__scFit = null; }); scFitNames(); }); });
 
 /* first screen ends neatly: if the 2nd product row only peeks above the bottom bar, push it just below the bar (small gap only) */
 var __scFoldVH = 0, __scFoldW = 0;
@@ -416,3 +421,7 @@ window.addEventListener("resize", function(){ if(window.innerWidth !== __scFoldW
 window.addEventListener("load", function(){ setTimeout(scFoldFix, 50); });
 try{ if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ setTimeout(scFoldFix, 50); }); }catch(e){}
 document.addEventListener("DOMContentLoaded", function(){ try{ var g = document.getElementById("grid"); if(g) new MutationObserver(function(){ scFoldFix(); }).observe(g, {childList: true}); }catch(e){} });
+/* an image that fails before the main script loads would call imageFallback() too early — retry once it exists */
+if(typeof window.imageFallback !== "function"){ window.imageFallback = function __scImgWait(img){ setTimeout(function(){ if(window.imageFallback !== __scImgWait) try{ window.imageFallback(img); }catch(e){} }, 300); }; }
+/* translate what is already on screen right away (header, search, language chip), then show the page — no wait for the whole document */
+try{ scApplyStaticTexts(); }catch(e){} finally{ try{ document.documentElement.classList.remove("sc-pre"); }catch(e){} }

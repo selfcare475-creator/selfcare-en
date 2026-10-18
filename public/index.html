@@ -6868,7 +6868,7 @@ html body #grid .card .badge-top,html body .badge-top,#filters .main-filters .ma
 header .cart-badge{background:#1f2f52!important;color:#fff!important;border-color:#fff!important}
 </style>
 <style id="sc-pre-css">html.sc-pre body{opacity:0}html body{transition:opacity .15s ease}</style>
-<script>(function(){try{var q=(location.search.match(/[?&]lang=([a-z]{2})/i)||[])[1],s=null;try{s=localStorage.getItem("sc_lang")}catch(e){}var l=(q||s||"").toLowerCase();if(!l){var L=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""];for(var i=0;i<L.length;i++){var b=String(L[i]||"").toLowerCase().split("-")[0];if(/^(en|cs|sk|pl|ru|uk|de)$/.test(b)){l=b;break}}}if(!l&&/selfcare-cz\.com$/.test(location.hostname))l="cs";if(l&&l!=="en"){document.documentElement.classList.add("sc-pre");setTimeout(function(){document.documentElement.classList.remove("sc-pre")},1200)}}catch(e){}})();</script>
+<script>(function(){try{var q=(location.search.match(/[?&]lang=([a-z]{2})/i)||[])[1],s=null;try{s=localStorage.getItem("sc_lang")}catch(e){}var l=(q||s||"").toLowerCase();if(!l&&/selfcare-cz\.com$/.test(location.hostname))l="cs";if(!l){var L=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""];for(var i=0;i<L.length;i++){var b=String(L[i]||"").toLowerCase().split("-")[0];if(/^(en|cs|sk|pl|ru|uk|de)$/.test(b)){l=b;break}}}if(!l&&/selfcare-cz\.com$/.test(location.hostname))l="cs";if(l&&l!=="en"){document.documentElement.classList.add("sc-pre");setTimeout(function(){document.documentElement.classList.remove("sc-pre")},1200)}}catch(e){}})();</script>
 </head>
 <body>
 
@@ -7310,7 +7310,8 @@ var displayLanguage = (function(){
     if(q && SC_LANGS.indexOf(q) >= 0){ try{ localStorage.setItem("sc_lang", q); }catch(e){} return q; }
     var s = null; try{ s = localStorage.getItem("sc_lang"); }catch(e){}
     if(s && SC_LANGS.indexOf(s) >= 0) return s;
-    var p = scPhoneLang(); if(p) return p;
+    /* phone language only on the English domain; selfcare-cz.com always opens in Czech unless the customer picks another */
+    if(scHostLang() === "en"){ var p = scPhoneLang(); if(p) return p; }
   }catch(e){}
   return scHostLang();
 })();
@@ -7329,6 +7330,8 @@ function T(key, vars){
 }
 /* order code per language: English 61, Slovak 51, every other language 72 (as on the Czech site) */
 function scSiteCode(){ return displayLanguage === "en" ? 61 : (displayLanguage === "sk" ? 51 : 72); }
+/* branch label = same as the two old sites: English orders → "Self Care 2", every other language → "Self Care" (orders + stock locks) */
+function scBranch(){ return displayLanguage === "en" ? "Self Care 2" : "Self Care"; }
 /* a pick() helper for {lang:text} packs */
 function scPick(pack){ return (pack && (pack[displayLanguage] != null ? pack[displayLanguage] : (pack.en != null ? pack.en : pack.cs))) || ""; }
 
@@ -7525,6 +7528,7 @@ function setDisplayLanguage(l, opts){
   try{ localStorage.removeItem("sc_cur"); }catch(e){}
   scApplyStaticTexts();
   scRerenderAll();
+  try{ if(typeof loadStockStatus === "function") loadStockStatus(); }catch(e){}
   try{ if(window.__scTrack) window.__scTrack("lang_change", {lang:l}); }catch(e){}
 }
 function setDisplayCurrency(c){
@@ -7621,7 +7625,8 @@ function scFitNames(){
     });
   }catch(e){}
 }
-window.addEventListener("resize", function(){ document.querySelectorAll("#grid .card-name").forEach(function(n){ n.__scFit = null; }); scFitNames(); });
+var __scFitW = window.innerWidth, __scFitRaf = 0;
+window.addEventListener("resize", function(){ if(window.innerWidth === __scFitW) return; __scFitW = window.innerWidth; cancelAnimationFrame(__scFitRaf); __scFitRaf = requestAnimationFrame(function(){ document.querySelectorAll("#grid .card-name").forEach(function(n){ n.__scFit = null; }); scFitNames(); }); });
 
 /* first screen ends neatly: if the 2nd product row only peeks above the bottom bar, push it just below the bar (small gap only) */
 var __scFoldVH = 0, __scFoldW = 0;
@@ -7651,6 +7656,10 @@ window.addEventListener("resize", function(){ if(window.innerWidth !== __scFoldW
 window.addEventListener("load", function(){ setTimeout(scFoldFix, 50); });
 try{ if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ setTimeout(scFoldFix, 50); }); }catch(e){}
 document.addEventListener("DOMContentLoaded", function(){ try{ var g = document.getElementById("grid"); if(g) new MutationObserver(function(){ scFoldFix(); }).observe(g, {childList: true}); }catch(e){} });
+/* an image that fails before the main script loads would call imageFallback() too early — retry once it exists */
+if(typeof window.imageFallback !== "function"){ window.imageFallback = function __scImgWait(img){ setTimeout(function(){ if(window.imageFallback !== __scImgWait) try{ window.imageFallback(img); }catch(e){} }, 300); }; }
+/* translate what is already on screen right away (header, search, language chip), then show the page — no wait for the whole document */
+try{ scApplyStaticTexts(); }catch(e){} finally{ try{ document.documentElement.classList.remove("sc-pre"); }catch(e){} }
 
 /* scooter / wheelchair booking — texts for the extra site languages (WhatsApp messages to the pharmacy stay English) */
 var SC_MOB_TX = {
@@ -9020,7 +9029,7 @@ async function loadStockStatus(){
       const key=stockToken(r.product_name||"");
       if(!key) return;
       const br = r.branch || "ALL";
-      const forThisBranch = (br === "ALL" || br === BRANCH);
+      const forThisBranch = (br === "ALL" || br === scBranch());
       if(r.out_of_stock && forThisBranch) outOfStockNames.add(key);
       if(r.price_egp!==undefined && r.price_egp!==null && String(r.price_egp)!=="") livePriceByName.set(key, Number(r.price_egp));
     });
@@ -12021,7 +12030,7 @@ function getOrderDetails(){
   const items = keys.map(k => ({idx:parseInt(k), product:products[parseInt(k)], qty:cart[k]}));
   const productTotal = items.reduce((sum, item) => sum + (livePrice(item.product) * item.qty), 0);
   const itemCount = items.reduce((sum, item) => sum + item.qty, 0);
-  const room = document.getElementById("checkoutRoom")?.value.trim() || "Not provided";
+  const room = (document.getElementById("checkoutRoom")?.value.trim() || document.getElementById("checkoutNote")?.value.trim()) || "Not provided";
   const hotel = document.getElementById("checkoutHotel")?.value.trim() || "Not provided";
   const deliveryDay = document.getElementById("deliveryDay")?.value || "Today";
   const deliveryTime = document.getElementById("deliveryTime")?.value || "13:00";
@@ -12322,7 +12331,8 @@ function renderCheckout(){
   /* v31: auto-fix common country-code mistakes */
   if(/^420421\d{6,}$/.test(phoneRaw)) phoneRaw = phoneRaw.slice(3);
   else if(/^4209\d{8,}$/.test(phoneRaw)) phoneRaw = "421" + phoneRaw.slice(3);
-  else if(phoneLocal.indexOf(phoneCode) === 0 && phoneLocal.length >= phoneCode.length + 6) phoneRaw = phoneLocal;
+  else if(phoneCode === "7" && /^8\d{10}$/.test(phoneLocal)) phoneRaw = "7" + phoneLocal.slice(1);
+  else if(phoneLocal.indexOf(phoneCode) === 0 && phoneLocal.length >= (phoneCode === "7" ? 11 : phoneCode.length + 9)) phoneRaw = phoneLocal;
   const phoneValid = phoneLocal.length >= 6 && phoneRaw.length >= 8 && phoneRaw.length <= 15;
   if(!phoneValid || !hotelValid){
     btn.removeAttribute("href");
@@ -12353,7 +12363,7 @@ function renderCheckout(){
     status: "New",
     source: "web",
     source_code: scSiteCode(), /* 61 English · 72 Czech & other languages · 51 Slovak */
-    branch: BRANCH
+    branch: scBranch()
   };
   btn.onclick = async function(e){
     e.preventDefault();
