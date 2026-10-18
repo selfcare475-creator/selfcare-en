@@ -519,6 +519,21 @@ if(matched < enProducts.length * 0.95) failures.push("catalog match too low: " +
 
 /* ---------- look: smaller WhatsApp bubble, no version stamp ---------- */
 rep("\n</body>\n", `\n<style id="sc-look-v1">
+/* tighter first screen: the first product row fits above the bottom bar */
+@media(max-width:899px){
+  html body .controls{margin-top:0!important;margin-bottom:0!important;padding-top:10px!important;padding-bottom:0!important}
+  html body #filters{margin-top:8px!important;margin-bottom:2px!important;padding-top:0!important}
+  html body #filters .main-filters{gap:8px 6px!important;padding:4px 0 2px!important}
+  html body #filters .main-filters .main-filter-btn,html body #filters .main-filters .main-filter-btn.tourist-main,html body #filters .main-filters .main-filter-btn[onclick*="mobility"]{min-height:76px!important;padding:5px 2px 6px!important}
+  html body #filters .main-filters .main-filter-btn .cat-icon.cat-img,html body #filters .main-filters .main-filter-btn.tourist-main .cat-icon.cat-img{width:50px!important;height:38px!important;flex:0 0 38px!important;margin:0 auto 3px!important}
+  html body #grid{margin-top:6px!important;gap:10px!important}
+  html body #grid .card .card-img-wrap{height:112px!important;min-height:112px!important;padding:6px 10px!important}
+  html body #grid .card .card-body{padding-top:8px!important;padding-bottom:10px!important;gap:6px!important}
+  html body #grid .card-use-for{margin:0!important}
+  html body #grid .card-footer{gap:6px!important}
+  html body #grid .card-price{min-height:0!important;padding-top:6px!important;padding-bottom:6px!important}
+  html body #grid .qty-pill{margin-top:0!important}
+}
 /* language chip inside the header */
 html body header .sc-hchip{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:7px 10px 7px 12px;border-radius:999px;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.35);color:#fff;font:inherit;font-size:13.5px;font-weight:900;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;flex:0 0 auto}
 html body header .sc-hchip-arrow{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#fff;color:#c24a17;font-size:9px}
