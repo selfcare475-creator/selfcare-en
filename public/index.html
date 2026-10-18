@@ -7950,6 +7950,7 @@ function dynamicCardTextForLang(p, lang){
   if(lang==="en")return useEn || "";
   if(lang==="cs"&&useCz)return useCz;
   if(lang==="sk"&&useCz)return (window.SC_SK_USE&&window.SC_SK_USE[useCz])||useCz;
+  if(lang==="de"||lang==="ru"||lang==="ua")return useEn||useCz||"";
   return useCz||useEn||"";
 }
 

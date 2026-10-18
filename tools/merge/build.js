@@ -144,7 +144,7 @@ repIn("applyDynOverlayCache", "dynamicCardTextForLang({use_en:ue0,use_cz:uc0}, \
   const enAuto = getDecl("autoCardTextFromCategory").replace("function autoCardTextFromCategory(", "function __autoCardTextEn(");
   replaceDecl("autoCardTextFromCategory", enAuto + "\nfunction autoCardTextFromCategory(p){ return displayLanguage === \"en\" ? __autoCardTextEn(p) : __autoCardTextI18n(p); }");
 }
-repIn("dynamicCardTextForLang", "if(lang===\"cs\"&&useCz)return useCz;", "if(lang===\"cs\"&&useCz)return useCz;\n  if(lang===\"sk\"&&useCz)return (window.SC_SK_USE&&window.SC_SK_USE[useCz])||useCz;");
+repIn("dynamicCardTextForLang", "if(lang===\"cs\"&&useCz)return useCz;", "if(lang===\"cs\"&&useCz)return useCz;\n  if(lang===\"sk\"&&useCz)return (window.SC_SK_USE&&window.SC_SK_USE[useCz])||useCz;\n  if(lang===\"de\"||lang===\"ru\"||lang===\"ua\")return useEn||useCz||\"\";");
 replaceDecl("productUseFor", `function productUseFor(p){
   const lang = displayLanguage;
   const approved = getApprovedCardText(p, lang);
