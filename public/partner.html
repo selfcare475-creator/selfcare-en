@@ -39,6 +39,7 @@ h2 small{color:var(--muted);font-size:12px;font-weight:700}
 .tabs button.on{background:var(--sea);border-color:var(--sea);color:#fff}
 .pay{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 0;border-top:1px solid var(--line);font-size:13px}
 .pay:first-of-type{border-top:0}.pay b{font-size:15px}.pay .p{color:var(--sun);font-weight:900;text-align:right}.pay .m{color:var(--muted)}
+.sec{margin-top:16px;font-size:13px;font-weight:900;color:var(--muted)}
 .note{color:var(--muted);font-size:12px;margin-top:14px;line-height:1.6}
 .empty{color:var(--muted);text-align:center;padding:30px 10px}
 .off{background:#fee2e2;color:#991b1b;border-radius:12px;padding:10px;font-weight:800;font-size:13px;margin-top:12px}
@@ -87,7 +88,7 @@ h2 small{color:var(--muted);font-size:12px;font-weight:700}
     if(!D.active) h += '<div class="off">' + L.paused + '</div>';
     h += '<div class="card pts"><div class="lbl">' + L.balance + ' · ' + (D.since ? L.since + ' (' + dt(D.since, {day:"numeric", month:"short"}) + ')' : L.start) + '</div>' +
          '<div class="big">' + num(b.points) + '</div><div class="row"><span><b>' + num(b.orders) + '</b> ' + L.orders + '</span><span>' + L.sales + ' <b>' + egp(b.sales) + '</b></span></div></div>';
-    h += '<div class="grid"><div class="tile"><b>' + num(v.today) + '</b><span>' + L.visits + ' · ' + L.today + '</span></div><div class="tile"><b>' + num(v.d7) + '</b><span>' + L.visits + ' · ' + L.d7 + '</span></div><div class="tile"><b>' + num(v.d30) + '</b><span>' + L.visits + ' · ' + L.d30 + '</span></div></div>';
+    h += '<div class="sec">' + L.visits + '</div><div class="grid" style="margin-top:6px"><div class="tile"><b>' + num(v.today) + '</b><span>' + L.today + '</span></div><div class="tile"><b>' + num(v.d7) + '</b><span>' + L.d7 + '</span></div><div class="tile"><b>' + num(v.d30) + '</b><span>' + L.d30 + '</span></div></div>';
     h += '<div class="grid"><div class="tile"><b>' + num(a.orders) + '</b><span>' + L.allOrders + '</span></div><div class="tile"><b>' + num(a.points) + '</b><span>' + L.allPoints + '</span></div><div class="tile"><b style="font-size:16px">' + egp(a.sales) + '</b><span>' + L.allSales + '</span></div></div>';
     h += '<div class="card"><h2>' + L.chart + '</h2><div class="tabs"><button data-m="v" class="' + (mode === "v" ? "on" : "") + '">' + L.cv + '</button><button data-m="o" class="' + (mode === "o" ? "on" : "") + '">' + L.co + '</button><button data-m="p" class="' + (mode === "p" ? "on" : "") + '">' + L.cp + '</button></div>' + chart() + '</div>';
     h += '<div class="card"><h2>' + L.yourLink + '</h2><div class="link"><input readonly value="' + esc(D.link) + '"><button class="btn" id="cp">' + L.copy + '</button>' + (navigator.share ? '<button class="btn" id="sh">' + L.share + '</button>' : '') + '</div></div>';
