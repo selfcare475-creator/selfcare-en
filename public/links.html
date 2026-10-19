@@ -64,26 +64,27 @@ a.btn.primary .ic{background:rgba(255,255,255,.14);color:#fff}
 .foot p+p{margin-top:5px}
 @media (max-width:360px){.hdr h1{font-size:20px}.hdr img{width:50px;height:50px}.tx strong{font-size:16px}a.btn{padding:12px 13px;gap:12px}}
 
-/* compact: whole page fits one phone screen without scrolling */
-body{min-height:100vh;min-height:100dvh}
-.hdr{padding:calc(12px + env(safe-area-inset-top)) 16px 12px;gap:12px}
-.hdr img{width:46px;height:46px}
-.hdr h1{font-size:20px}
-.hdr p{font-size:13px;margin-top:2px}
-main{padding:12px 14px 4px;display:flex;flex-direction:column;justify-content:center}
-.label{font-size:11px;margin:10px 4px 7px}
-.label:first-child{margin-top:0}
-.links{gap:8px}
-a.btn{min-height:58px;padding:9px 14px;gap:12px;border-radius:16px}
-.ic{flex:0 0 40px;width:40px;height:40px;border-radius:12px}
-.ic svg{width:21px;height:21px}
-.ic .n{width:18px;height:18px;line-height:18px;font-size:10.5px;top:-5px;right:-5px}
-.tx strong{font-size:15.5px}
-.tx > span{font-size:12.5px;margin-top:1px}
-.foot{padding:10px 14px calc(12px + env(safe-area-inset-bottom));font-size:11.5px;line-height:1.5}
+/* fluid: fills one phone screen top-to-bottom, no scrolling, no empty gaps */
+body{height:100vh;height:100dvh;min-height:0;overflow:hidden}
+.hdr{padding:calc(clamp(12px,2.4dvh,24px) + env(safe-area-inset-top)) 18px clamp(12px,2.4dvh,24px);gap:14px}
+.hdr img{width:clamp(46px,7.5dvh,66px);height:clamp(46px,7.5dvh,66px)}
+.hdr h1{font-size:clamp(20px,3dvh,25px)}
+.hdr p{font-size:clamp(13px,1.9dvh,15.5px);margin-top:2px}
+main{flex:1;min-height:0;padding:clamp(10px,2.2dvh,22px) 14px 0;display:flex;flex-direction:column;justify-content:space-evenly}
+.group{display:flex;flex-direction:column}
+.label{font-size:clamp(11px,1.5dvh,12.5px);margin:0 4px clamp(6px,1.2dvh,10px)}
+.links{gap:clamp(8px,1.7dvh,15px)}
+a.btn{min-height:clamp(54px,11.4dvh,100px);padding:6px 14px;gap:clamp(12px,1.8dvh,16px);border-radius:clamp(15px,2.2dvh,20px)}
+.ic{flex:0 0 auto;width:clamp(40px,6dvh,50px);height:clamp(40px,6dvh,50px);border-radius:13px}
+.ic svg{width:clamp(21px,3dvh,25px);height:clamp(21px,3dvh,25px)}
+.ic .n{width:19px;height:19px;line-height:19px;font-size:11px;top:-6px;right:-6px}
+.tx strong{font-size:clamp(15.5px,2.25dvh,18.5px)}
+.tx > span{font-size:clamp(12.5px,1.75dvh,14.5px);margin-top:2px}
+.foot{flex:0 0 auto;padding:clamp(8px,1.6dvh,14px) 14px calc(clamp(10px,1.8dvh,16px) + env(safe-area-inset-bottom));font-size:clamp(11.5px,1.55dvh,13px);line-height:1.5}
 .foot b{color:var(--ink);font-weight:900}
 .foot p+p{margin-top:2px}
-@media (max-height:620px){a.btn{min-height:52px;padding:7px 12px}.label{margin:7px 4px 5px}.hdr{padding-top:calc(9px + env(safe-area-inset-top));padding-bottom:9px}}
+/* very short screens: allow scrolling rather than clipping */
+@media (max-height:540px){body{height:auto;min-height:100dvh;overflow:auto}main{justify-content:flex-start;gap:12px}}
 </style>
 </head>
 <body>
@@ -96,6 +97,7 @@ a.btn{min-height:58px;padding:9px 14px;gap:12px;border-radius:16px}
 </header>
 
 <main>
+  <section class="group">
   <p class="label">Our pharmacies</p>
   <nav class="links" aria-label="Pharmacy locations">
     <a class="btn" href="https://maps.app.goo.gl/YVxXg9NCS8Gg82vF9?g_st=ac" target="_blank" rel="noopener">
@@ -110,6 +112,9 @@ a.btn{min-height:58px;padding:9px 14px;gap:12px;border-radius:16px}
     </a>
   </nav>
 
+  </section>
+
+  <section class="group">
   <p class="label">Get in touch</p>
   <nav class="links" aria-label="Contact and online ordering">
     <a class="btn" href="https://wa.me/201501401776" target="_blank" rel="noopener">
@@ -128,6 +133,7 @@ a.btn{min-height:58px;padding:9px 14px;gap:12px;border-radius:16px}
       <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
     </a>
   </nav>
+  </section>
 </main>
 
 <footer class="foot">
