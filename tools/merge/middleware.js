@@ -2,7 +2,27 @@
 const SC_HOSTS = { en: "https://selfcare-en.com/", cs: "https://selfcare-cz.com/" };
 const SC_ORDER = ["en", "cs", "sk", "pl", "ru", "ua", "de"];
 function scLangUrl(l){ return l === "en" ? SC_HOSTS.en : l === "cs" ? SC_HOSTS.cs : SC_HOSTS.en + "?lang=" + (l === "ua" ? "uk" : l); }
+const SC_SB = "https://lbeuqkerbenrpycuvohl.supabase.co", SC_SB_KEY = "sb_publishable_Lbqjl73U7lqbFNVB5Sj64A_vEe6z5cB";
+/* promoter short link: /<code> -> log the visit, remember the code (30 days), open the site in the promoter's language */
+async function scPromoter(context, url, code){
+  try{
+    const r = await fetch(SC_SB + "/rest/v1/rpc/promoter_hit", { method: "POST",
+      headers: { apikey: SC_SB_KEY, Authorization: "Bearer " + SC_SB_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ p_code: Number(code), p_host: url.hostname }) });
+    const lang = r.ok ? await r.json() : null;
+    if(lang){
+      const dest = new URL("/", url);
+      if(lang !== "en" && lang !== "ar") dest.searchParams.set("lang", lang);
+      dest.searchParams.set("ref", code);
+      return new Response(null, { status: 302, headers: { Location: dest.toString(), "Cache-Control": "no-store",
+        "Set-Cookie": "sc_ref=" + code + "." + Date.now() + "; Path=/; Max-Age=2592000; SameSite=Lax; Secure" } });
+    }
+  }catch(e){}
+  return null;
+}
 export async function onRequest(context){
+  const pm = new URL(context.request.url).pathname.match(/^\/(\d{1,6})\/?$/);
+  if(pm){ const pr = await scPromoter(context, new URL(context.request.url), pm[1]); if(pr) return pr; }
   const res = await context.next();
   try{
     const url = new URL(context.request.url);

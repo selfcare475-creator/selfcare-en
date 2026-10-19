@@ -8915,6 +8915,10 @@ function livePrice(product){
   return Number(product.price)||0;
 }
 
+/* promoters: ?ref=<code> (from selfcare-en.com/<code>) is kept 30 days; the last promoter link wins; sent with the order as promoter_code */
+function scRefGet(){try{var u=new URLSearchParams(location.search).get("ref"),now=Date.now();if(u&&/^\d{1,6}$/.test(u)){localStorage.setItem("sc_ref",JSON.stringify({c:+u,t:now}));}else if(!localStorage.getItem("sc_ref")){var m=document.cookie.match(/(?:^|; )sc_ref=(\d{1,6})\.(\d+)/);if(m)localStorage.setItem("sc_ref",JSON.stringify({c:+m[1],t:+m[2]}));}var r=JSON.parse(localStorage.getItem("sc_ref")||"null");if(r&&r.c&&now-r.t<2592e6)return r.c;}catch(e){}return null}
+function scRefField(){var c=scRefGet();return c?{promoter_code:c}:{}}
+try{scRefGet();var __scU=new URL(location.href);if(__scU.searchParams.has("ref")){__scU.searchParams.delete("ref");history.replaceState(history.state,"",__scU.pathname+__scU.search+__scU.hash);}}catch(e){}
 async function saveOrderToDashboard(order){
   try {
     await fetch(SB_URL + "/rest/v1/orders", { method:"POST", headers:SB_HEADERS, body:JSON.stringify(order) });
@@ -8923,7 +8927,7 @@ async function saveOrderToDashboard(order){
 async function createOrUpdateDraftOrder(order){
   const existing=sessionStorage.getItem("scp_draft_order_id");
   const headers={...SB_HEADERS,"Prefer":"return=representation"};
-  const payload={...order,status:"Draft",client_order_ref:sessionStorage.getItem("scp_client_order_ref")||("web_"+Date.now()+"_"+Math.random().toString(16).slice(2))};
+  const payload={...order,...scRefField(),status:"Draft",client_order_ref:sessionStorage.getItem("scp_client_order_ref")||("web_"+Date.now()+"_"+Math.random().toString(16).slice(2))};
   sessionStorage.setItem("scp_client_order_ref",payload.client_order_ref);
   let res;
   if(existing){res=await fetch(SB_URL+"/rest/v1/orders?id=eq."+encodeURIComponent(existing),{method:"PATCH",headers,body:JSON.stringify(payload)});}
@@ -8942,7 +8946,7 @@ async function confirmDraftOrder(id){
 }
 async function createConfirmedOrder(order){
   const headers={...SB_HEADERS,"Prefer":"return=representation"};
-  const payload={...order,status:"New"};
+  const payload={...order,status:"New",...scRefField()};
   window.__scLastCancelToken="";
   try{ const __ct=scNewCancelToken(); payload.cancel_hash=await scSha256Hex(__ct); window.__scLastCancelToken=__ct; }catch(e){ delete payload.cancel_hash; }
   const res=await fetch(SB_URL+"/rest/v1/orders",{method:"POST",headers,body:JSON.stringify(payload)});

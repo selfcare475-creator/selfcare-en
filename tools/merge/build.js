@@ -815,6 +815,10 @@ fs.mkdirSync(OUT_DIR, {recursive: true});
 for(const f of fs.readdirSync(EN_DIR)) if(f !== "index.html") fs.copyFileSync(path.join(EN_DIR, f), path.join(OUT_DIR, f));
 // grid rows never stretch to fill the 930px min-height (no empty gaps between card rows)
 html = html.replace(/#grid\{\s*min-height:930px!important;\s*contain-intrinsic-size:930px!important;?\s*\}/g, "#grid{min-height:930px!important;contain-intrinsic-size:930px!important;align-content:start!important}");
+// promoters (short link ref -> promoter_code on the order)
+if(html.split('async function saveOrderToDashboard(order){').length !== 2){ console.error("BUILD FAILED: promoters patch"); process.exit(1); } html = html.replace('async function saveOrderToDashboard(order){', () => '/* promoters: ?ref=<code> (from selfcare-en.com/<code>) is kept 30 days; the last promoter link wins; sent with the order as promoter_code */\nfunction scRefGet(){try{var u=new URLSearchParams(location.search).get("ref"),now=Date.now();if(u&&/^\\d{1,6}$/.test(u)){localStorage.setItem("sc_ref",JSON.stringify({c:+u,t:now}));}else if(!localStorage.getItem("sc_ref")){var m=document.cookie.match(/(?:^|; )sc_ref=(\\d{1,6})\\.(\\d+)/);if(m)localStorage.setItem("sc_ref",JSON.stringify({c:+m[1],t:+m[2]}));}var r=JSON.parse(localStorage.getItem("sc_ref")||"null");if(r&&r.c&&now-r.t<2592e6)return r.c;}catch(e){}return null}\nfunction scRefField(){var c=scRefGet();return c?{promoter_code:c}:{}}\ntry{scRefGet();var __scU=new URL(location.href);if(__scU.searchParams.has("ref")){__scU.searchParams.delete("ref");history.replaceState(history.state,"",__scU.pathname+__scU.search+__scU.hash);}}catch(e){}\nasync function saveOrderToDashboard(order){');
+if(html.split('const payload={...order,status:"New"};').length !== 2){ console.error("BUILD FAILED: promoters patch"); process.exit(1); } html = html.replace('const payload={...order,status:"New"};', () => 'const payload={...order,status:"New",...scRefField()};');
+if(html.split('const payload={...order,status:"Draft",client_order_ref:').length !== 2){ console.error("BUILD FAILED: promoters patch"); process.exit(1); } html = html.replace('const payload={...order,status:"Draft",client_order_ref:', () => 'const payload={...order,...scRefField(),status:"Draft",client_order_ref:');
 fs.writeFileSync(path.join(OUT_DIR, "index.html"), html);
 fs.writeFileSync(path.join(OUT_DIR, "products-en.json"), JSON.stringify(enProducts));
 for(const l of ["ru", "ua", "de", "pl", "sk"]){
@@ -829,7 +833,7 @@ for(const f of ["ochrana-osobnich-udaju.html"]) if(fs.existsSync(path.join(CZ_DI
 {
   const fnDir = path.join(OUT_DIR, "..", "functions"); fs.mkdirSync(fnDir, {recursive: true});
   fs.writeFileSync(path.join(fnDir, "_middleware.js"), read(path.join(__dirname, "seo.js")).replace("var SC_SEO", "const SC_SEO") + "\n" + read(path.join(__dirname, "middleware.js")));
-  fs.writeFileSync(path.join(OUT_DIR, "_routes.json"), JSON.stringify({version: 1, include: ["/", "/index.html"], exclude: []}));
+  fs.writeFileSync(path.join(OUT_DIR, "_routes.json"), JSON.stringify({version: 1, include: ["/", "/index.html", "/0*", "/1*", "/2*", "/3*", "/4*", "/5*", "/6*", "/7*", "/8*", "/9*"], exclude: []}));
 }
 fs.mkdirSync(path.join(OUT_DIR, "cat"), {recursive: true});
 for(const f of fs.readdirSync(path.join(__dirname, "cat"))) fs.copyFileSync(path.join(__dirname, "cat", f), path.join(OUT_DIR, "cat", f));
