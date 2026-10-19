@@ -32,7 +32,7 @@ async function scPromoter(context, url, code){
       const dest = new URL("/", url);
       if(lang !== "en" && lang !== "ar") dest.searchParams.set("lang", lang);
       dest.searchParams.set("ref", code);
-      return new Response(null, { status: 302, headers: { Location: dest.toString(), "Cache-Control": "no-store",
+      return new Response(null, { status: 302, headers: { Location: dest.pathname + dest.search, /* relative: the sc-router worker proxies selfcare-en.com to pages.dev */ "Cache-Control": "no-store",
         "Set-Cookie": "sc_ref=" + code + "." + Date.now() + "; Path=/; Max-Age=2592000; SameSite=Lax; Secure" } });
     }
   }catch(e){}
