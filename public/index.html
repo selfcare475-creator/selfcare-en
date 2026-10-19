@@ -8916,9 +8916,9 @@ function livePrice(product){
 }
 
 /* promoters: ?ref=<code> (from selfcare-en.com/<code>) is kept 30 days; the last promoter link wins; sent with the order as promoter_code */
-function scRefGet(){try{var u=new URLSearchParams(location.search).get("ref"),now=Date.now();if(u&&/^\d{1,6}$/.test(u)){localStorage.setItem("sc_ref",JSON.stringify({c:+u,t:now}));}else if(!localStorage.getItem("sc_ref")){var m=document.cookie.match(/(?:^|; )sc_ref=(\d{1,6})\.(\d+)/);if(m)localStorage.setItem("sc_ref",JSON.stringify({c:+m[1],t:+m[2]}));}var r=JSON.parse(localStorage.getItem("sc_ref")||"null");if(r&&r.c&&now-r.t<2592e6)return r.c;}catch(e){}return null}
+function scRefGet(){try{var __q=new URLSearchParams(location.search),u=__q.get("ref")||__q.get("p"),now=Date.now();if(u&&/^\d{1,6}$/.test(u)){localStorage.setItem("sc_ref",JSON.stringify({c:+u,t:now}));}else if(!localStorage.getItem("sc_ref")){var m=document.cookie.match(/(?:^|; )sc_ref=(\d{1,6})\.(\d+)/);if(m)localStorage.setItem("sc_ref",JSON.stringify({c:+m[1],t:+m[2]}));}var r=JSON.parse(localStorage.getItem("sc_ref")||"null");if(r&&r.c&&now-r.t<2592e6)return r.c;}catch(e){}return null}
 function scRefField(){var c=scRefGet();return c?{promoter_code:c}:{}}
-try{scRefGet();var __scU=new URL(location.href);if(__scU.searchParams.has("ref")){__scU.searchParams.delete("ref");history.replaceState(history.state,"",__scU.pathname+__scU.search+__scU.hash);}}catch(e){}
+try{scRefGet();var __scU=new URL(location.href);if(__scU.searchParams.has("ref")||__scU.searchParams.has("p")){__scU.searchParams.delete("ref");__scU.searchParams.delete("p");history.replaceState(history.state,"",__scU.pathname+__scU.search+__scU.hash);}}catch(e){}
 async function saveOrderToDashboard(order){
   try {
     await fetch(SB_URL + "/rest/v1/orders", { method:"POST", headers:SB_HEADERS, body:JSON.stringify(order) });
