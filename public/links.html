@@ -63,6 +63,27 @@ a.btn.primary .ic{background:rgba(255,255,255,.14);color:#fff}
 .foot a{color:var(--navy);text-decoration:none;font-weight:800}
 .foot p+p{margin-top:5px}
 @media (max-width:360px){.hdr h1{font-size:20px}.hdr img{width:50px;height:50px}.tx strong{font-size:16px}a.btn{padding:12px 13px;gap:12px}}
+
+/* compact: whole page fits one phone screen without scrolling */
+body{min-height:100vh;min-height:100dvh}
+.hdr{padding:calc(12px + env(safe-area-inset-top)) 16px 12px;gap:12px}
+.hdr img{width:46px;height:46px}
+.hdr h1{font-size:20px}
+.hdr p{font-size:13px;margin-top:2px}
+main{padding:12px 14px 4px;display:flex;flex-direction:column;justify-content:center}
+.label{font-size:11px;margin:10px 4px 7px}
+.label:first-child{margin-top:0}
+.links{gap:8px}
+a.btn{min-height:58px;padding:9px 14px;gap:12px;border-radius:16px}
+.ic{flex:0 0 40px;width:40px;height:40px;border-radius:12px}
+.ic svg{width:21px;height:21px}
+.ic .n{width:18px;height:18px;line-height:18px;font-size:10.5px;top:-5px;right:-5px}
+.tx strong{font-size:15.5px}
+.tx > span{font-size:12.5px;margin-top:1px}
+.foot{padding:10px 14px calc(12px + env(safe-area-inset-bottom));font-size:11.5px;line-height:1.5}
+.foot b{color:var(--ink);font-weight:900}
+.foot p+p{margin-top:2px}
+@media (max-height:620px){a.btn{min-height:52px;padding:7px 12px}.label{margin:7px 4px 5px}.hdr{padding-top:calc(9px + env(safe-area-inset-top));padding-bottom:9px}}
 </style>
 </head>
 <body>
@@ -110,10 +131,8 @@ a.btn.primary .ic{background:rgba(255,255,255,.14);color:#fff}
 </main>
 
 <footer class="foot">
-  <p class="brand">Self Care Pharmacy</p>
-  <p>Hurghada, Red Sea, Egypt</p>
-  <p>WhatsApp: <a href="https://wa.me/201501401776">+20 150 140 1776</a></p>
-  <p>Email: <a href="mailto:selfcare475@gmail.com">selfcare475@gmail.com</a></p>
+  <p><b>Self Care Pharmacy</b> · Hurghada, Egypt</p>
+  <p><a href="https://wa.me/201501401776">+20 150 140 1776</a> · <a href="mailto:selfcare475@gmail.com">selfcare475@gmail.com</a></p>
 </footer>
 </body>
 </html>
