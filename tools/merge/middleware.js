@@ -19,15 +19,15 @@ async function scPromoter(context, url, code){
   try{
     const req = context.request;
     if(scIsBot(req)) return new Response(null, { status: 302, headers: { Location: "/", "Cache-Control": "no-store" } });
-    let lang = scSeen(req, code), fresh = false;
-    if(!lang){ lang = await scHit(code, url.hostname); fresh = !!lang; }
+    let lang = scSeen(req, code);
+    if(!lang) lang = await scHit(code, url.hostname);
     if(lang){
       const dest = new URL("/", url);
       if(lang !== "en" && lang !== "ar") dest.searchParams.set("lang", lang);
       dest.searchParams.set("p", code); /* "p" = came from /<code> (visit already handled); "ref" = outside link, handled below */
       const h = new Headers({ Location: dest.pathname + dest.search, /* relative: the sc-router worker proxies selfcare-en.com to pages.dev */ "Cache-Control": "no-store" });
       h.append("Set-Cookie", "sc_ref=" + code + "." + Date.now() + "; Path=/; Max-Age=2592000; SameSite=Lax; Secure");
-      if(fresh) h.append("Set-Cookie", scSeenCookie(code, lang));
+      /* only ONE Set-Cookie here: the sc-router worker in front keeps just one; sc_seen_<code> is set on the landing page (?p=) */
       return new Response(null, { status: 302, headers: h });
     }
   }catch(e){}
@@ -46,6 +46,8 @@ export async function onRequest(context){
       context.waitUntil(scHit(rf, "via-ref"));
       seenSet = scSeenCookie(rf, (u1.searchParams.get("lang") || "en").toLowerCase().slice(0, 2));
     }
+    const pp = u1.searchParams.get("p");
+    if(!seenSet && pp && /^\d{1,6}$/.test(pp) && !scSeen(context.request, pp)) seenSet = scSeenCookie(pp, (u1.searchParams.get("lang") || "en").toLowerCase().slice(0, 2));
   }catch(e){}
   const out = await scMain(context);
   if(!seenSet) return out;
