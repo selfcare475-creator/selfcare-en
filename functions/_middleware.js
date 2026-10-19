@@ -43,6 +43,15 @@ export async function onRequest(context){
   { const u0 = new URL(context.request.url); if(u0.search.indexOf("?", 1) > 0) return new Response(null, { status: 301, headers: { Location: u0.pathname + "?" + u0.search.slice(1).replace(/\?/g, "&") } }); }
   const pm = new URL(context.request.url).pathname.match(/^\/(\d{1,6})\/?$/);
   if(pm){ const pr = await scPromoter(context, new URL(context.request.url), pm[1]); if(pr) return pr; }
+  /* landing with ?ref=<code> (e.g. the Czech domain redirect → ref=72): log the visit once, unless it came from /<code> (cookie already set) */
+  try{
+    const u1 = new URL(context.request.url), rf = u1.searchParams.get("ref");
+    if(rf && /^\d{1,6}$/.test(rf) && (u1.pathname === "/" || u1.pathname === "/index.html") && !new RegExp("(?:^|; )sc_ref=" + rf + "\\.").test(context.request.headers.get("Cookie") || "")){
+      context.waitUntil(fetch(SC_SB + "/rest/v1/rpc/promoter_hit", { method: "POST",
+        headers: { apikey: SC_SB_KEY, Authorization: "Bearer " + SC_SB_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ p_code: Number(rf), p_host: "via-ref" }) }).catch(function(){}));
+    }
+  }catch(e){}
   const res = await context.next();
   try{
     const url = new URL(context.request.url);
