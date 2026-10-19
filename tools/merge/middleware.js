@@ -21,6 +21,8 @@ async function scPromoter(context, url, code){
   return null;
 }
 export async function onRequest(context){
+  /* CZ redirect rule appends "?lang=cs" after an existing query (…?fbclid=x?lang=cs) → turn the 2nd "?" into "&" */
+  { const u0 = new URL(context.request.url); if(u0.search.indexOf("?", 1) > 0) return new Response(null, { status: 301, headers: { Location: u0.pathname + "?" + u0.search.slice(1).replace(/\?/g, "&") } }); }
   const pm = new URL(context.request.url).pathname.match(/^\/(\d{1,6})\/?$/);
   if(pm){ const pr = await scPromoter(context, new URL(context.request.url), pm[1]); if(pr) return pr; }
   const res = await context.next();
