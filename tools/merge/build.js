@@ -813,6 +813,8 @@ if(failures.length){ console.error("BUILD FAILED:\n - " + failures.join("\n - ")
 for(const s of inlineScripts(html)){ try{ parse(s.code); }catch(e){ console.error("syntax error in script at", s.start, e.message, s.code.slice(0, 80)); process.exit(1); } }
 fs.mkdirSync(OUT_DIR, {recursive: true});
 for(const f of fs.readdirSync(EN_DIR)) if(f !== "index.html") fs.copyFileSync(path.join(EN_DIR, f), path.join(OUT_DIR, f));
+/* extra static pages kept in merge/static (partner dashboard …) */
+const ST_DIR = path.join(__dirname, "static"); if(fs.existsSync(ST_DIR)) for(const f of fs.readdirSync(ST_DIR)) fs.copyFileSync(path.join(ST_DIR, f), path.join(OUT_DIR, f));
 // grid rows never stretch to fill the 930px min-height (no empty gaps between card rows)
 html = html.replace(/#grid\{\s*min-height:930px!important;\s*contain-intrinsic-size:930px!important;?\s*\}/g, "#grid{min-height:930px!important;contain-intrinsic-size:930px!important;align-content:start!important}");
 // promoters (short link ref -> promoter_code on the order)
