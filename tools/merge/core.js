@@ -429,6 +429,7 @@ function __scFoldRun(){
     var cards = document.querySelectorAll("#grid > .card");
     for(var i = 0; i < cards.length && i < 2; i++) cards[i].style.removeProperty("margin-bottom");
     __scFoldMB = null;
+    return; /* T: no empty space under the first card row on mobile */
     if(window.innerWidth >= 900 || cards.length < 3) return;
     var nav = document.querySelector(".sc-bnav"); if(!nav || getComputedStyle(nav).display === "none") return;
     if(!__scFoldVH || window.innerWidth !== __scFoldW){ __scFoldVH = window.innerHeight; __scFoldW = window.innerWidth; }
