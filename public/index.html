@@ -7317,7 +7317,7 @@ var displayLanguage = (function(){
 var displayCurrency = (function(){
   var s = null; try{ s = localStorage.getItem("sc_cur"); }catch(e){}
   if(["GBP","EUR","USD","CZK"].indexOf(s) >= 0) return s;
-  return displayLanguage === "en" ? "GBP" : "EUR";
+  return displayLanguage === "en" ? "GBP" : (displayLanguage === "ru" ? "USD" : "EUR");
 })();
 try{ document.documentElement.lang = SC_HTML_LANG[displayLanguage] || "en"; }catch(e){}
 
@@ -7527,8 +7527,8 @@ function setDisplayLanguage(l, opts){
   if(!(opts && opts.keepAr) && window.__SC_AR && typeof window.__scToggleAR === "function"){ try{ window.__scToggleAR(); }catch(e){} }
   displayLanguage = l;
   try{ localStorage.setItem("sc_lang", l); }catch(e){}
-  /* picking a language always sets its currency: English → £, every other language (Czech included) → € ; the customer can still change it after */
-  displayCurrency = l === "en" ? "GBP" : "EUR";
+  /* picking a language always sets its currency: English → £, Russian → $, every other language (Czech included) → € ; the customer can still change it after */
+  displayCurrency = l === "en" ? "GBP" : (l === "ru" ? "USD" : "EUR");
   try{ localStorage.removeItem("sc_cur"); }catch(e){}
   scApplyStaticTexts();
   scRerenderAll();
