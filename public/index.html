@@ -7306,8 +7306,11 @@ var displayLanguage = (function(){
   try{
     var q = (location.search.match(/[?&]lang=([a-z]{2})/i) || [])[1];
     if(q){ q = q.toLowerCase(); if(q === "cz") q = "cs"; if(q === "uk") q = "ua"; }
-    if(q && SC_LANGS.indexOf(q) >= 0){ try{ localStorage.setItem("sc_lang", q); }catch(e){} return q; }
     var s = null; try{ s = localStorage.getItem("sc_lang"); }catch(e){}
+    /* sk51: ?lang= from a redirect or promoter link (?ref= / ?p=) is only a default — a language the customer already picked (e.g. Slovak → code 51) wins */
+    var viaLink = /[?&](ref|p)=\d/.test(location.search);
+    if(viaLink && s && SC_LANGS.indexOf(s) >= 0) return s;
+    if(q && SC_LANGS.indexOf(q) >= 0){ if(!viaLink){ try{ localStorage.setItem("sc_lang", q); }catch(e){} } return q; }
     if(s && SC_LANGS.indexOf(s) >= 0) return s;
     /* phone language only on the English domain; selfcare-cz.com always opens in Czech unless the customer picks another */
     if(scHostLang() === "en"){ var p = scPhoneLang(); if(p) return p; }
