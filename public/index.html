@@ -14894,12 +14894,12 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 .sc-tp-hit{position:absolute;inset:0;cursor:pointer;z-index:2}
 .sc-tp-bg{position:fixed;inset:0;background:rgba(15,25,40,.35);z-index:100000;display:none;align-items:center;justify-content:center;padding:16px}
 .sc-tp-bg.open{display:flex}
-.sc-tp{background:#fff;border-radius:18px;padding:12px 10px 10px;width:100%;max-width:230px;box-shadow:0 20px 50px rgba(15,25,40,.30);font-family:'Nunito',sans-serif;animation:scTpIn .18s ease}
+.sc-tp{background:#fff;border-radius:20px;padding:14px 12px 12px;width:100%;max-width:270px;box-shadow:0 20px 50px rgba(15,25,40,.30);font-family:'Nunito',sans-serif;animation:scTpIn .18s ease}
 .sc-tp-h{display:flex;align-items:center;justify-content:space-between;font-weight:900;font-size:13.5px;color:#1F3151;margin:0 4px 6px}
 .sc-tp-x{border:0;background:#F3F5F7;width:26px;height:26px;border-radius:50%;font-size:16px;color:#6e7d90;cursor:pointer}
-.sc-tp-g{display:flex;flex-direction:column;gap:2px;max-height:min(62vh,430px);overflow-y:auto;overscroll-behavior:contain}
-.sc-tp-g button{flex:0 0 auto;border:0;border-bottom:1px solid #EEF1F4;background:#fff;border-radius:10px;height:34px;font-weight:800;font-size:13.5px;color:#182534;cursor:pointer;font-family:inherit;padding:0}
-.sc-tp-g button.on{background:#1F3151;border-color:#1F3151;color:#fff}
+.sc-tp-g{display:flex;flex-direction:column;gap:6px;max-height:min(72vh,560px);overflow-y:auto;overscroll-behavior:contain}
+.sc-tp-g button{flex:0 0 auto;border:1.5px solid #E6EAF0 !important;box-shadow:none !important;background:#F6F8FB !important;border-radius:12px !important;height:40px !important;min-height:40px;line-height:40px;margin:0 !important;font-weight:800;font-size:14px;color:#182534;cursor:pointer;font-family:inherit;padding:0}
+.sc-tp-g button.on{background:#1F3151 !important;border-color:#1F3151 !important;color:#fff}
 .sc-tp-g button:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed}
 @keyframes scTpIn{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
 </style>
