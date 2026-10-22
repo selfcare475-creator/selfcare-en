@@ -14889,6 +14889,65 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   document.addEventListener("DOMContentLoaded",fix);
 })();
 </script>
+<style id="sc-timepick-css">
+.sc-tp-wrap{position:relative}
+.sc-tp-hit{position:absolute;inset:0;cursor:pointer;z-index:2}
+.sc-tp-bg{position:fixed;inset:0;background:rgba(15,25,40,.35);z-index:100000;display:none;align-items:center;justify-content:center;padding:16px}
+.sc-tp-bg.open{display:flex}
+.sc-tp{background:#fff;border-radius:20px;padding:14px 14px 12px;width:100%;max-width:330px;box-shadow:0 20px 50px rgba(15,25,40,.30);font-family:'Nunito',sans-serif;animation:scTpIn .18s ease}
+.sc-tp-h{display:flex;align-items:center;justify-content:space-between;font-weight:900;font-size:14px;color:#1F3151;margin-bottom:10px}
+.sc-tp-x{border:0;background:#F3F5F7;width:30px;height:30px;border-radius:50%;font-size:16px;color:#6e7d90;cursor:pointer}
+.sc-tp-g{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.sc-tp-g button{border:1.5px solid #DDE1E6;background:#fff;border-radius:11px;height:38px;font-weight:800;font-size:12.5px;color:#182534;cursor:pointer;font-family:inherit;padding:0}
+.sc-tp-g button.on{background:#1F3151;border-color:#1F3151;color:#fff}
+.sc-tp-g button:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed}
+@keyframes scTpIn{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+</style>
+<script id="sc-timepick">
+/* compact time picker: 12 slots in a small 4×3 card instead of the phone's full-screen list (the real <select> stays and keeps all the logic) */
+(function(){
+  function sel(){ return document.getElementById("deliveryTime"); }
+  function title(){ var l = document.getElementById("deliveryTimeLabel"); return l ? l.textContent.trim() : "🕒"; }
+  var bg = null;
+  function build(){
+    bg = document.createElement("div"); bg.className = "sc-tp-bg";
+    bg.innerHTML = '<div class="sc-tp" role="dialog"><div class="sc-tp-h"><span class="sc-tp-t"></span><button type="button" class="sc-tp-x" aria-label="Close">✕</button></div><div class="sc-tp-g"></div></div>';
+    bg.addEventListener("click", function(e){ if(e.target === bg || e.target.closest(".sc-tp-x")) close(); });
+    document.body.appendChild(bg);
+  }
+  function open(){
+    var s = sel(); if(!s) return;
+    try{ if(typeof updateDeliveryTimeOptions === "function") updateDeliveryTimeOptions(); }catch(e){}
+    if(!bg) build();
+    bg.querySelector(".sc-tp-t").textContent = title();
+    var g = bg.querySelector(".sc-tp-g"); g.innerHTML = "";
+    Array.from(s.options).forEach(function(o){
+      var b = document.createElement("button"); b.type = "button"; b.textContent = o.textContent.trim();
+      if(o.disabled) b.disabled = true;
+      if(o.value === s.value) b.className = "on";
+      b.addEventListener("click", function(){
+        s.value = o.value;
+        s.dispatchEvent(new Event("change", {bubbles:true}));
+        close();
+      });
+      g.appendChild(b);
+    });
+    bg.classList.add("open");
+  }
+  function close(){ if(bg) bg.classList.remove("open"); }
+  function init(){
+    var s = sel(); if(!s) return setTimeout(init, 400);
+    if(s.parentNode.classList.contains("sc-tp-wrap")) return;
+    var w = document.createElement("div"); w.className = "sc-tp-wrap";
+    s.parentNode.insertBefore(w, s); w.appendChild(s);
+    var hit = document.createElement("div"); hit.className = "sc-tp-hit"; hit.setAttribute("role", "button"); hit.setAttribute("aria-label", "Time");
+    hit.addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); open(); });
+    w.appendChild(hit);
+  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+</script>
+
 </body>
 </html>
 
