@@ -14964,7 +14964,9 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     try{
       var grid = document.getElementById("grid"); if(!grid) return;
       var old = grid.querySelector(".sc-pb"), cards = grid.querySelectorAll(":scope > .card"), n = cols(grid) * ROWS;
-      if(grid.classList.contains("kit-grid") || cards.length <= n){ if(old) old.remove(); return; }
+      /* hidden for Czech for now (T) */
+      var hideLang = (typeof displayLanguage === "string" && displayLanguage === "cs");
+      if(hideLang || grid.classList.contains("kit-grid") || cards.length <= n){ if(old) old.remove(); return; }
       var after = cards[n - 1], l = lang();
       if(old && old.previousElementSibling === after && old.getAttribute("data-l") === l) return;
       if(!old){
