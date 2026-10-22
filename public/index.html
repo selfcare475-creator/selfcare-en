@@ -12474,6 +12474,7 @@ installFastScrollLoader();
           <option value="20:00">8 PM</option>
           <option value="21:00">9 PM</option>
           <option value="22:00">10 PM</option>
+          <option value="23:00">11 PM</option>
         </select>
       </div>
     </div>
@@ -13232,7 +13233,7 @@ function scTrackToggle(btn){
 var scReschState = {};
 function scSlotList(){
   try{ var sel=document.getElementById("deliveryTime"); var v=sel?Array.from(sel.options).map(function(o){return o.value;}).filter(function(x){return /^\d{1,2}:\d{2}$/.test(x);}):[]; if(v.length) return v; }catch(e){}
-  return ["12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00"];
+  return ["12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"];
 }
 function scSlotLabel(v){ var p=String(v).split(":"), h=Number(p[0]); if(scTrackLang()!=="en") return v; return (h%12||12)+(p[1]!=="00"?":"+p[1]:"")+" "+(h>=12?"PM":"AM"); }
 function scSlotOk(day,v){ if(day!=="today") return true; var m=timeToMinutes(v); return m!==null && m >= scCairoNowMinutes()+90; }
