@@ -14926,7 +14926,6 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 @keyframes scPbDash{to{stroke-dashoffset:-90}}
 @keyframes scPbBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @media (min-width:700px){.sc-pb{min-height:190px;padding:22px 28px 30px}.sc-pb-l{flex-basis:58%;max-width:58%}.sc-pb-t{font-size:28px}.sc-pb-t2{font-size:22px}.sc-pb-sl{height:70px}.sc-pb-r{width:38%;right:20px}.sc-pb-b{width:46px;height:46px;font-size:21px}.sc-pb-dots{left:28px}}
-@media (prefers-reduced-motion:reduce){.sc-pb:after,.sc-pb-eb i,.sc-pb-line,.sc-pb-btn span,.sc-pb-ph img,.sc-pb-arc path,.sc-pb-b{animation:none}}
 </style>
 <script id="sc-partner-banner">
 /* partner banner (light carousel): after the first 3 product rows — bloggers / tour guides / big followings → WhatsApp */
@@ -14958,7 +14957,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     return h;
   }
   function show(el){ var ss = el.querySelectorAll(".sc-pb-s"), dd = el.querySelectorAll(".sc-pb-dots i"); for(var i = 0; i < ss.length; i++){ ss[i].classList.toggle("on", i === slide); if(dd[i]) dd[i].classList.toggle("on", i === slide); } }
-  function tick(){ var el = document.querySelector("#grid .sc-pb"); if(!el) return; slide = (slide + 1) % 3; show(el); }
+  function tick(){ var el = document.querySelector(".sc-pb"); if(!el) return; slide = (slide + 1) % 3; show(el); }
   function place(){
     if(busy) return; busy = true;
     try{
@@ -14969,7 +14968,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
       if(!old) old = document.querySelector(".sc-pb");
       if(hideLang){ if(old) old.remove(); return; }
       var after = cards[n - 1], l = lang();
-      /* staging test: banner at the top, under the search bar */
+      /* banner at the top, under the search bar */
       var top = document.querySelector(".controls");
       if(top){ old = document.querySelector(".sc-pb"); after = top; }
       if(old && old.previousElementSibling === after && old.getAttribute("data-l") === l) return;
@@ -14979,7 +14978,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
       }
       if(old.getAttribute("data-l") !== l){ old.innerHTML = html(); old.setAttribute("data-l", l); }
       after.insertAdjacentElement("afterend", old);
-      if(!timer && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) timer = setInterval(tick, 3500);
+      if(!timer) timer = setInterval(tick, 3500);
     }catch(e){}
     finally{ busy = false; }
   }
@@ -14994,19 +14993,19 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 </script>
 
 <style id="sc-partner-banner-small">
-/* staging: smaller banner */
-.sc-pb{min-height:118px !important;padding:10px 12px 18px !important;border-radius:20px !important;margin:2px 14px 10px !important}
-.sc-pb-eb{font-size:10px !important;padding:3px 8px 3px 7px !important;margin-bottom:6px !important}
-.sc-pb-sl{height:50px !important}
-.sc-pb-t{font-size:16px !important}
-.sc-pb-t2{font-size:13.5px !important}
-.sc-pb-line{width:26px !important;height:2.5px !important;margin:0 0 7px !important}
-.sc-pb-btn{font-size:12px !important;padding:7px 13px !important}
+/* smaller banner */
+.sc-pb{min-height:100px !important;padding:8px 12px 16px !important;border-radius:20px !important;margin:2px 14px 10px !important}
+.sc-pb-eb{font-size:9.5px !important;padding:2px 7px 2px 6px !important;margin-bottom:5px !important}
+.sc-pb-sl{height:42px !important}
+.sc-pb-t{font-size:14.5px !important}
+.sc-pb-t2{font-size:12.5px !important}
+.sc-pb-line{width:22px;height:2px !important;margin:0 0 6px !important}
+.sc-pb-btn{font-size:11.5px !important;padding:6px 12px !important}
 .sc-pb-ph{top:8px !important;bottom:8px !important;border-radius:16px !important}
 .sc-pb-ph2{top:24px !important;bottom:24px !important}
-.sc-pb-b{width:30px !important;height:30px !important;font-size:14px !important}
-.sc-pb-b3{width:26px !important;height:26px !important;font-size:12px !important}
-.sc-pb-dots{bottom:7px !important;left:12px !important}
+.sc-pb-b{width:26px !important;height:26px !important;font-size:12px !important}
+.sc-pb-b3{width:22px !important;height:22px !important;font-size:10px !important}
+.sc-pb-dots{bottom:6px !important;left:12px !important}
 @media (min-width:700px){.sc-pb{min-height:140px !important;padding:14px 22px 22px !important}.sc-pb-t{font-size:22px !important}.sc-pb-t2{font-size:17px !important}.sc-pb-sl{height:58px !important}}
 </style>
 </body>
