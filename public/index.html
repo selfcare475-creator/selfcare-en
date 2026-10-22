@@ -14889,63 +14889,101 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   document.addEventListener("DOMContentLoaded",fix);
 })();
 </script>
-<style id="sc-timepick-css">
-.sc-tp-wrap{position:relative}
-.sc-tp-hit{position:absolute;inset:0;cursor:pointer;z-index:2}
-.sc-tp-bg{position:fixed;inset:0;background:rgba(15,25,40,.35);z-index:100000;display:none;align-items:center;justify-content:center;padding:16px}
-.sc-tp-bg.open{display:flex}
-.sc-tp{background:#fff;border-radius:20px;padding:14px 12px 12px;width:100%;max-width:270px;box-shadow:0 20px 50px rgba(15,25,40,.30);font-family:'Nunito',sans-serif;animation:scTpIn .18s ease}
-.sc-tp-h{display:flex;align-items:center;justify-content:space-between;font-weight:900;font-size:13.5px;color:#1F3151;margin:0 4px 6px}
-.sc-tp-x{border:0;background:#F3F5F7;width:26px;height:26px;border-radius:50%;font-size:16px;color:#6e7d90;cursor:pointer}
-.sc-tp-g{display:flex;flex-direction:column;gap:6px;max-height:min(72vh,560px);overflow-y:auto;overscroll-behavior:contain}
-.sc-tp-g button{flex:0 0 auto;border:1.5px solid #E6EAF0 !important;box-shadow:none !important;background:#F6F8FB !important;border-radius:12px !important;height:40px !important;min-height:40px;line-height:40px;margin:0 !important;font-weight:800;font-size:14px;color:#182534;cursor:pointer;font-family:inherit;padding:0}
-.sc-tp-g button.on{background:#1F3151 !important;border-color:#1F3151 !important;color:#fff}
-.sc-tp-g button:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed}
-@keyframes scTpIn{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+<style id="sc-partner-banner-css">
+.sc-pb{grid-column:1/-1;position:relative;overflow:hidden;border-radius:24px;min-height:168px;padding:16px 16px 26px;display:flex;align-items:center;color:#182534;font-family:'Nunito',sans-serif;
+  background:radial-gradient(120% 140% at 0% 0%,#ffffff 0%,#f4f8fc 55%,#eaf2fb 100%);border:1px solid #e3eaf3;box-shadow:0 12px 28px rgba(31,49,81,.08)}
+.sc-pb:after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.75) 50%,rgba(255,255,255,0) 100%);transform:skewX(-18deg);animation:scPbShine 5.5s ease-in-out infinite;pointer-events:none;z-index:4}
+.sc-pb-l{position:relative;z-index:3;flex:0 0 56%;max-width:56%;min-width:0}
+.sc-pb-eb{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#2D4876;background:#fff;border:1px solid #e3eaf3;padding:4px 10px 4px 8px;border-radius:999px;margin-bottom:9px;white-space:nowrap;box-shadow:0 3px 8px rgba(31,49,81,.06)}
+.sc-pb-eb i{width:7px;height:7px;border-radius:50%;background:#22b07d;box-shadow:0 0 0 0 rgba(34,176,125,.6);animation:scPbPing 1.8s ease-out infinite}
+.sc-pb-sl{position:relative;height:74px}
+.sc-pb-s{position:absolute;inset:0;opacity:0;transform:translateY(12px);transition:opacity .55s ease,transform .55s ease}
+.sc-pb-s.on{opacity:1;transform:none}
+.sc-pb-t{font-size:19px;font-weight:900;line-height:1.1;color:#1F3151;letter-spacing:-.2px}
+.sc-pb-t2{font-size:16px;font-weight:800;line-height:1.15;color:#D6501B;margin-top:2px}
+.sc-pb-line{width:34px;height:3px;border-radius:3px;background:#D6501B;margin:2px 0 10px;animation:scPbLine 3.5s ease-in-out infinite}
+.sc-pb-btn{display:inline-flex;align-items:center;gap:6px;background:#1F3151;color:#fff !important;text-decoration:none;font-weight:800;font-size:13px;padding:9px 16px;border-radius:999px;box-shadow:0 8px 18px rgba(31,49,81,.22)}
+.sc-pb-btn span{display:inline-block;animation:scPbArrow 1.6s ease-in-out infinite}
+.sc-pb-r{position:absolute;z-index:2;right:-6px;top:0;bottom:0;width:48%}
+.sc-pb-ph{position:absolute;top:12px;bottom:12px;right:22px;width:62%;border-radius:22px;overflow:hidden;transform:skewX(-14deg);box-shadow:0 12px 26px rgba(31,49,81,.18);background:#eef3f8}
+.sc-pb-ph img{position:absolute;top:0;left:-25%;width:150%;height:100%;object-fit:cover;transform:skewX(14deg);animation:scPbZoom 9s ease-in-out infinite alternate}
+.sc-pb-ph2{right:auto;left:4px;width:22%;top:34px;bottom:34px;opacity:.9}
+.sc-pb-ph2 img{left:-180%;width:420%}
+.sc-pb-arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.sc-pb-arc path{fill:none;stroke:#9fb3c8;stroke-width:1.4;stroke-dasharray:4 5;animation:scPbDash 6s linear infinite}
+.sc-pb-b{position:absolute;width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:0 8px 18px rgba(31,49,81,.16);display:flex;align-items:center;justify-content:center;font-size:18px;z-index:3;animation:scPbBob 3.8s ease-in-out infinite}
+.sc-pb-b1{left:-4px;top:16px}
+.sc-pb-b2{right:4px;bottom:10px;animation-delay:-1.3s}
+.sc-pb-b3{right:6px;top:6px;width:32px;height:32px;font-size:15px;animation-delay:-2.4s}
+.sc-pb-dots{position:absolute;z-index:5;left:16px;bottom:10px;display:flex;gap:5px}
+.sc-pb-dots i{width:6px;height:6px;border-radius:999px;background:#c9d4e1;transition:width .4s ease,background .4s ease}
+.sc-pb-dots i.on{width:18px;background:#D6501B}
+@keyframes scPbShine{0%,55%{left:-60%}100%{left:130%}}
+@keyframes scPbPing{0%{box-shadow:0 0 0 0 rgba(34,176,125,.55)}100%{box-shadow:0 0 0 8px rgba(34,176,125,0)}}
+@keyframes scPbLine{0%,100%{width:34px}50%{width:56px}}
+@keyframes scPbArrow{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@keyframes scPbZoom{from{transform:skewX(14deg) scale(1)}to{transform:skewX(14deg) scale(1.12)}}
+@keyframes scPbDash{to{stroke-dashoffset:-90}}
+@keyframes scPbBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media (min-width:700px){.sc-pb{min-height:190px;padding:22px 28px 30px}.sc-pb-l{flex-basis:58%;max-width:58%}.sc-pb-t{font-size:28px}.sc-pb-t2{font-size:22px}.sc-pb-sl{height:70px}.sc-pb-r{width:38%;right:20px}.sc-pb-b{width:46px;height:46px;font-size:21px}.sc-pb-dots{left:28px}}
+@media (prefers-reduced-motion:reduce){.sc-pb:after,.sc-pb-eb i,.sc-pb-line,.sc-pb-btn span,.sc-pb-ph img,.sc-pb-arc path,.sc-pb-b{animation:none}}
 </style>
-<script id="sc-timepick">
-/* compact time picker: a small vertical list card instead of the phone's full-screen list (the real <select> stays and keeps all the logic) */
+<script id="sc-partner-banner">
+/* partner banner (light carousel): after the first 3 product rows — bloggers / tour guides / big followings → WhatsApp */
 (function(){
-  function sel(){ return document.getElementById("deliveryTime"); }
-  function title(){ var l = document.getElementById("deliveryTimeLabel"); return l ? l.textContent.trim() : "🕒"; }
-  var bg = null;
-  function build(){
-    bg = document.createElement("div"); bg.className = "sc-tp-bg";
-    bg.innerHTML = '<div class="sc-tp" role="dialog"><div class="sc-tp-h"><span class="sc-tp-t"></span><button type="button" class="sc-tp-x" aria-label="Close">✕</button></div><div class="sc-tp-g"></div></div>';
-    bg.addEventListener("click", function(e){ if(e.target === bg || e.target.closest(".sc-tp-x")) close(); });
-    document.body.appendChild(bg);
+  var TX = {
+    en:{e:"Partner program",b:"Join now",m:"Hi! I'd like to become a Self Care partner (blogger / tour guide).",s:[["Bloggers & creators","earn with us"],["Tour guides","recommend & earn"],["Lots of followers?","let's grow together"]]},
+    cs:{e:"Partnerský program",b:"Přidat se",m:"Dobrý den, chtěl(a) bych se stát partnerem Self Care (blogger / průvodce).",s:[["Blogeři a tvůrci","vydělávejte s námi"],["Průvodci","doporučte a vydělejte"],["Hodně sledujících?","rosťme spolu"]]},
+    sk:{e:"Partnerský program",b:"Pridať sa",m:"Dobrý deň, chcel(a) by som sa stať partnerom Self Care (bloger / sprievodca).",s:[["Blogeri a tvorcovia","zarábajte s nami"],["Sprievodcovia","odporučte a zarobte"],["Veľa sledovateľov?","rastime spolu"]]},
+    pl:{e:"Program partnerski",b:"Dołącz",m:"Dzień dobry, chciał(a)bym zostać partnerem Self Care (bloger / przewodnik).",s:[["Blogerzy i twórcy","zarabiaj z nami"],["Przewodnicy","polecaj i zarabiaj"],["Dużo obserwujących?","rośnijmy razem"]]},
+    ru:{e:"Партнёрская программа",b:"Присоединиться",m:"Здравствуйте! Хочу стать партнёром Self Care (блогер / гид).",s:[["Блогеры и авторы","зарабатывайте с нами"],["Гиды","рекомендуйте и зарабатывайте"],["Много подписчиков?","растём вместе"]]},
+    ua:{e:"Партнерська програма",b:"Приєднатися",m:"Вітаю! Хочу стати партнером Self Care (блогер / гід).",s:[["Блогери та автори","заробляйте з нами"],["Гіди","рекомендуйте й заробляйте"],["Багато підписників?","зростаймо разом"]]},
+    de:{e:"Partnerprogramm",b:"Mitmachen",m:"Hallo! Ich möchte Self Care Partner werden (Blogger / Reiseleiter).",s:[["Blogger & Creator","verdienen Sie mit"],["Reiseleiter","empfehlen & verdienen"],["Viele Follower?","gemeinsam wachsen"]]}
+  };
+  var IMG = "https://res.cloudinary.com/de4boyel3/image/upload/c_fill,w_520,h_390,f_auto,q_auto/v1792698052/banners/partner-handshake.png";
+  var ROWS = 3, busy = false, slide = 0, timer = null;
+  function lang(){ var l = (typeof displayLanguage === "string" && displayLanguage) || "en"; return TX[l] ? l : "en"; }
+  function cols(grid){ try{ var n = getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length; return n > 0 ? n : 2; }catch(e){ return 2; } }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+  function html(){
+    var x = TX[lang()], h = '<div class="sc-pb-l"><div class="sc-pb-eb"><i></i>' + esc(x.e) + '</div><div class="sc-pb-sl">';
+    x.s.forEach(function(s, i){ h += '<div class="sc-pb-s' + (i === slide ? ' on' : '') + '"><div class="sc-pb-t">' + esc(s[0]) + '</div><div class="sc-pb-t2">' + esc(s[1]) + '</div></div>'; });
+    h += '</div><div class="sc-pb-line"></div><a class="sc-pb-btn" href="https://wa.me/201501401776?text=' + encodeURIComponent(x.m) + '" target="_blank" rel="noopener">' + esc(x.b) + ' <span>→</span></a></div>';
+    h += '<div class="sc-pb-r" aria-hidden="true">' +
+      '<svg class="sc-pb-arc" viewBox="0 0 200 170" preserveAspectRatio="none"><path d="M18 34 C 40 -10, 120 -6, 150 20"/><path d="M60 160 C 120 178, 178 150, 186 128"/></svg>' +
+      '<div class="sc-pb-ph sc-pb-ph2"><img src="' + IMG + '" alt="" loading="lazy" decoding="async"></div>' +
+      '<div class="sc-pb-ph"><img src="' + IMG + '" alt="" loading="lazy" decoding="async"></div>' +
+      '<div class="sc-pb-b sc-pb-b1">👥</div><div class="sc-pb-b sc-pb-b2">📈</div><div class="sc-pb-b sc-pb-b3">🌍</div></div>';
+    h += '<div class="sc-pb-dots">' + x.s.map(function(_, i){ return '<i' + (i === slide ? ' class="on"' : '') + '></i>'; }).join("") + '</div>';
+    return h;
   }
-  function open(){
-    var s = sel(); if(!s) return;
-    try{ if(typeof updateDeliveryTimeOptions === "function") updateDeliveryTimeOptions(); }catch(e){}
-    if(!bg) build();
-    bg.querySelector(".sc-tp-t").textContent = title();
-    var g = bg.querySelector(".sc-tp-g"); g.innerHTML = "";
-    Array.from(s.options).forEach(function(o){
-      var b = document.createElement("button"); b.type = "button"; b.textContent = o.textContent.trim();
-      if(o.disabled) b.disabled = true;
-      if(o.value === s.value) b.className = "on";
-      b.addEventListener("click", function(){
-        s.value = o.value;
-        s.dispatchEvent(new Event("change", {bubbles:true}));
-        close();
-      });
-      g.appendChild(b);
-    });
-    bg.classList.add("open");
-    try{ var on = g.querySelector(".on"); if(on) on.scrollIntoView({block:"center"}); }catch(e){}
+  function show(el){ var ss = el.querySelectorAll(".sc-pb-s"), dd = el.querySelectorAll(".sc-pb-dots i"); for(var i = 0; i < ss.length; i++){ ss[i].classList.toggle("on", i === slide); if(dd[i]) dd[i].classList.toggle("on", i === slide); } }
+  function tick(){ var el = document.querySelector("#grid .sc-pb"); if(!el) return; slide = (slide + 1) % 3; show(el); }
+  function place(){
+    if(busy) return; busy = true;
+    try{
+      var grid = document.getElementById("grid"); if(!grid) return;
+      var old = grid.querySelector(".sc-pb"), cards = grid.querySelectorAll(":scope > .card"), n = cols(grid) * ROWS;
+      if(grid.classList.contains("kit-grid") || cards.length <= n){ if(old) old.remove(); return; }
+      var after = cards[n - 1], l = lang();
+      if(old && old.previousElementSibling === after && old.getAttribute("data-l") === l) return;
+      if(!old){
+        old = document.createElement("div"); old.className = "sc-pb";
+        old.addEventListener("click", function(e){ if(e.target.closest(".sc-pb-btn")){ try{ if(window.__scTrack) window.__scTrack("partner_banner_click", {lang:lang()}); }catch(_){} } });
+      }
+      if(old.getAttribute("data-l") !== l){ old.innerHTML = html(); old.setAttribute("data-l", l); }
+      after.insertAdjacentElement("afterend", old);
+      if(!timer && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) timer = setInterval(tick, 3500);
+    }catch(e){}
+    finally{ busy = false; }
   }
-  function close(){ if(bg) bg.classList.remove("open"); }
-  function init(){
-    var s = sel(); if(!s) return setTimeout(init, 400);
-    if(s.parentNode.classList.contains("sc-tp-wrap")) return;
-    var w = document.createElement("div"); w.className = "sc-tp-wrap";
-    s.parentNode.insertBefore(w, s); w.appendChild(s);
-    var hit = document.createElement("div"); hit.className = "sc-tp-hit"; hit.setAttribute("role", "button"); hit.setAttribute("aria-label", "Time");
-    hit.addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); open(); });
-    w.appendChild(hit);
+  function start(){
+    var grid = document.getElementById("grid"); if(!grid) return setTimeout(start, 300);
+    new MutationObserver(place).observe(grid, {childList:true});
+    window.addEventListener("resize", function(){ clearTimeout(window.__scPbT); window.__scPbT = setTimeout(place, 200); });
+    place();
   }
-  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })();
 </script>
 
