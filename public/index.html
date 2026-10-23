@@ -8920,7 +8920,7 @@ function livePrice(product){
 
 /* promoters: ?ref=<code> (from selfcare-en.com/<code>) is kept 30 days; the last promoter link wins; sent with the order as promoter_code */
 function scRefGet(){try{var __q=new URLSearchParams(location.search),u=__q.get("ref")||__q.get("p"),now=Date.now();if(u&&/^\d{1,6}$/.test(u)){localStorage.setItem("sc_ref",JSON.stringify({c:+u,t:now}));}else if(!localStorage.getItem("sc_ref")){var m=document.cookie.match(/(?:^|; )sc_ref=(\d{1,6})\.(\d+)/);if(m)localStorage.setItem("sc_ref",JSON.stringify({c:+m[1],t:+m[2]}));}var r=JSON.parse(localStorage.getItem("sc_ref")||"null");if(r&&r.c&&now-r.t<2592e6)return r.c;}catch(e){}return null}
-function scRefField(){var c=scRefGet();return c?{promoter_code:c}:{}}
+function scRefField(){var c=scRefGet();var o=c?{promoter_code:c}:{};try{var h=findHotelByInput((document.getElementById("checkoutHotel")||{}).value||"");if(c&&h&&h.free)o.free_delivery="promo"+c;}catch(e){}return o}
 try{scRefGet();var __scU=new URL(location.href);if(__scU.searchParams.has("ref")||__scU.searchParams.has("p")){__scU.searchParams.delete("ref");__scU.searchParams.delete("p");history.replaceState(history.state,"",__scU.pathname+__scU.search+__scU.hash);}}catch(e){}
 async function saveOrderToDashboard(order){
   try {
@@ -9296,7 +9296,7 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
 
 async function loadExtraHotels(){
   try{
-    const r=await fetch(SB_URL+"/rest/v1/hotel_delivery_fees?select=hotel_name,fee_egp,aliases&is_active=eq.true&order=id.asc&limit=2000",{headers:SB_HEADERS});
+    const r=await fetch(SB_URL+"/rest/v1/hotel_delivery_fees?select=hotel_name,fee_egp,aliases,promo_free&is_active=eq.true&order=id.asc&limit=2000",{headers:SB_HEADERS});
     if(!r.ok)return;
     const rows=await r.json();
     if(!Array.isArray(rows)) return;
@@ -9377,7 +9377,7 @@ function showHotelSuggestions(){
   box.innerHTML = matches.map(h =>
     `<button type="button" onclick="selectHotel('${escapeJsString(h.name)}')">
       <span>${h.name}</span>
-      <small>${h.fee} EGP • ${approxText(h.fee)}</small>
+      <small>${scFeeLabel(h)}</small>
     </button>`
   ).join("");
   box.style.display = "grid";
@@ -11866,7 +11866,7 @@ function showCheckoutHotelSuggestions(){
   box.innerHTML = matches.map(h =>
     `<button type="button" onclick="selectCheckoutHotel('${escapeJsString(h.name)}')">
       <span>${h.name}</span>
-      <small>${h.fee} EGP • ${approxText(h.fee)}</small>
+      <small>${scFeeLabel(h)}</small>
     </button>`
   ).join("");
   box.style.display = "grid";
@@ -11964,7 +11964,7 @@ function buildInvoiceHTML(){
 
     <div class="inv-summary">
       <div class="inv-row"><span>Products total</span><span>${d.productTotal} EGP • ${approxText(d.productTotal)}</span></div>
-      <div class="inv-row"><span>Delivery</span><span>${d.deliveryFee ? `${d.deliveryFee} EGP • ${approxText(d.deliveryFee)}` : "Confirm via WhatsApp"}</span></div>
+      <div class="inv-row"><span>Delivery</span><span>${scHotelFree(d.hotel) ? scFeeLabel(findHotelByInput(d.hotel)) : (d.deliveryFee ? `${d.deliveryFee} EGP • ${approxText(d.deliveryFee)}` : "Confirm via WhatsApp")}</span></div>
       ${d.cardFee ? `<div class="inv-row"><span>Visa fee 3%</span><span>${d.cardFee} EGP • ${approxText(d.cardFee)}</span></div>` : ``}
       <div class="inv-row inv-total"><span>Grand Total</span><span>${d.finalTotal} EGP • ${approxText(d.finalTotal)}</span></div>
       <div class="inv-row"><span>Note</span><span>${escapeHtml(d.note)}</span></div>
@@ -11980,7 +11980,7 @@ function buildInvoiceHTML(){
 function buildInvoiceText(){
   const d = getOrderDetails();
   const lines = d.items.map(({product:p, qty}) => `• ${p.name} x${qty} = ${livePrice(p) * qty} EGP`);
-  const deliveryText = d.deliveryFee ? `${d.deliveryFee} EGP (${approxText(d.deliveryFee)})` : "Confirm via WhatsApp";
+  const deliveryText = scHotelFree(d.hotel) ? "FREE 🎉 (Czech partner offer, code 72)" : (d.deliveryFee ? `${d.deliveryFee} EGP (${approxText(d.deliveryFee)})` : "Confirm via WhatsApp");
   const cardFeeLine = d.cardFee ? `
 💳 Visa fee 3%: ${d.cardFee} EGP (${approxText(d.cardFee)})` : "";
   return `Hello, I would like to order:
@@ -12166,7 +12166,7 @@ function renderCheckout(){
   // الزر يشتغل طالما العميل كتب أي اسم فندق
   const hotelValid = hotelInputValue.length >= 2;
   const deliveryText = hotel
-    ? (deliveryFee ? `${deliveryFee} EGP • ${approxText(deliveryFee)}` : T("selectHotelSugg"))
+    ? (selectedHotel && selectedHotel.free ? scFeeLabel(selectedHotel) : (deliveryFee ? `${deliveryFee} EGP • ${approxText(deliveryFee)}` : T("selectHotelSugg")))
     : T("selectHotel");
 
   const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || "cash";
@@ -14690,7 +14690,7 @@ async function previewCatalog() {
   d.settings.official_gbp = typeof GBP_RATE === 'number' ? GBP_RATE : 65; d.settings.official_eur = typeof EUR_RATE_EN === 'number' ? EUR_RATE_EN : 55;
   d.settings.official_usd = typeof USD_RATE_EN === 'number' ? USD_RATE_EN : 45; d.settings.rate_discount = 0;
   d.hotels = (typeof hotels !== 'undefined' && Array.isArray(hotels) ? hotels : []).map((h, i) => ({ id: 'h' + i, name: h.name, aliases: h.aliases || [], active: true,
-    zone_id: !(h.fee > 0) ? null : h.fee <= 100 ? 'z-downtown' : h.fee <= 250 ? 'z-villages' : h.fee < 400 ? 'z-sahl' : h.fee === 400 ? 'z-makadi' : 'z-soma' }));
+    zone_id: ((h.baseFee || h.fee) > 0) === false ? null : (h.baseFee || h.fee) <= 100 ? 'z-downtown' : (h.baseFee || h.fee) <= 250 ? 'z-villages' : (h.baseFee || h.fee) < 400 ? 'z-sahl' : (h.baseFee || h.fee) === 400 ? 'z-makadi' : 'z-soma' }));
   const kept = store.get(DEMO_KEY); if (kept && kept.bookings) d.bookings = kept.bookings;
   store.set(DEMO_KEY, d);
   $('#mpreview').hidden = false;
@@ -15065,6 +15065,61 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     w.appendChild(hit);
   }
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+</script>
+
+<script>
+/* promo72 (Oct 2026): free delivery to the promo hotels for customers who came through the Czech partner
+   (selfcare-cz.com or selfcare-en.com/72 -> promoter code kept 30 days). Window + code come from settings
+   promo_free_code / promo_free_from / promo_free_until; hotels flagged hotel_delivery_fees.promo_free.
+   The database re-checks every flagged order (order_is_free_delivery), so a faked flag just gets the normal fee. */
+window.SC_PROMO = null;
+var SC_FREE_TX = {en:"FREE",cs:"ZDARMA",sk:"ZADARMO",pl:"GRATIS",ru:"БЕСПЛАТНО",ua:"БЕЗКОШТОВНО",de:"GRATIS",ar:"مجاناً"};
+function scFreeWord(){ try{ return SC_FREE_TX[displayLanguage] || "FREE"; }catch(e){ return "FREE"; } }
+function scPromoActive(){
+  var p = window.SC_PROMO; if(!p || !p.code) return false;
+  var now = Date.now(); if(!(now >= p.from && now <= p.until)) return false;
+  var c = null; try{ c = scRefGet(); }catch(e){}
+  return c !== null && String(c) === String(p.code);
+}
+function scPromoApply(){
+  var on = scPromoActive();
+  try{ (hotels || []).forEach(function(h){
+    if(!h.promoFree){ if(h.free){ h.free = false; if(h.baseFee) h.fee = h.baseFee; } return; }
+    if(!h.free && Number(h.fee) > 0) h.baseFee = Number(h.fee);
+    if(on){ h.free = true; h.fee = 0; } else { h.free = false; if(h.baseFee) h.fee = h.baseFee; }
+  }); }catch(e){}
+}
+function scHotelFree(name){ try{ var h = findHotelByInput(name || ""); return !!(h && h.free); }catch(e){ return false; } }
+function scFeeLabel(h){
+  if(h && h.free) return '<s style="opacity:.55">' + (h.baseFee || "") + ' EGP</s> <b style="color:#15803d">' + scFreeWord() + ' 🎉</b>';
+  return h ? (h.fee + " EGP • " + approxText(h.fee)) : "";
+}
+(function(){
+  var ar = scApplyHotelRows;
+  scApplyHotelRows = function(rows){
+    var r = ar.apply(this, arguments);
+    try{ (rows || []).forEach(function(row){
+      var h = findHotelByInput(String((row && row.hotel_name) || ""));
+      if(!h) return;
+      if(Number(row.fee_egp) > 0) h.baseFee = Number(row.fee_egp);
+      if(row.promo_free !== undefined) h.promoFree = !!row.promo_free;
+    }); scPromoApply(); }catch(e){}
+    return r;
+  };
+  try{ var cached = JSON.parse(localStorage.getItem("scHotelRowsV1") || "[]"); if(cached.length) scApplyHotelRows(cached); }catch(e){}
+  function refresh(){
+    try{ if(typeof renderCart === "function") renderCart(); }catch(e){}
+    try{ if(document.getElementById("checkoutTotalBox") && typeof renderCheckout === "function") renderCheckout(); }catch(e){}
+  }
+  fetch(SB_URL + "/rest/v1/settings?select=key,value&key=in.(promo_free_code,promo_free_from,promo_free_until)", {headers: SB_HEADERS})
+    .then(function(r){ return r.json(); })
+    .then(function(rows){
+      var m = {}; (rows || []).forEach(function(x){ m[x.key] = x.value; });
+      var f = Date.parse(m.promo_free_from || ""), u = Date.parse(m.promo_free_until || "");
+      window.SC_PROMO = (m.promo_free_code && f && u) ? {code: m.promo_free_code, from: f, until: u} : null;
+      scPromoApply(); refresh();
+    }).catch(function(){});
 })();
 </script>
 </body>
