@@ -14974,7 +14974,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
       if(old && old.previousElementSibling === after && old.getAttribute("data-l") === l) return;
       if(!old){
         old = document.createElement("div"); old.className = "sc-pb";
-        old.addEventListener("click", function(e){ if(e.target.closest(".sc-pb-btn")){ try{ if(window.__scTrack) window.__scTrack("partner_banner_click", {lang:lang()}); }catch(_){} } });
+        old.addEventListener("click", function(e){ if(e.target.closest(".sc-pb-btn")){ try{ if(typeof window.scTrack === "function") window.scTrack("partner_click", lang()); }catch(_){} } });
       }
       if(old.getAttribute("data-l") !== l){ old.innerHTML = html(); old.setAttribute("data-l", l); }
       after.insertAdjacentElement("afterend", old);
