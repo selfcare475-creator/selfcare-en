@@ -12047,6 +12047,42 @@ function copyInvoiceText(){
   }
 }
 
+/* v32: national-number lengths per country code (digits after the code) */
+var SC_PHONE_LEN = {"44":[10],"420":[9],"421":[9],"48":[9],"49":[9,10,11],"380":[9],"7":[10],"20":[10],
+  "43":[9,10,11,12,13],"31":[9],"32":[8,9],"33":[9],"34":[9],"39":[9,10,11],"36":[8,9],"40":[9],"41":[9],"45":[8],"46":[7,8,9],
+  "47":[8],"358":[6,7,8,9,10],"370":[8],"371":[8],"372":[7,8],"353":[9],"351":[9],"30":[10],"359":[8,9],"385":[8,9],"386":[8],
+  "381":[8,9],"90":[10],"972":[9],"971":[9],"966":[9],"1":[10]};
+var SC_PHONE_ERR = {
+  en:"This number looks incomplete — a +{cc} number has {n} digits after the country code (you entered {got}). Please check it so we can reach you on WhatsApp.",
+  cs:"Číslo vypadá neúplné — číslo +{cc} má po předvolbě {n} číslic (zadali jste {got}). Zkontrolujte ho prosím, abychom vás zastihli na WhatsAppu.",
+  sk:"Číslo vyzerá neúplné — číslo +{cc} má po predvoľbe {n} číslic (zadali ste {got}). Skontrolujte ho, prosím, aby sme vás zastihli na WhatsAppe.",
+  pl:"Numer wygląda na niepełny — numer +{cc} ma {n} cyfr po kodzie kraju (wpisano {got}). Sprawdź go, abyśmy mogli skontaktować się przez WhatsApp.",
+  ru:"Номер выглядит неполным — у номера +{cc} после кода страны {n} цифр (вы ввели {got}). Проверьте его, чтобы мы могли связаться с вами в WhatsApp.",
+  ua:"Номер виглядає неповним — номер +{cc} має {n} цифр після коду країни (ви ввели {got}). Перевірте його, щоб ми могли зв'язатися з вами у WhatsApp.",
+  de:"Die Nummer scheint unvollständig — eine +{cc}-Nummer hat {n} Ziffern nach der Ländervorwahl (eingegeben: {got}). Bitte prüfen, damit wir Sie per WhatsApp erreichen."
+};
+function scPhoneLenCheck(raw){
+  raw = String(raw||"");
+  var codes = Object.keys(SC_PHONE_LEN).sort(function(a,b){return b.length-a.length;});
+  for(var i=0;i<codes.length;i++){
+    var cc = codes[i];
+    if(raw.indexOf(cc)===0){
+      var nat = raw.length - cc.length, allowed = SC_PHONE_LEN[cc];
+      if(allowed.indexOf(nat) >= 0) return {ok:true, cc:cc};
+      return {ok:false, cc:cc, got:nat, n: allowed.length>1 ? allowed[0]+"–"+allowed[allowed.length-1] : String(allowed[0])};
+    }
+  }
+  return {ok:true, cc:null};
+}
+function scShowPhoneLenHint(r){
+  var el = document.getElementById("scPhoneLenErr");
+  if(!el) return;
+  if(!r){ el.style.display="none"; el.textContent=""; return; }
+  var lang = (typeof displayLanguage!=="undefined" && SC_PHONE_ERR[displayLanguage]) ? displayLanguage : "en";
+  el.textContent = SC_PHONE_ERR[lang].replace("{cc}", r.cc).replace("{n}", r.n).replace("{got}", r.got);
+  el.style.display = "block";
+}
+
 function toggleManualPhoneCode(){
   const select = document.getElementById("checkoutPhoneCode");
   const manual = document.getElementById("checkoutPhoneCodeManual");
@@ -12207,7 +12243,10 @@ function renderCheckout(){
   else if(/^4209\d{8,}$/.test(phoneRaw)) phoneRaw = "421" + phoneRaw.slice(3);
   else if(phoneCode === "7" && /^8\d{10}$/.test(phoneLocal)) phoneRaw = "7" + phoneLocal.slice(1);
   else if(phoneLocal.indexOf(phoneCode) === 0 && phoneLocal.length >= (phoneCode === "7" ? 11 : phoneCode.length + 9)) phoneRaw = phoneLocal;
-  const phoneValid = phoneLocal.length >= 6 && phoneRaw.length >= 8 && phoneRaw.length <= 15;
+  /* v32 (2026-10-24): per-country length check — blocks incomplete/garbled numbers (e.g. "4444488321") before the order is sent */
+  const scLen = scPhoneLenCheck(phoneRaw);
+  const phoneValid = phoneLocal.length >= 6 && phoneRaw.length >= 8 && phoneRaw.length <= 15 && scLen.ok;
+  scShowPhoneLenHint(phoneLocal.length >= 6 && !scLen.ok ? scLen : null);
   if(!phoneValid || !hotelValid){
     btn.removeAttribute("href");
     btn.style.opacity = "0.5";
@@ -12446,6 +12485,7 @@ installFastScrollLoader();
         <input id="checkoutPhone" class="checkout-input phone-number" type="tel" inputmode="tel" placeholder="WhatsApp number" oninput="renderCheckout()" required>
         <input id="checkoutPhoneCodeManual" class="checkout-input phone-code-manual" type="tel" inputmode="numeric" placeholder="+XXX" maxlength="4" oninput="this.value=this.value.replace(/[^0-9]/g, '').slice(0,4); renderCheckout()">
       </div>
+      <div class="checkout-help sc-phone-len-err" id="scPhoneLenErr" style="display:none;color:#c62828;font-weight:600"></div>
       <div class="checkout-help" id="checkoutPhoneHelp">Required for delivery follow-up and hotel/gate coordination on WhatsApp.</div>
     </div>
 
