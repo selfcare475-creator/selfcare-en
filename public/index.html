@@ -7449,6 +7449,21 @@ function scApplyStaticTexts(){
   }catch(e){}
   scUpdatePrefButtons();
   scFitHeaderButtons();
+  scApplyRuCashOnly();
+}
+/* ru-cash: Russian cards don't work abroad, so the Russian site offers cash on delivery only */
+function scApplyRuCashOnly(){
+  try{
+    var ru = displayLanguage === "ru";
+    var visa = document.querySelector('input[name="paymentMethod"][value="visa"]');
+    var cash = document.querySelector('input[name="paymentMethod"][value="cash"]');
+    if(visa){ var lb = visa.closest("label"); if(lb) lb.style.display = ru ? "none" : ""; }
+    var switched = false;
+    if(ru && visa && visa.checked && cash){ cash.checked = true; switched = true; }
+    var note = document.getElementById("paymentNote");
+    if(note) note.textContent = ru ? "\uD83D\uDCB5 Оплата только наличными при доставке." : T("visaNote");
+    if(switched && typeof renderCheckout === "function"){ try{ renderCheckout(); }catch(e){} }
+  }catch(e){}
 }
 /* header buttons keep the English width: long words get a slightly smaller font instead of a wider button */
 function scFitHeaderButtons(){
