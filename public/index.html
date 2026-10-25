@@ -7457,7 +7457,7 @@ function scApplyRuCashOnly(){
     var ru = displayLanguage === "ru";
     var visa = document.querySelector('input[name="paymentMethod"][value="visa"]');
     var cash = document.querySelector('input[name="paymentMethod"][value="cash"]');
-    if(visa){ var lb = visa.closest("label"); if(lb) lb.style.display = ru ? "none" : ""; }
+    if(visa){ var lb = visa.closest("label"); if(lb){ if(ru) lb.style.setProperty("display","none","important"); else lb.style.removeProperty("display"); } visa.disabled = ru; }
     var switched = false;
     if(ru && visa && visa.checked && cash){ cash.checked = true; switched = true; }
     var note = document.getElementById("paymentNote");
