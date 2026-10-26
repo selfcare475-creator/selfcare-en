@@ -7549,6 +7549,7 @@ function setDisplayLanguage(l, opts){
   displayCurrency = l === "en" ? "GBP" : (l === "ru" ? "USD" : "EUR");
   try{ localStorage.removeItem("sc_cur"); }catch(e){}
   scApplyStaticTexts();
+  try{ if(typeof scPromoApply === "function") scPromoApply(); }catch(e){}
   scRerenderAll();
   try{ if(typeof loadStockStatus === "function") loadStockStatus(); }catch(e){}
   try{ scLoadDesc(l); }catch(e){}
@@ -8935,7 +8936,7 @@ function livePrice(product){
 
 /* promoters: ?ref=<code> (from selfcare-en.com/<code>) is kept 30 days; the last promoter link wins; sent with the order as promoter_code */
 function scRefGet(){try{var __q=new URLSearchParams(location.search),u=__q.get("ref")||__q.get("p"),now=Date.now();if(u&&/^\d{1,6}$/.test(u)){localStorage.setItem("sc_ref",JSON.stringify({c:+u,t:now}));}else if(!localStorage.getItem("sc_ref")){var m=document.cookie.match(/(?:^|; )sc_ref=(\d{1,6})\.(\d+)/);if(m)localStorage.setItem("sc_ref",JSON.stringify({c:+m[1],t:+m[2]}));}var r=JSON.parse(localStorage.getItem("sc_ref")||"null");if(r&&r.c&&now-r.t<2592e6)return r.c;}catch(e){}return null}
-function scRefField(){var c=scRefGet();var o=c?{promoter_code:c}:{};try{var h=findHotelByInput((document.getElementById("checkoutHotel")||{}).value||"");if(c&&h&&h.free)o.free_delivery="promo"+c;}catch(e){}return o}
+function scRefField(){var c=scRefGet();var o=c?{promoter_code:c}:{};try{var h=findHotelByInput((document.getElementById("checkoutHotel")||{}).value||"");if(h&&h.free&&(c||(window.SC_PROMO&&SC_PROMO.code)))o.free_delivery="promo"+(c||SC_PROMO.code);}catch(e){}return o}
 try{scRefGet();var __scU=new URL(location.href);if(__scU.searchParams.has("ref")||__scU.searchParams.has("p")){__scU.searchParams.delete("ref");__scU.searchParams.delete("p");history.replaceState(history.state,"",__scU.pathname+__scU.search+__scU.hash);}}catch(e){}
 async function saveOrderToDashboard(order){
   try {
@@ -15134,6 +15135,8 @@ function scFreeWord(){ try{ return SC_FREE_TX[displayLanguage] || "FREE"; }catch
 function scPromoActive(){
   var p = window.SC_PROMO; if(!p || !p.code) return false;
   var now = Date.now(); if(!(now >= p.from && now <= p.until)) return false;
+  /* Czech/Slovak site language counts as the Czech partner (T, 26/10): no link needed */
+  try{ if(displayLanguage === "cs" || displayLanguage === "sk") return true; }catch(e){}
   var c = null; try{ c = scRefGet(); }catch(e){}
   return c !== null && String(c) === String(p.code);
 }
