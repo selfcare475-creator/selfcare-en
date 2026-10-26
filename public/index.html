@@ -15064,6 +15064,121 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 .sc-pb-dots{bottom:6px !important;left:12px !important}
 @media (min-width:700px){.sc-pb{min-height:140px !important;padding:14px 22px 22px !important}.sc-pb-t{font-size:22px !important}.sc-pb-t2{font-size:17px !important}.sc-pb-sl{height:58px !important}}
 </style>
+<style id="sc-fd-banner-css">
+/* promo72 free-delivery banner (Czech/Slovak): same look as the partner banner, green accent */
+.sc-fd{grid-column:1/-1;margin:2px 14px 10px;position:relative;overflow:hidden;border-radius:20px;min-height:112px;padding:9px 12px 14px;display:flex;align-items:center;color:#182534;font-family:'Nunito',sans-serif;
+  background:radial-gradient(120% 140% at 0% 0%,#ffffff 0%,#f1faf5 55%,#e3f5ec 100%);border:1px solid #cfe9db;box-shadow:0 12px 28px rgba(31,49,81,.08)}
+.sc-fd:after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.75) 50%,rgba(255,255,255,0) 100%);transform:skewX(-18deg);animation:scPbShine 5.5s ease-in-out infinite;pointer-events:none;z-index:4}
+.sc-fd-l{position:relative;z-index:3;flex:0 0 60%;max-width:60%;min-width:0}
+.sc-fd-eb{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:800;color:#15803d;background:#fff;border:1px solid #cfe9db;padding:2px 7px 2px 6px;border-radius:999px;margin-bottom:5px;white-space:nowrap;box-shadow:0 3px 8px rgba(31,49,81,.06)}
+.sc-fd-eb i{width:7px;height:7px;border-radius:50%;background:#22b07d;box-shadow:0 0 0 0 rgba(34,176,125,.6);animation:scPbPing 1.8s ease-out infinite}
+.sc-fd-t{font-size:15px;font-weight:900;line-height:1.1;color:#1F3151;letter-spacing:-.2px}
+.sc-fd-t b{color:#15803d}
+.sc-fd-t2{font-size:12.5px;font-weight:800;line-height:1.15;color:#D6501B;margin-top:2px}
+.sc-fd-sl{position:relative;height:30px;margin-top:4px}
+.sc-fd-s{position:absolute;inset:0;opacity:0;transform:translateY(10px);transition:opacity .55s ease,transform .55s ease;font-size:11.5px;font-weight:700;color:#2D4876;line-height:1.25}
+.sc-fd-s.on{opacity:1;transform:none}
+.sc-fd-s em{font-style:normal;color:#8a99ad;font-weight:700}
+.sc-fd-btn{display:inline-flex;align-items:center;gap:6px;background:#15803d;color:#fff !important;text-decoration:none;font-weight:800;font-size:11.5px;padding:6px 12px;border-radius:999px;box-shadow:0 8px 18px rgba(21,128,61,.25);border:0;cursor:pointer;margin-top:6px;font-family:inherit}
+.sc-fd-btn span{display:inline-block;animation:scPbArrow 1.6s ease-in-out infinite}
+.sc-fd-r{position:absolute;z-index:2;right:0;top:0;bottom:0;width:40%}
+.sc-fd-stamp{position:absolute;right:14px;top:50%;transform:translateY(-50%) rotate(-8deg);background:#fff;border:3px solid #15803d;color:#15803d;border-radius:16px;padding:6px 10px;text-align:center;box-shadow:0 12px 26px rgba(21,128,61,.18);animation:scPbBob 3.8s ease-in-out infinite}
+.sc-fd-stamp b{display:block;font-size:17px;font-weight:900;letter-spacing:-.3px;line-height:1}
+.sc-fd-stamp s{display:block;font-size:11px;font-weight:800;color:#15803d;margin-top:3px;text-decoration:none}
+.sc-fd-b{position:absolute;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 8px 18px rgba(31,49,81,.16);display:flex;align-items:center;justify-content:center;font-size:12px;z-index:3;animation:scPbBob 3.8s ease-in-out infinite}
+.sc-fd-b1{left:6px;top:8px;animation-delay:-1.3s}.sc-fd-b2{right:6px;bottom:8px;animation-delay:-2.4s}
+.sc-fd-dots{position:absolute;z-index:5;left:12px;bottom:5px;display:flex;gap:5px}
+.sc-fd-dots i{width:6px;height:6px;border-radius:999px;background:#c9d4e1;transition:width .4s ease,background .4s ease}
+.sc-fd-dots i.on{width:18px;background:#15803d}
+@media (min-width:700px){.sc-fd{min-height:150px;padding:16px 24px 24px}.sc-fd-l{flex-basis:62%;max-width:62%}.sc-fd-t{font-size:24px}.sc-fd-t2{font-size:17px}.sc-fd-s{font-size:14px}.sc-fd-sl{height:38px}.sc-fd-btn{font-size:13px;padding:8px 16px}.sc-fd-stamp b{font-size:26px}.sc-fd-stamp s{font-size:14px}.sc-fd-b{width:38px;height:38px;font-size:18px}.sc-fd-dots{left:24px}}
+/* hotel list modal */
+.sc-fd-bg{position:fixed;inset:0;background:rgba(15,25,40,.45);z-index:100001;display:none;align-items:flex-end;justify-content:center;padding:0}
+.sc-fd-bg.open{display:flex}
+.sc-fd-m{background:#fff;border-radius:22px 22px 0 0;padding:14px 14px 18px;width:100%;max-width:520px;max-height:84vh;display:flex;flex-direction:column;box-shadow:0 -20px 50px rgba(15,25,40,.3);font-family:'Nunito',sans-serif;animation:scTpIn .18s ease}
+@media (min-width:700px){.sc-fd-bg{align-items:center;padding:16px}.sc-fd-m{border-radius:22px;max-height:80vh}}
+.sc-fd-mh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 4px}
+.sc-fd-mh b{font-size:15px;font-weight:900;color:#1F3151}
+.sc-fd-mh small{display:block;font-size:11.5px;font-weight:700;color:#8a99ad;margin-top:2px}
+.sc-fd-x{border:0;background:#F3F5F7;width:30px;height:30px;border-radius:50%;font-size:18px;color:#6e7d90;cursor:pointer;flex:0 0 auto}
+.sc-fd-q{width:100%;box-sizing:border-box;border:1.5px solid #DFE4EC;border-radius:12px;padding:9px 12px;font-size:14px;font-family:inherit;margin:8px 0;outline:none}
+.sc-fd-q:focus{border-color:#15803d}
+.sc-fd-ul{overflow-y:auto;overscroll-behavior:contain;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:2px}
+.sc-fd-h{display:flex;align-items:center;gap:6px;background:#f1faf5;border:1px solid #cfe9db;border-radius:11px;padding:7px 9px;font-size:12px;font-weight:700;color:#1F3151;line-height:1.2}
+.sc-fd-h i{font-style:normal;flex:0 0 auto;color:#15803d;font-weight:900}
+.sc-fd-h s{margin-left:auto;color:#8a99ad;font-size:10.5px;font-weight:800;flex:0 0 auto}
+.sc-fd-none{grid-column:1/-1;text-align:center;color:#8a99ad;font-size:12.5px;padding:14px}
+.sc-fd-note{font-size:11px;color:#8a99ad;font-weight:700;margin-top:8px;text-align:center}
+</style>
+<script id="sc-fd-banner">
+/* promo72 free-delivery banner: shown while scPromoActive() (Czech/Slovak site language, or ref=72), top of the grid under the search bar.
+   Hotel examples + "show all hotels" sheet come from the live hotel list (hotel_delivery_fees.promo_free). */
+(function(){
+  var TX = {
+    cs:{e:"Akce pro české a slovenské zákazníky",t:"Doprava <b>ZDARMA</b>",t2:"do {n} hotelů v Hurghadě",ex:"např.",b:"Zobrazit všechny hotely",mh:"Hotely s dopravou zdarma",ms:"{n} hotelů · stačí vybrat hotel v košíku",q:"Hledat hotel…",no:"Hotel nenalezen – napište nám na WhatsApp",note:"Platí do {d} · sleva se odečte automaticky",was:"místo",stamp:"ZDARMA"},
+    sk:{e:"Akcia pre českých a slovenských zákazníkov",t:"Doprava <b>ZADARMO</b>",t2:"do {n} hotelov v Hurghade",ex:"napr.",b:"Zobraziť všetky hotely",mh:"Hotely s dopravou zadarmo",ms:"{n} hotelov · stačí vybrať hotel v košíku",q:"Hľadať hotel…",no:"Hotel sa nenašiel – napíšte nám na WhatsApp",note:"Platí do {d} · zľava sa odpočíta automaticky",was:"namiesto",stamp:"ZADARMO"},
+    en:{e:"Offer for Czech & Slovak guests",t:"<b>FREE</b> delivery",t2:"to {n} hotels in Hurghada",ex:"e.g.",b:"Show all hotels",mh:"Hotels with free delivery",ms:"{n} hotels · just pick your hotel at checkout",q:"Search hotel…",no:"Hotel not found – message us on WhatsApp",note:"Valid until {d} · applied automatically",was:"instead of",stamp:"FREE"}
+  };
+  var EX = [["Marriott","Le Pacha","Steigenberger Aldau"],["Hilton Plaza","Four Seasons","Amarina Sapphire"],["Sindbad Club","Sunrise Holidays","Pickalbatros White Beach"],["Arabella Azur","Siva Grand Beach","King Tut Aqua Park"]];
+  var busy = false, slide = 0, timer = null;
+  function lang(){ var l = (typeof displayLanguage === "string" && displayLanguage) || "en"; return TX[l] ? l : "en"; }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+  function active(){ try{ return typeof scPromoActive === "function" && scPromoActive(); }catch(e){ return false; } }
+  function list(){ try{ return (hotels || []).filter(function(h){ return h && h.promoFree; }); }catch(e){ return []; } }
+  function until(){ try{ var p = window.SC_PROMO; if(!p || !p.until) return ""; var d = new Date(p.until); return d.getDate() + ". " + (d.getMonth() + 1) + "."; }catch(e){ return ""; } }
+  function fmt(s, n){ return s.split("{n}").join(n).split("{d}").join(until()); }
+  function html(n){
+    var x = TX[lang()], h = '<div class="sc-fd-l"><div class="sc-fd-eb"><i></i>' + esc(x.e) + '</div>';
+    h += '<div class="sc-fd-t">' + x.t + '</div><div class="sc-fd-t2">' + esc(fmt(x.t2, n)) + '</div><div class="sc-fd-sl">';
+    EX.forEach(function(s, i){ h += '<div class="sc-fd-s' + (i === slide ? ' on' : '') + '"><em>' + esc(x.ex) + '</em> ' + esc(s.join(" · ")) + '</div>'; });
+    h += '</div><button type="button" class="sc-fd-btn">' + esc(x.b) + ' <span>→</span></button></div>';
+    h += '<div class="sc-fd-r" aria-hidden="true"><div class="sc-fd-b sc-fd-b1">🏨</div><div class="sc-fd-stamp"><b>' + esc(x.stamp) + '</b><s>🛵 0 EGP</s></div><div class="sc-fd-b sc-fd-b2">🛵</div></div>';
+    h += '<div class="sc-fd-dots">' + EX.map(function(_, i){ return '<i' + (i === slide ? ' class="on"' : '') + '></i>'; }).join("") + '</div>';
+    return h;
+  }
+  function show(el){ var ss = el.querySelectorAll(".sc-fd-s"), dd = el.querySelectorAll(".sc-fd-dots i"); for(var i = 0; i < ss.length; i++){ ss[i].classList.toggle("on", i === slide); if(dd[i]) dd[i].classList.toggle("on", i === slide); } }
+  function tick(){ var el = document.querySelector(".sc-fd"); if(!el) return; slide = (slide + 1) % EX.length; show(el); }
+  function openList(){
+    var x = TX[lang()], L = list().slice().sort(function(a, b){ return String(a.name).localeCompare(String(b.name)); });
+    var bg = document.getElementById("scFdBg");
+    if(!bg){ bg = document.createElement("div"); bg.id = "scFdBg"; bg.className = "sc-fd-bg"; document.body.appendChild(bg);
+      bg.addEventListener("click", function(e){ if(e.target === bg || e.target.closest(".sc-fd-x")) bg.classList.remove("open"); }); }
+    function rows(q){
+      q = String(q || "").toLowerCase().trim();
+      var r = L.filter(function(h){ return !q || String(h.name).toLowerCase().indexOf(q) >= 0; });
+      if(!r.length) return '<div class="sc-fd-none">' + esc(x.no) + '</div>';
+      return r.map(function(h){ var was = Number(h.baseFee || h.fee || 0); return '<div class="sc-fd-h"><i>✓</i><span>' + esc(h.name) + '</span>' + (was > 0 ? '<s>' + esc(x.was) + ' ' + was + '</s>' : '') + '</div>'; }).join("");
+    }
+    bg.innerHTML = '<div class="sc-fd-m"><div class="sc-fd-mh"><div><b>' + esc(x.mh) + '</b><small>' + esc(fmt(x.ms, L.length)) + '</small></div><button type="button" class="sc-fd-x" aria-label="close">×</button></div>' +
+      '<input class="sc-fd-q" type="search" placeholder="' + esc(x.q) + '"><div class="sc-fd-ul">' + rows("") + '</div><div class="sc-fd-note">' + esc(fmt(x.note, L.length)) + '</div></div>';
+    var inp = bg.querySelector(".sc-fd-q"), ul = bg.querySelector(".sc-fd-ul");
+    inp.addEventListener("input", function(){ ul.innerHTML = rows(inp.value); });
+    bg.classList.add("open");
+    try{ if(typeof window.scTrack === "function") window.scTrack("promo_hotels_open", lang()); }catch(_){}
+  }
+  function place(){
+    if(busy) return; busy = true;
+    try{
+      var old = document.querySelector(".sc-fd"), top = document.querySelector(".controls"), n = list().length, l = lang();
+      if(!active() || !top || n < 1){ if(old) old.remove(); return; }
+      var pb = document.querySelector(".sc-pb"); if(pb && pb.previousElementSibling === top) top = pb; /* below the partner banner when both show */
+      var key = l + "|" + n;
+      if(old && old.previousElementSibling === top && old.getAttribute("data-k") === key) return;
+      if(!old){ old = document.createElement("div"); old.className = "sc-fd"; old.addEventListener("click", function(e){ if(e.target.closest(".sc-fd-btn")) openList(); }); }
+      if(old.getAttribute("data-k") !== key){ old.innerHTML = html(n); old.setAttribute("data-k", key); }
+      top.insertAdjacentElement("afterend", old);
+      if(!timer) timer = setInterval(tick, 3500);
+    }catch(e){}
+    finally{ busy = false; }
+  }
+  window.scFdBannerRefresh = place;
+  function start(){
+    var grid = document.getElementById("grid"); if(!grid) return setTimeout(start, 300);
+    new MutationObserver(place).observe(grid, {childList:true});
+    place(); setInterval(place, 2000);
+  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+})();
+</script>
 <style id="sc-timepick-css">
 .sc-tp-wrap{position:relative}
 .sc-tp-hit{position:absolute;inset:0;cursor:pointer;z-index:2}
