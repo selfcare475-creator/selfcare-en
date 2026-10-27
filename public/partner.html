@@ -32,11 +32,13 @@ body{background:var(--bg);color:var(--ink);font:500 15px/1.45 "Plus Jakarta Sans
 .chip.brand{color:var(--blue)}
 .off{background:var(--redBg);color:var(--red);border-radius:14px;padding:10px 14px;font-weight:700;font-size:13px;margin-top:12px}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-.stat{background:var(--card);border-radius:20px;padding:14px;box-shadow:var(--shadow)}
-.stat .hd{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;font-weight:700}
+.stat{background:var(--card);border-radius:20px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:118px}
+.stat .hd{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat .hd span.t{overflow:hidden;text-overflow:ellipsis}
+.stat .ft{margin-top:auto;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .ic{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none}
 .ic svg{width:16px;height:16px}
-.stat .v{font-size:24px;font-weight:800;letter-spacing:-.4px;margin:8px 0 6px;white-space:nowrap}
+.stat .v{font-size:26px;font-weight:800;letter-spacing:-.4px;margin:8px 0 8px;white-space:nowrap}
 .stat .v small{font-size:13px;font-weight:700;color:var(--muted);margin-left:3px}
 .pill{display:inline-flex;align-items:center;gap:3px;border-radius:99px;padding:2px 8px;font-size:11.5px;font-weight:700}
 .pill.up{background:var(--greenBg);color:var(--green)}.pill.dn{background:var(--redBg);color:var(--red)}.pill.eq{background:var(--line);color:var(--muted)}
@@ -163,14 +165,13 @@ body{background:var(--bg);color:var(--ink);font:500 15px/1.45 "Plus Jakarta Sans
     h += '<div class="hero"><div class="lbl">' + L.balance + '</div><div class="big">' + num(b.points) + '<small>' + L.pts + '</small></div>' +
          '<div class="money"><span>' + L.worth + '</span><b>' + egp(b.money) + ' <small>EGP</small></b></div>' +
          '<div class="meta">' + (D.since ? L.since + ' · ' + dt(D.since, {day:"numeric", month:"short"}) : L.start) + '</div></div>';
+    function stat(ic, bg, fg, label, value, foot){ return '<div class="stat"><div class="hd"><span class="ic" style="background:' + bg + ';color:' + fg + '">' + ic + '</span><span class="t">' + label + '</span></div><div class="v">' + value + '</div><div class="ft">' + foot + '</div></div>'; }
+    function trend(cur, prev){ return pill(cur, prev) + '<span class="pill eq">' + L.d7 + '</span>'; }
     h += '<div class="stats">' +
-      '<div class="stat"><div class="hd"><span class="ic" style="background:var(--i3b);color:var(--i3)">' + IC.star + '</span>' + L.p7 + '</div><div class="v">' + num(sum(last7, "p")) + '</div>' + pill(sum(last7, "p"), sum(prev7, "p")) + '</div>' +
-      '<div class="stat"><div class="hd"><span class="ic" style="background:var(--i1b);color:var(--i1)">' + IC.gift + '</span>' + L.paidT + '</div><div class="v">' + egp(a.paid) + '<small>EGP</small></div><span class="pill eq">' + num(a.points) + ' ' + L.pts + ' · ' + L.allTime + '</span></div>' +
-      '</div>';
-    /* T 27/10/2026: partner sees visits + customers who bought (no sales amounts) */
-    h += '<div class="stats">' +
-      '<div class="stat"><div class="hd"><span class="ic" style="background:var(--i2b);color:var(--i2)">' + IC.eye + '</span>' + L.visits + '</div><div class="v">' + num(a.visits) + '</div>' + pill(sum(last7, "v"), sum(prev7, "v")) + ' <span class="pill eq">' + L.d7 + '</span></div>' +
-      '<div class="stat"><div class="hd"><span class="ic" style="background:var(--i1b);color:var(--i1)">' + IC.bag + '</span>' + L.buyers + '</div><div class="v">' + num(a.buyers) + '</div>' + pill(sum(last7, "o"), sum(prev7, "o")) + ' <span class="pill eq">' + L.d7 + '</span></div>' +
+      stat(IC.eye, 'var(--i2b)', 'var(--i2)', L.visits, num(a.visits), trend(sum(last7, "v"), sum(prev7, "v"))) +
+      stat(IC.bag, 'var(--i1b)', 'var(--i1)', L.cb, num(a.buyers), trend(sum(last7, "o"), sum(prev7, "o"))) +
+      stat(IC.star, 'var(--i3b)', 'var(--i3)', L.points, num(sum(last7, "p")), trend(sum(last7, "p"), sum(prev7, "p"))) +
+      stat(IC.gift, 'var(--i1b)', 'var(--i1)', L.paidT, egp(a.paid) + '<small>EGP</small>', '<span class="pill eq">' + num(a.points) + ' ' + L.pts + ' · ' + L.allTime + '</span>') +
       '</div>';
     h += '<div class="hero" style="background:linear-gradient(145deg,#1F3151,#2D4876);box-shadow:0 18px 40px rgba(31,49,81,.3)"><div class="lbl">' + L.chart + ' <small style="opacity:.8;font-weight:600">· ' + L.last30 + '</small></div>' +
          '<div class="legend"><span><i style="background:#8fd0ff"></i>' + L.cv + '</span><span><i style="background:#f7d154"></i>' + L.cb + '</span></div>' + (days.length > 1 ? bars(days) : '') + '</div>';
