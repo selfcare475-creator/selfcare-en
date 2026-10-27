@@ -15019,8 +15019,8 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     try{
       var grid = document.getElementById("grid"); if(!grid) return;
       var old = grid.querySelector(".sc-pb"), cards = grid.querySelectorAll(":scope > .card"), n = cols(grid) * ROWS;
-      /* hidden for Czech for now (T) */
-      var hideLang = (typeof displayLanguage === "string" && displayLanguage === "cs");
+      /* partner banner switched off in all languages (T, 27/10) — set to false to bring it back */
+      var hideLang = true;
       if(!old) old = document.querySelector(".sc-pb");
       if(hideLang){ if(old) old.remove(); return; }
       var after = cards[n - 1], l = lang();
