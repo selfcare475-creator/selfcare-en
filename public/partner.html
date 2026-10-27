@@ -160,7 +160,7 @@ body{background:var(--bg);color:var(--ink);font:500 15px/1.45 "Plus Jakarta Sans
     var b = D.balance || {}, a = D.all_time || {}, days = D.days || [];
     var last7 = days.slice(-7), prev7 = days.slice(-14, -7);
     var h = '<div class="top"><div><div class="hello">' + L.hi + '</div><div class="name">' + esc(D.name) + ' 👋</div></div><div class="avatar">' + esc(initials(D.name)) + '</div></div>';
-    h += '<div class="chips"><span class="chip brand">Self Care Pharmacy · ' + L.partner + '</span><span class="chip">' + L.code + ' <b>' + D.code + '</b></span></div>';
+    h += '<div class="chips"><span class="chip brand">Self Care Pharmacy · ' + L.partner + '</span><span class="chip">' + L.code + ' <b>' + D.code + '</b></span>' + (D.demo ? '<span class="chip" style="background:#fff3cd;color:#8a5a00">Demo</span>' : '') + '</div>';
     if(!D.active) h += '<div class="off">' + L.paused + '</div>';
     h += '<div class="hero"><div class="lbl">' + L.balance + '</div><div class="big">' + num(b.points) + '<small>' + L.pts + '</small></div>' +
          '<div class="money"><span>' + L.worth + '</span><b>' + egp(b.money) + ' <small>EGP</small></b></div>' +
@@ -189,7 +189,24 @@ body{background:var(--bg);color:var(--ink);font:500 15px/1.45 "Plus Jakarta Sans
     if(t.id === "cp"){ var inp = t.previousElementSibling; (navigator.clipboard ? navigator.clipboard.writeText(D.link) : Promise.reject()).catch(function(){ inp.select(); document.execCommand("copy"); }); t.textContent = L.copied; setTimeout(function(){ t.textContent = L.copy; }, 1500); }
     if(t.id === "sh"){ navigator.share({title:"Self Care Pharmacy", url:D.link}).catch(function(){}); }
   });
+  /* demo dashboard for partner pitches: /partner?demo=1&lang=cs — sample numbers, no database */
+  function demo(){
+    var q = new URLSearchParams(location.search), lang = (q.get("lang") || "en").toLowerCase(); if(lang === "cz") lang = "cs"; if(lang === "ua") lang = "uk";
+    var d0 = new Date(); d0.setHours(12, 0, 0, 0); var days = [], seed = 7;
+    function rnd(){ seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    for(var i = 29; i >= 0; i--){ var d = new Date(d0 - i * 864e5), wk = (d.getDay() === 5 || d.getDay() === 6) ? 1.35 : 1;
+      var v = Math.round((18 + rnd() * 16) * wk), o = Math.round(v * (0.04 + rnd() * 0.03)), pts = o * Math.round(22 + rnd() * 14);
+      days.push({d: d.toISOString().slice(0, 10), v: v, o: o, p: pts}); }
+    var tp = days.reduce(function(a, x){ return a + x.p; }, 0), pay = new Date(d0 - 31 * 864e5);
+    D = {name: "Demo Partner", code: 100, lang: lang, active: true, link: "https://selfcare-en.com/100", since: pay.toISOString(),
+         balance: {points: tp, money: tp * 7, buyers: days.reduce(function(a, x){ return a + x.o; }, 0), visits: days.reduce(function(a, x){ return a + x.v; }, 0)},
+         all_time: {points: tp + 860, paid: 860 * 7, buyers: days.reduce(function(a, x){ return a + x.o; }, 0) + 31, visits: days.reduce(function(a, x){ return a + x.v; }, 0) + 690},
+         days: days, payouts: [{paid_at: pay.toISOString(), points: 860, amount: 860 * 7}], demo: true};
+    L = T[lang] || T.en; loc = LOC[lang] || "en-GB"; document.documentElement.lang = lang; document.title = "Self Care · " + L.partner + " · Demo";
+    render();
+  }
   function load(){
+    if(new URLSearchParams(location.search).get("demo")){ demo(); return; }
     if(tok.length < 16){ app.innerHTML = '<div class="loading">' + L.bad + '</div>'; return; }
     fetch(SB + "/rest/v1/rpc/partner_dashboard", {method:"POST", headers:{apikey:KEY, Authorization:"Bearer " + KEY, "Content-Type":"application/json"}, body:JSON.stringify({p_token:tok})})
       .then(function(r){ return r.ok ? r.json() : null; })
@@ -200,7 +217,7 @@ body{background:var(--bg);color:var(--ink);font:500 15px/1.45 "Plus Jakarta Sans
         render();
       }).catch(function(){});
   }
-  load(); setInterval(function(){ if(D && !document.hidden) load(); }, 120000);
+  load(); setInterval(function(){ if(D && !D.demo && !document.hidden) load(); }, 120000);
 })();
 </script>
 </body>
