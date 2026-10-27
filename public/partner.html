@@ -167,6 +167,16 @@ body{background:var(--bg);color:var(--ink);font:500 15px/1.45 "Plus Jakarta Sans
       '<div class="stat"><div class="hd"><span class="ic" style="background:var(--i3b);color:var(--i3)">' + IC.star + '</span>' + L.p7 + '</div><div class="v">' + num(sum(last7, "p")) + '</div>' + pill(sum(last7, "p"), sum(prev7, "p")) + '</div>' +
       '<div class="stat"><div class="hd"><span class="ic" style="background:var(--i1b);color:var(--i1)">' + IC.gift + '</span>' + L.paidT + '</div><div class="v">' + egp(a.paid) + '<small>EGP</small></div><span class="pill eq">' + num(a.points) + ' ' + L.pts + ' · ' + L.allTime + '</span></div>' +
       '</div>';
+    /* T 27/10/2026: visits · orders · sales visible to the partner again */
+    h += '<div class="stats">' +
+      '<div class="stat"><div class="hd"><span class="ic" style="background:var(--i2b);color:var(--i2)">' + IC.eye + '</span>' + L.visits + '</div><div class="v">' + num(a.visits) + '</div>' + pill(sum(last7, "v"), sum(prev7, "v")) + ' <span class="pill eq">' + L.d7 + '</span></div>' +
+      '<div class="stat"><div class="hd"><span class="ic" style="background:var(--i1b);color:var(--i1)">' + IC.bag + '</span>' + L.orders + '</div><div class="v">' + num(a.orders) + '</div>' + pill(sum(last7, "o"), sum(prev7, "o")) + ' <span class="pill eq">' + L.d7 + '</span></div>' +
+      '</div>';
+    h += '<div class="hero" style="background:linear-gradient(145deg,#1F3151,#2D4876);box-shadow:0 18px 40px rgba(31,49,81,.3)"><div class="lbl">' + L.sales + '</div>' +
+         (D.since ? '<div class="money"><span>' + L.since + ' · ' + dt(D.since, {day:"numeric", month:"short"}) + ' · ' + num(b.orders) + ' ' + L.orders + '</span><b>' + egp(b.sales) + ' <small>EGP</small></b></div>' : '') +
+         '<div class="money"' + (D.since ? ' style="margin-top:0"' : '') + '><span>' + L.allTime + ' · ' + num(a.orders) + ' ' + L.orders + '</span><b>' + egp(a.sales) + ' <small>EGP</small></b></div>' +
+         '<div class="lbl" style="margin-top:4px">' + L.chart + ' <small style="opacity:.8;font-weight:600">· ' + L.last30 + '</small></div>' +
+         '<div class="legend"><span><i style="background:#8fd0ff"></i>' + L.cv + '</span><span><i style="background:#f7d154"></i>' + L.co + '</span></div>' + (days.length > 1 ? bars(days) : '') + '</div>';
     h += '<div class="card"><h3>' + L.hist + '<small>' + L.last30 + '</small></h3><div class="sub" style="margin-top:6px">' + pill(sum(last7, "p"), sum(prev7, "p")) + ' ' + L.vs + '</div>' + (days.length > 1 ? line(days, "p") : '') + '</div>';
     h += '<div class="card"><h3>' + L.yourLink + '</h3><div class="link"><input readonly value="' + esc(D.link) + '"><button class="btn" id="cp">' + L.copy + '</button>' + (navigator.share ? '<button class="btn ghost" id="sh">' + L.share + '</button>' : '') + '</div></div>';
     h += '<div class="card"><h3>' + L.payouts + '</h3>' + ((D.payouts || []).length ? D.payouts.map(function(q){
