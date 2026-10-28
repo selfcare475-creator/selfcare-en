@@ -9662,6 +9662,32 @@ function cleanCatLabel(cat){
 
 let activeMain = "top";
 let activeFilter = "Best sellers";
+/* care mode (?shop=care) — Google Ads landing (T, 28/10): the same shop, opened on Skin & body, with every
+   medicine category removed (Google does not allow pharmacy/medicine ads in Egypt). Nothing else changes. */
+var SC_CARE = false;
+try{ SC_CARE = new URLSearchParams(location.search).get("shop") === "care"; }catch(e){}
+if(SC_CARE){
+  (function(){
+    var OKCAT = {"Cosmetics":1,"Vitamins":1,"Hair care":1,"Skin care":1,"Sun & beach":1,"Oral care":1,"Eva cosmetics":1};
+    var OKMAIN = {skin:1,hair:1,sun:1,supplements:1};
+    window.scCareOk = function(p){
+      try{
+        if(!p || !OKCAT[String(p.cat || "")]) return false;
+        var sub = productSubcat(p); if(sub === "Skin medicines" || sub === "Antibiotics") return false;
+        return !!OKMAIN[productMainKey(p)];
+      }catch(e){ return false; }
+    };
+    var push = products.push;
+    products.push = function(){ for(var i = 0; i < arguments.length; i++){ if(window.scCareOk(arguments[i])) push.call(this, arguments[i]); } return this.length; };
+    delete categoryGroups.top; delete categoryGroups.tourist; delete categoryGroups.medicine;
+    activeMain = "skin"; activeFilter = "All";
+    /* keep the mode on internal links so the customer never lands on the medicine catalogue from an ad */
+    document.addEventListener("click", function(e){
+      var a = e.target && e.target.closest && e.target.closest("a[href]"); if(!a) return;
+      try{ var u = new URL(a.getAttribute("href"), location.href); if(u.origin === location.origin && (u.pathname === "/" || u.pathname === "/index.html") && !u.searchParams.get("shop")){ u.searchParams.set("shop", "care"); a.setAttribute("href", u.pathname + u.search + u.hash); } }catch(_){}
+    }, true);
+  })();
+}
 let searchTerm = "";
 let renderQueued = false;
 const SEARCH_RENDER_LIMIT = 40;
@@ -12848,6 +12874,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
   }
 
   function setTopCategory(){
+    if(window.SC_CARE){ activeMain = "skin"; activeFilter = "All"; refreshCatalog(); return; }
     try{
       if(typeof categoryGroups !== "undefined" && categoryGroups.top && categoryGroups.top.subs){
         activeMain = "top";
@@ -12861,6 +12888,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
   }
 
   function setReadyKitsCategory(){
+    if(window.SC_CARE){ activeMain = "skin"; activeFilter = "All"; refreshCatalog(); return; }
     try{
       activeMain = "tourist";
       activeFilter = "Care Kits";
