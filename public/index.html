@@ -9681,6 +9681,8 @@ if(SC_CARE){
     products.push = function(){ for(var i = 0; i < arguments.length; i++){ if(window.scCareOk(arguments[i])) push.call(this, arguments[i]); } return this.length; };
     delete categoryGroups.top; delete categoryGroups.tourist; delete categoryGroups.medicine;
     activeMain = "skin"; activeFilter = "All";
+    try{ document.title = "Self Care Pharmacy Hurghada – Skin Care, Sun Care, Vitamins & Travel Essentials Delivered to Your Hotel";
+      var md = document.querySelector('meta[name="description"]'); if(md) md.setAttribute("content", "Self Care Pharmacy Hurghada – skin care, sun care, hair care, vitamins and travel essentials, ordered on WhatsApp and delivered to your hotel room. Pay cash on delivery."); }catch(e){}
     /* keep the mode on internal links so the customer never lands on the medicine catalogue from an ad */
     document.addEventListener("click", function(e){
       var a = e.target && e.target.closest && e.target.closest("a[href]"); if(!a) return;
