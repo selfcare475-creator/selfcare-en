@@ -9690,6 +9690,8 @@ if(SC_CARE){
     }, true);
   })();
 }
+/* ?cat=skin|hair|sun|supplements|medicine|tourist — open the full shop on that category (Google Ads link, T 28/10) */
+try{ var __scCat0 = new URLSearchParams(location.search).get("cat"); if(__scCat0 && categoryGroups[__scCat0]){ activeMain = __scCat0; activeFilter = "All"; } }catch(e){}
 let searchTerm = "";
 let renderQueued = false;
 const SEARCH_RENDER_LIMIT = 40;
