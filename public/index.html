@@ -15277,7 +15277,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   function nFree(){ try{ return (hotels || []).filter(function(h){ return h.free; }).length; }catch(e){ return 0; } }
   function fdHtml(){
     var t = x();
-    return '<div class="sc-fd" data-hc="1"><div class="sc-fd-l"><div class="sc-fd-eb">⏳ ' + esc(t.e) + (untilTxt() ? ' · ' + esc(untilTxt()) : '') + '</div>'
+    return '<div class="sc-fd" data-hc="1"><div class="sc-fd-l"><div class="sc-fd-eb sc-fit">⏳ ' + esc(t.e) + (untilTxt() ? ' · ' + esc(untilTxt()) : '') + '</div>'
       + '<div><div class="sc-fd-t sc-fit">' + esc(t.t) + '</div><div class="sc-fd-t2 sc-fit">' + esc(t.t2.replace("{n}", nFree())) + '</div></div>'
       + '<div class="sc-fd-btn sc-fit">' + esc(t.b) + ' <span>' + (L() === "ar" ? "←" : "→") + '</span></div></div>'
       + '<div class="sc-fd-img" aria-hidden="true"><img src="' + IMG + '" alt="" decoding="async"></div><div class="sc-fd-tag">' + esc(t.free) + '</div></div>';
