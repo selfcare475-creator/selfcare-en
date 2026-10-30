@@ -15223,16 +15223,18 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 .sc-rv-row small{display:block;font-size:10.5px;line-height:1.2;color:#4a5872;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 [dir=rtl] .sc-rv-b{border-left:0;border-right:1px solid #EAD5C6;padding-left:0;padding-right:12px}
 @media (min-width:700px){.sc-fd,.sc-rv{height:150px}.sc-fd-l{left:24px;top:16px;bottom:16px}.sc-fd-t{font-size:28px}.sc-fd-t2{font-size:15px}.sc-fd-eb{font-size:11px}.sc-fd-btn{font-size:13px}.sc-rv-big{font-size:40px}.sc-rv{padding:14px 26px}.sc-rv-row b{font-size:14px}.sc-rv-row small{font-size:12px}}
-.sc-hc-note{font-size:12px;font-weight:700;color:#92400e;background:#FFF4E5;border-radius:10px;padding:7px 10px;margin-top:10px}
+.sc-hc-note{font-size:12px;font-weight:700;color:#92400e;background:#FFF4E5;border-radius:10px;padding:7px 10px}
 /* hotel checker */
-.sc-hc-ov{position:fixed;inset:0;background:rgba(15,25,45,.55);z-index:100000;display:none;align-items:flex-end;justify-content:center}
-.sc-hc-ov.on{display:flex}
-.sc-hc{background:#fff;width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:18px 16px 20px;max-height:86vh;display:flex;flex-direction:column;font-family:'Nunito',sans-serif;color:#1F3151;animation:scHcUp .28s ease}
-@keyframes scHcUp{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
-@media (min-width:600px){.sc-hc-ov{align-items:center}.sc-hc{border-radius:24px}}
-.sc-hc-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.sc-hc-h b{font-size:18px;font-weight:900}
-.sc-hc-x{border:0;background:#F1F5FA;width:36px;height:36px;border-radius:12px;font-size:18px;cursor:pointer;color:#1F3151}
+.sc-hc-ov{position:fixed;inset:0;background:#fff;z-index:100000;display:none}
+.sc-hc-ov.on{display:block}
+.sc-hc{background:#fff;width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;font-family:'Nunito',sans-serif;color:#1F3151;animation:scHcIn .25s ease}
+@keyframes scHcIn{from{transform:translateX(30px);opacity:.3}to{transform:none;opacity:1}}
+.sc-hc-h{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#1F3151,#2D4876);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 14px}
+.sc-hc-h b{flex:1;font-size:18px;font-weight:900;line-height:1.2}
+.sc-hc-x{border:0;background:rgba(255,255,255,.16);color:#fff;width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;flex:0 0 auto}
+.sc-hc-body{flex:1;overflow:auto;padding:14px 16px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
+.sc-hc-body .sc-hc-list{overflow:visible}
+@media (min-width:700px){.sc-hc-body{max-width:640px;width:100%;margin:0 auto;box-sizing:border-box}}
 .sc-hc-in{margin-top:12px;width:100%;box-sizing:border-box;border:1.5px solid #dfe6ef;border-radius:14px;padding:12px 14px;font-size:16px;font-family:inherit;outline:none}
 .sc-hc-in:focus{border-color:#F07A2B}
 .sc-hc-res{margin-top:10px;border-radius:14px;padding:12px;font-weight:800;font-size:14px;display:none}
@@ -15321,10 +15323,11 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     if(!ov){ ov = document.createElement("div"); ov.className = "sc-hc-ov"; document.body.appendChild(ov);
       ov.addEventListener("click", function(e){ if(e.target === ov || e.target.closest(".sc-hc-x") || e.target.closest("[data-shop]")) hcClose(); var it = e.target.closest(".sc-hc-it"); if(it) pick(it.getAttribute("data-n")); }); }
     ov.setAttribute("dir", L() === "ar" ? "rtl" : "ltr");
-    ov.innerHTML = '<div class="sc-hc" role="dialog"><div class="sc-hc-h"><b>' + esc(t.mt) + '</b><button class="sc-hc-x" type="button" aria-label="close">✕</button></div>'
+    ov.innerHTML = '<div class="sc-hc" role="dialog"><div class="sc-hc-h"><b>🏨 ' + esc(t.mt) + '</b><button class="sc-hc-x" type="button" aria-label="close">✕</button></div><div class="sc-hc-body">'
       + '<div class="sc-hc-note">ℹ️ ' + esc(t.note) + '</div><input class="sc-hc-in" type="search" autocomplete="off" placeholder="' + esc(t.ph) + '"><div class="sc-hc-res"></div>'
-      + '<div class="sc-hc-lt"></div><div class="sc-hc-list"></div></div>';
+      + '<div class="sc-hc-lt"></div><div class="sc-hc-list"></div></div></div>';
     ov.classList.add("on"); document.body.style.overflow = "hidden";
+    if(!pushed){ try{ history.pushState({schc:1}, ""); pushed = true; }catch(e){} }
     var inp = ov.querySelector(".sc-hc-in");
     inp.addEventListener("input", function(){ list(inp.value); ov.querySelector(".sc-hc-res").className = "sc-hc-res"; });
     list("");
@@ -15333,7 +15336,9 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     else setTimeout(function(){ try{ inp.focus(); }catch(e){} }, 250);
     try{ window.scTrack && window.scTrack("fd_check_open", L(), true); }catch(e){}
   }
-  function hcClose(){ if(ov){ ov.classList.remove("on"); document.body.style.overflow = ""; } }
+  var pushed = false;
+  function hcClose(fromPop){ if(ov && ov.classList.contains("on")){ ov.classList.remove("on"); document.body.style.overflow = ""; if(pushed && !fromPop){ pushed = false; try{ history.back(); }catch(e){} } pushed = false; } }
+  window.addEventListener("popstate", function(){ if(ov && ov.classList.contains("on")) hcClose(true); });
   function badge(h){ var t = x(); return h.free ? '<em>' + esc(t.free) + ' 🎉</em>' : '<em class="p">' + esc(h.fee) + ' EGP</em>'; }
   function list(q){
     var t = x(), box = ov.querySelector(".sc-hc-list"), lt = ov.querySelector(".sc-hc-lt"), arr = [];
