@@ -14955,6 +14955,105 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 })();
 </script>
 
+<script id="sc-cart-recovery">
+/* Abandoned-checkout recovery (T, 30/10): when a guest types a WhatsApp number in checkout but leaves without ordering,
+   the basket is saved (save_abandoned_checkout). If no order follows, WhatsApp sends one message (cart-recovery function);
+   the "complete my order" reply sends a link ?cart=TOKEN that restores the basket and checkout details here. */
+(function(){
+  try{
+    function v(id){ var e = document.getElementById(id); return e ? String(e.value || "") : ""; }
+    function L(){ try{ return String(displayLanguage || "en"); }catch(e){ return "en"; } }
+    function H(){ return { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json" }; }
+    function sid(){ try{ return sessionStorage.getItem("sc_fsid") || ""; }catch(e){ return ""; } }
+    function phone(){
+      var local = v("checkoutPhone").replace(/\D/g, "").replace(/^0+/, ""), code = "";
+      try{ code = getCheckoutPhoneCode("44"); }catch(e){}
+      if(!local) return "";
+      if(code && local.indexOf(code) === 0 && local.length - code.length >= 8) return local;
+      return code + local;
+    }
+    function items(){ var out = [], t = 0; try{ for(var k in cart){ var q = Number(cart[k]) || 0, p = products[parseInt(k)]; if(q > 0 && p){ var key = scCartKeyOf(p); out.push({ c: key.c, n: key.n, q: q }); t += (Number(livePrice(p)) || 0) * q; } } }catch(e){} return { list: out, total: t }; }
+    function fee(){ try{ var m = findHotelByInput(v("checkoutHotel").trim()); return m ? (Number(m.fee) || 0) : null; }catch(e){ return null; } }
+    var lastBody = "", timer = null;
+    function save(){
+      try{
+        var ph = phone(); if(ph.length < 8 || !sid()) return;
+        var it = items(); if(!it.list.length) return;
+        var pay = (document.querySelector('input[name="paymentMethod"]:checked') || {}).value || "";
+        var ref = null; try{ ref = scRefGet(); }catch(e){}
+        var p = { sid: sid(), phone: ph, lang: L(), site: location.hostname, items: it.list, total: it.total, hotel: v("checkoutHotel").trim().slice(0,120),
+                  room: v("checkoutNote").trim().slice(0,200), fee: fee(), day: v("deliveryDay"), time: v("deliveryTime"), pay: pay, ref: ref };
+        var body = JSON.stringify({ p: p }); if(body === lastBody) return; lastBody = body;
+        fetch(SB_URL + "/rest/v1/rpc/save_abandoned_checkout", { method: "POST", keepalive: true, headers: H(), body: body }).catch(function(){});
+      }catch(e){}
+    }
+    function later(){ clearTimeout(timer); timer = setTimeout(save, 1500); }
+    var ov = document.getElementById("checkoutOverlay");
+    if(ov){
+      ov.addEventListener("change", later, true);
+      ov.addEventListener("input", function(e){ if(e.target && /checkoutPhone|checkoutHotel|checkoutNote/.test(e.target.id || "")) later(); }, true);
+      new MutationObserver(function(){ if(!ov.classList.contains("active")) save(); else consent(); }).observe(ov, { attributes:true, attributeFilter:["class"] });
+      document.addEventListener("visibilitychange", function(){ if(document.visibilityState === "hidden" && ov.classList.contains("active")) save(); });
+      window.addEventListener("pagehide", function(){ if(ov.classList.contains("active")) save(); });
+    }
+
+    /* small consent line under the phone field */
+    var CONSENT = { en:"We only use your number for WhatsApp messages about this order.", cs:"Číslo použijeme jen pro zprávy na WhatsAppu ohledně této objednávky.",
+      sk:"Číslo použijeme len na správy cez WhatsApp ohľadom tejto objednávky.", pl:"Numer wykorzystamy tylko do wiadomości na WhatsApp w sprawie tego zamówienia.",
+      ru:"Номер используем только для сообщений в WhatsApp по этому заказу.", ua:"Номер використаємо лише для повідомлень у WhatsApp щодо цього замовлення.",
+      de:"Wir nutzen Ihre Nummer nur für WhatsApp-Nachrichten zu dieser Bestellung." };
+    function consent(){
+      try{
+        var help = document.getElementById("checkoutPhoneHelp"); if(!help) return;
+        var el = document.getElementById("scPhoneConsent");
+        if(!el){ el = document.createElement("div"); el.id = "scPhoneConsent"; el.className = "checkout-help"; el.style.cssText = "font-size:11px;opacity:.75;margin-top:2px"; help.parentNode.insertBefore(el, help.nextSibling); }
+        el.textContent = "🔒 " + (CONSENT[L()] || CONSENT.en);
+      }catch(e){}
+    }
+    consent();
+
+    /* restore from ?cart=TOKEN */
+    var tok = (location.search.match(/[?&]cart=([a-f0-9]{8,64})/i) || [])[1];
+    if(!tok) return;
+    var tries = 0;
+    function ready(){ try{ return scCartLoaded && scCartSettled && products.length > 0; }catch(e){ return false; } }
+    function setPhone(full){
+      try{
+        var sel = document.getElementById("checkoutPhoneCode"), codes = [];
+        for(var i = 0; i < sel.options.length; i++){ var o = sel.options[i].value; if(/^\d+$/.test(o)) codes.push(o); }
+        codes.sort(function(a,b){ return b.length - a.length; });
+        var c = codes.find(function(x){ return full.indexOf(x) === 0 && full.length - x.length >= 7; });
+        if(c){ sel.value = c; document.getElementById("checkoutPhone").value = full.slice(c.length); }
+        else { sel.value = "manual"; try{ toggleManualPhoneCode(); }catch(e){} var m = document.getElementById("checkoutPhoneCodeManual"); if(m) m.value = full.slice(0, Math.max(1, full.length - 9)); document.getElementById("checkoutPhone").value = full.slice(Math.max(1, full.length - 9)); }
+      }catch(e){}
+    }
+    function restore(){
+      if(!ready()){ if(tries++ < 60) setTimeout(restore, 500); return; }
+      fetch(SB_URL + "/rest/v1/rpc/get_abandoned_checkout", { method: "POST", headers: H(), body: JSON.stringify({ p_token: tok }) })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          try{ history.replaceState(null, "", location.pathname + location.search.replace(/[?&]cart=[^&]*/i, "").replace(/^&/, "?") + location.hash); }catch(e){}
+          if(!d || !Array.isArray(d.items) || !d.items.length){ try{ window.scTrack && window.scTrack("cart_recover_fail", "empty"); }catch(e){} return; }
+          var added = 0, missing = 0;
+          for(var k in cart) delete cart[k];
+          d.items.forEach(function(e){ var i = scFindCartProductIdx(e), q = parseInt(e.q) || 1; if(i >= 0){ var s = productStock(i); if(s > 0){ cart[i] = Math.min(s, q); added++; } else missing++; } else missing++; });
+          saveCart(); try{ updateCartBadge(); }catch(e){} try{ if(typeof updateVisibleCardQtyUI === "function") updateVisibleCardQtyUI(); }catch(e){}
+          if(!added){ try{ window.scTrack && window.scTrack("cart_recover_fail", "no_stock"); }catch(e){} return; }
+          var hi = document.getElementById("hotelInput"), ch = document.getElementById("checkoutHotel");
+          if(d.hotel){ if(hi) hi.value = d.hotel; if(ch) ch.value = d.hotel; }
+          openCheckout();
+          if(d.room){ var n = document.getElementById("checkoutNote"); if(n && !n.value) n.value = d.room; }
+          if(d.phone) setPhone(String(d.phone));
+          if(d.pay){ var r = document.querySelector('input[name="paymentMethod"][value="' + d.pay + '"]'); if(r) r.checked = true; }
+          try{ renderCheckout(); }catch(e){}
+          try{ window.scTrack && window.scTrack("cart_recovered", "items:" + added + (missing ? "|missing:" + missing : "")); }catch(e){}
+        }).catch(function(){});
+    }
+    restore();
+  }catch(e){}
+})();
+</script>
+
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "799e181d553a4f3b866aeb86da2ff7d1"}'></script><!-- End Cloudflare Web Analytics -->
 <script id="sc-coming-soon">
 /* Products shown as "Coming soon" while they are out of stock (they still can't be ordered). */
