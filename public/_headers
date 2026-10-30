@@ -1,3 +1,7 @@
 /docs/*
   X-Robots-Tag: noindex, nofollow
   Cache-Control: private, no-store
+/products-en.json
+  Cache-Control: public, max-age=600, stale-while-revalidate=86400
+/kits-en.json
+  Cache-Control: public, max-age=600, stale-while-revalidate=86400

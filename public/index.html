@@ -6639,7 +6639,8 @@ body { padding-bottom: 34px !important; }
 #scArBtn{display:none!important}
 header .cart-btn{white-space:nowrap;overflow:visible!important;position:relative}header .cart-btn .cart-badge{z-index:5}#cartBtnText{overflow:hidden;text-overflow:ellipsis}
 </style>
-<script>window.__scCat=(function(){function g(u){return fetch(u,{cache:"force-cache"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null})}try{return{p:g("products-en.json?v=35m1"),k:g("kits-en.json?v=45")}}catch(e){return null}})();</script>
+<script>/* catalog: use the copy saved on this phone straight away (instant products on repeat visits), refresh it in the background */
+window.__scT0=Date.now();window.__scCat=(function(){function g(u,k){var net=fetch(u,{cache:"force-cache"}).then(function(r){return r.ok?r.text():null}).then(function(t){if(!t)return null;try{localStorage.setItem(k,u+"\n"+t)}catch(e){}return JSON.parse(t)}).catch(function(){return null});try{var c=localStorage.getItem(k);if(c){var i=c.indexOf("\n");if(c.slice(0,i)===u){window.__scCatLocal=1;return Promise.resolve(JSON.parse(c.slice(i+1)))}}}catch(e){}return net}try{return{p:g("products-en.json?v=35m1","sc_cat_p"),k:g("kits-en.json?v=45","sc_cat_k")}}catch(e){return null}})();</script>
 <style>
 @keyframes sc-wa-pulse {
   0%, 100% { transform: scale(1); box-shadow: 0 10px 24px rgba(37,211,102,.45); }
@@ -12413,7 +12414,7 @@ loadSplitCatalogData().then(()=>{
   try { if(typeof rebuildBestSellersFromProducts === "function") rebuildBestSellersFromProducts("en"); } catch(e){}
   buildFastCategoryBuckets();
   buildFilters();
-  requestAnimationFrame(()=>smoothRenderGridNow());
+  requestAnimationFrame(()=>{ smoothRenderGridNow(); try{ var ms = Date.now() - (window.__scT0 || Date.now()); setTimeout(function(){ if(window.scTrack) window.scTrack("grid_ready", ms + "ms|" + (window.__scCatLocal ? "local" : "net")); }, 1500); }catch(e){} });
 
   scheduleNonCriticalWork(()=>{
     loadStockStatus().then(()=>loadDynamicBestSellers());
