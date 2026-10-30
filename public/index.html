@@ -15467,26 +15467,15 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   function watchGrid(){ var g = document.getElementById("grid"); if(!g) return setTimeout(watchGrid, 400); new MutationObserver(noRes).observe(g, {childList:true}); }
   watchGrid();
 
-  /* 2 + 4) clean basket summary: products, delivery to the hotel, total + one trust line */
+  /* basket summary: products only (T, 30/10: no hotel row, no notes under the button) */
   function cartExtras(){
     try{
       var sum = document.getElementById("cartSummary"), foot = document.getElementById("cartFooter");
       if(!sum || !foot || foot.style.display === "none") return;
-      var x = t(), v = hotelVal(), h = findH(v), tot = 0, n = 0;
+      var tot = 0, n = 0;
       for(var k in cart){ var q = Number(cart[k]) || 0, p = products[parseInt(k)]; if(q > 0 && p){ tot += livePrice(p) * q; n += q; } }
-      var feeTxt, fee = 0, known = false;
-      if(h){ known = true; fee = h.free ? 0 : (Number(h.fee) || 0); feeTxt = h.free ? '<span class="sc-free">' + esc(x.free) + '</span>' : esc(fee + " EGP"); }
-      else if(v.length >= 2){ feeTxt = '<span class="sc-soft">' + esc(x.conf) + '</span>'; }
-      else { feeTxt = '<span class="sc-link">' + esc(x.pick) + ' ›</span>'; }
-      var all = tot + fee;
-      sum.innerHTML =
-        '<div class="cart-row"><span class="cart-row-label">' + esc(T("products")) + ' (' + n + ')</span><span class="cart-row-val">' + tot + ' EGP</span></div>'
-      + '<div class="cart-row sc-cdel2"><span class="cart-row-label">🏨 ' + esc(x.del) + (h || v.length >= 2 ? '<small>' + esc(h ? h.name : v) + ' ✎</small>' : '') + '</span><span class="cart-row-val">' + feeTxt + '</span></div>'
-      + '<div class="cart-row cart-total-row"><span class="cart-total-label">' + esc(T("total")) + '</span><span class="cart-total-val">' + all + ' EGP<small>' + esc(approxText(all)) + (known || v.length < 2 ? '' : ' + ' + esc(x.del.toLowerCase())) + '</small></span></div>';
-      var d = sum.querySelector(".sc-cdel2");
-      d.addEventListener("click", function(){ track("cart_hotel_check", null); if(typeof window.scOpenHotelCheck === "function") window.scOpenHotelCheck(); });
-      var btn = document.getElementById("cartCheckoutBtn");
-      if(btn){ var tr = foot.querySelector(".sc-trust"); if(!tr){ tr = document.createElement("div"); tr.className = "sc-trust"; btn.insertAdjacentElement("afterend", tr); } tr.textContent = x.trust[0] + " · " + x.trust[1]; }
+      sum.innerHTML = '<div class="cart-row cart-total-row" style="border:0;padding-top:0;margin-top:0"><span class="cart-total-label">' + esc(T("products")) + ' (' + n + ')</span><span class="cart-total-val">' + tot + ' EGP<small>' + esc(approxText(tot)) + '</small></span></div>';
+      var tr = foot.querySelector(".sc-trust"); if(tr) tr.remove();
     }catch(e){}
   }
   if(typeof renderCart === "function"){ var _rc = renderCart; renderCart = function(){ var r = _rc.apply(this, arguments); cartExtras(); return r; }; }
