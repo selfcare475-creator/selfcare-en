@@ -15391,14 +15391,16 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 .sc-nores b{display:block;font-size:16px;font-weight:900;margin-bottom:4px}
 .sc-nores p{margin:0 0 10px;font-size:13px;color:#4a5872;font-weight:700}
 .sc-nores a{display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;font-weight:900;font-size:14px;padding:10px 16px;border-radius:999px;text-decoration:none;box-shadow:0 6px 14px rgba(37,211,102,.3)}
-.sc-cdel{margin:8px 0 2px;border:1.5px dashed #F0B48A;background:#FFF7F1;border-radius:14px;padding:10px 12px;font-family:'Nunito',sans-serif;color:#1F3151;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.sc-cdel .l{min-width:0}
-.sc-cdel .l b{display:block;font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sc-cdel .l span{display:block;font-size:12px;font-weight:800;color:#4a5872}
-.sc-cdel .l span.free{color:#15803d}
-.sc-cdel .r{flex:0 0 auto;font-size:12px;font-weight:900;color:#E8561C;white-space:nowrap}
-.sc-cdel.ask{justify-content:center;font-weight:900;font-size:14px;color:#C2410C}
-.sc-trust{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 10px;margin:8px 0 2px;font-size:11.5px;font-weight:800;color:#3b6b4c;font-family:'Nunito',sans-serif}
+.sc-cdel2{cursor:pointer}
+.sc-cdel2 .cart-row-label small{display:block;font-size:11.5px;font-weight:700;color:#1F3151;opacity:.75;margin-top:1px;max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-cdel2 .sc-free{color:#15803d;font-weight:900}
+.sc-cdel2 .sc-soft{font-size:11.5px;font-weight:700;color:#92400e}
+.sc-cdel2 .sc-link{color:#E8561C;font-weight:900}
+#cartSummary .cart-total-val{font-size:18px;text-align:right;line-height:1.1}
+#cartSummary .cart-total-val small{display:block;font-size:11.5px;font-weight:700;color:var(--muted)}
+#cartSummary .cart-total-row{margin-bottom:0}
+.sc-trust{text-align:center;margin:7px 0 0;font-size:11.5px;font-weight:800;color:#3b6b4c;font-family:'Nunito',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cartClearBtn{border:0 !important;margin-top:2px !important;padding:6px !important;font-size:12px !important;opacity:.8}
 .sc-hnote{display:none;margin-top:6px;padding:8px 10px;border-radius:10px;background:#FFF4E5;color:#92400e;font-size:12px;font-weight:700;line-height:1.35}
 .sc-hnote.on{display:block}
 .sc-rmd{position:fixed;left:12px;right:12px;z-index:960;display:flex;align-items:center;gap:10px;background:#1F3151;color:#fff;border-radius:16px;padding:10px 12px;box-shadow:0 12px 28px rgba(15,25,45,.28);font-family:'Nunito',sans-serif;transform:translateY(140%);opacity:0;transition:transform .35s ease,opacity .35s ease;max-width:520px;margin:0 auto}
@@ -15418,14 +15420,14 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 (function(){
   var WA = "201501401776";
   var TX = {
-    en:{nf:"Can't find what you need?",nfp:"Ask us on WhatsApp — we'll check if we have it and send you the price.",nfb:"Ask on WhatsApp",nfm:"Hi! Do you have: ",del:"Delivery",chk:"🏨 Check delivery to your hotel",chg:"Change",free:"FREE 🎉",conf:"fee confirmed on WhatsApp",trust:["✅ Pay on delivery","No prepayment","💵 Cash or 💳 card"],hn:"Hotel not on our list? No problem — you can still order. We'll confirm the delivery fee with you on WhatsApp.",rt:"Your basket is waiting",rs:"{n} items saved",rg:"Complete order"},
-    cs:{nf:"Nenašli jste, co hledáte?",nfp:"Napište nám na WhatsApp — ověříme, zda to máme, a pošleme cenu.",nfb:"Zeptat se na WhatsAppu",nfm:"Dobrý den, máte: ",del:"Doprava",chk:"🏨 Ověřit dopravu do hotelu",chg:"Změnit",free:"ZDARMA 🎉",conf:"cenu potvrdíme na WhatsAppu",trust:["✅ Platba při převzetí","Bez zálohy","💵 Hotově nebo 💳 kartou"],hn:"Váš hotel není v seznamu? Nevadí — objednat můžete i tak. Cenu dopravy vám potvrdíme na WhatsAppu.",rt:"Váš košík na vás čeká",rs:"uloženo položek: {n}",rg:"Dokončit"},
-    sk:{nf:"Nenašli ste, čo hľadáte?",nfp:"Napíšte nám na WhatsApp — overíme, či to máme, a pošleme cenu.",nfb:"Opýtať sa na WhatsAppe",nfm:"Dobrý deň, máte: ",del:"Doprava",chk:"🏨 Overiť dopravu do hotela",chg:"Zmeniť",free:"ZADARMO 🎉",conf:"cenu potvrdíme na WhatsAppe",trust:["✅ Platba pri prevzatí","Bez zálohy","💵 Hotovosť alebo 💳 karta"],hn:"Váš hotel nie je v zozname? Nevadí — objednať môžete aj tak. Cenu dopravy vám potvrdíme na WhatsAppe.",rt:"Váš košík na vás čaká",rs:"uložené položky: {n}",rg:"Dokončiť"},
-    pl:{nf:"Nie możesz znaleźć produktu?",nfp:"Napisz do nas na WhatsApp — sprawdzimy, czy go mamy, i podamy cenę.",nfb:"Zapytaj na WhatsApp",nfm:"Dzień dobry, czy macie: ",del:"Dostawa",chk:"🏨 Sprawdź dostawę do hotelu",chg:"Zmień",free:"GRATIS 🎉",conf:"cenę potwierdzimy na WhatsApp",trust:["✅ Płatność przy odbiorze","Bez przedpłaty","💵 Gotówka lub 💳 karta"],hn:"Twojego hotelu nie ma na liście? Nie szkodzi — możesz zamówić. Cenę dostawy potwierdzimy na WhatsApp.",rt:"Twój koszyk czeka",rs:"zapisane produkty: {n}",rg:"Dokończ"},
-    ru:{nf:"Не нашли нужное?",nfp:"Напишите нам в WhatsApp — проверим наличие и пришлём цену.",nfb:"Спросить в WhatsApp",nfm:"Здравствуйте! У вас есть: ",del:"Доставка",chk:"🏨 Проверить доставку в отель",chg:"Изменить",free:"БЕСПЛАТНО 🎉",conf:"стоимость уточним в WhatsApp",trust:["✅ Оплата при получении","Без предоплаты","💵 Наличные или 💳 карта"],hn:"Вашего отеля нет в списке? Ничего страшного — заказать всё равно можно. Стоимость доставки уточним в WhatsApp.",rt:"Ваша корзина ждёт вас",rs:"сохранено товаров: {n}",rg:"Оформить"},
-    ua:{nf:"Не знайшли потрібне?",nfp:"Напишіть нам у WhatsApp — перевіримо наявність і надішлемо ціну.",nfb:"Запитати у WhatsApp",nfm:"Вітаю! У вас є: ",del:"Доставка",chk:"🏨 Перевірити доставку в готель",chg:"Змінити",free:"БЕЗКОШТОВНО 🎉",conf:"вартість уточнимо у WhatsApp",trust:["✅ Оплата при отриманні","Без передоплати","💵 Готівка або 💳 картка"],hn:"Вашого готелю немає у списку? Не страшно — замовити все одно можна. Вартість доставки уточнимо у WhatsApp.",rt:"Ваш кошик чекає",rs:"збережено товарів: {n}",rg:"Оформити"},
-    de:{nf:"Nicht gefunden, was Sie suchen?",nfp:"Schreiben Sie uns auf WhatsApp — wir prüfen, ob wir es haben, und nennen Ihnen den Preis.",nfb:"Per WhatsApp fragen",nfm:"Hallo! Haben Sie: ",del:"Lieferung",chk:"🏨 Lieferung ins Hotel prüfen",chg:"Ändern",free:"GRATIS 🎉",conf:"Preis bestätigen wir per WhatsApp",trust:["✅ Zahlung bei Lieferung","Keine Vorauszahlung","💵 Bar oder 💳 Karte"],hn:"Ihr Hotel steht nicht auf der Liste? Kein Problem — Sie können trotzdem bestellen. Die Liefergebühr bestätigen wir per WhatsApp.",rt:"Ihr Warenkorb wartet",rs:"{n} Artikel gespeichert",rg:"Bestellen"},
-    ar:{nf:"مش لاقي اللي بتدور عليه؟",nfp:"ابعتلنا على واتساب ونشوفلك متوفر ولا لا ونقولك السعر.",nfb:"اسأل على واتساب",nfm:"أهلاً، عندكم: ",del:"التوصيل",chk:"🏨 اعرف التوصيل لفندقك",chg:"تغيير",free:"مجاناً 🎉",conf:"هنأكد السعر على واتساب",trust:["✅ الدفع عند الاستلام","من غير دفع مقدم","💵 كاش أو 💳 فيزا"],hn:"فندقك مش في الليستة؟ مفيش مشكلة — تقدر تطلب عادي، وهنأكدلك سعر التوصيل على واتساب.",rt:"سلتك مستنياك",rs:"{n} منتج محفوظ",rg:"كمّل الطلب"}
+    en:{nf:"Can't find what you need?",nfp:"Ask us on WhatsApp — we'll check if we have it and send you the price.",nfb:"Ask on WhatsApp",nfm:"Hi! Do you have: ",pick:"Choose hotel",del:"Delivery",chk:"🏨 Check delivery to your hotel",chg:"Change",free:"FREE 🎉",conf:"fee confirmed on WhatsApp",trust:["✅ Pay on delivery","No prepayment","💵 Cash or 💳 card"],hn:"Hotel not on our list? No problem — you can still order. We'll confirm the delivery fee with you on WhatsApp.",rt:"Your basket is waiting",rs:"{n} items saved",rg:"Complete order"},
+    cs:{nf:"Nenašli jste, co hledáte?",nfp:"Napište nám na WhatsApp — ověříme, zda to máme, a pošleme cenu.",nfb:"Zeptat se na WhatsAppu",nfm:"Dobrý den, máte: ",pick:"Vybrat hotel",del:"Doprava",chk:"🏨 Ověřit dopravu do hotelu",chg:"Změnit",free:"ZDARMA 🎉",conf:"cenu potvrdíme na WhatsAppu",trust:["✅ Platba při převzetí","Bez zálohy","💵 Hotově nebo 💳 kartou"],hn:"Váš hotel není v seznamu? Nevadí — objednat můžete i tak. Cenu dopravy vám potvrdíme na WhatsAppu.",rt:"Váš košík na vás čeká",rs:"uloženo položek: {n}",rg:"Dokončit"},
+    sk:{nf:"Nenašli ste, čo hľadáte?",nfp:"Napíšte nám na WhatsApp — overíme, či to máme, a pošleme cenu.",nfb:"Opýtať sa na WhatsAppe",nfm:"Dobrý deň, máte: ",pick:"Vybrať hotel",del:"Doprava",chk:"🏨 Overiť dopravu do hotela",chg:"Zmeniť",free:"ZADARMO 🎉",conf:"cenu potvrdíme na WhatsAppe",trust:["✅ Platba pri prevzatí","Bez zálohy","💵 Hotovosť alebo 💳 karta"],hn:"Váš hotel nie je v zozname? Nevadí — objednať môžete aj tak. Cenu dopravy vám potvrdíme na WhatsAppe.",rt:"Váš košík na vás čaká",rs:"uložené položky: {n}",rg:"Dokončiť"},
+    pl:{nf:"Nie możesz znaleźć produktu?",nfp:"Napisz do nas na WhatsApp — sprawdzimy, czy go mamy, i podamy cenę.",nfb:"Zapytaj na WhatsApp",nfm:"Dzień dobry, czy macie: ",pick:"Wybierz hotel",del:"Dostawa",chk:"🏨 Sprawdź dostawę do hotelu",chg:"Zmień",free:"GRATIS 🎉",conf:"cenę potwierdzimy na WhatsApp",trust:["✅ Płatność przy odbiorze","Bez przedpłaty","💵 Gotówka lub 💳 karta"],hn:"Twojego hotelu nie ma na liście? Nie szkodzi — możesz zamówić. Cenę dostawy potwierdzimy na WhatsApp.",rt:"Twój koszyk czeka",rs:"zapisane produkty: {n}",rg:"Dokończ"},
+    ru:{nf:"Не нашли нужное?",nfp:"Напишите нам в WhatsApp — проверим наличие и пришлём цену.",nfb:"Спросить в WhatsApp",nfm:"Здравствуйте! У вас есть: ",pick:"Выбрать отель",del:"Доставка",chk:"🏨 Проверить доставку в отель",chg:"Изменить",free:"БЕСПЛАТНО 🎉",conf:"стоимость уточним в WhatsApp",trust:["✅ Оплата при получении","Без предоплаты","💵 Наличные или 💳 карта"],hn:"Вашего отеля нет в списке? Ничего страшного — заказать всё равно можно. Стоимость доставки уточним в WhatsApp.",rt:"Ваша корзина ждёт вас",rs:"сохранено товаров: {n}",rg:"Оформить"},
+    ua:{nf:"Не знайшли потрібне?",nfp:"Напишіть нам у WhatsApp — перевіримо наявність і надішлемо ціну.",nfb:"Запитати у WhatsApp",nfm:"Вітаю! У вас є: ",pick:"Обрати готель",del:"Доставка",chk:"🏨 Перевірити доставку в готель",chg:"Змінити",free:"БЕЗКОШТОВНО 🎉",conf:"вартість уточнимо у WhatsApp",trust:["✅ Оплата при отриманні","Без передоплати","💵 Готівка або 💳 картка"],hn:"Вашого готелю немає у списку? Не страшно — замовити все одно можна. Вартість доставки уточнимо у WhatsApp.",rt:"Ваш кошик чекає",rs:"збережено товарів: {n}",rg:"Оформити"},
+    de:{nf:"Nicht gefunden, was Sie suchen?",nfp:"Schreiben Sie uns auf WhatsApp — wir prüfen, ob wir es haben, und nennen Ihnen den Preis.",nfb:"Per WhatsApp fragen",nfm:"Hallo! Haben Sie: ",pick:"Hotel wählen",del:"Lieferung",chk:"🏨 Lieferung ins Hotel prüfen",chg:"Ändern",free:"GRATIS 🎉",conf:"Preis bestätigen wir per WhatsApp",trust:["✅ Zahlung bei Lieferung","Keine Vorauszahlung","💵 Bar oder 💳 Karte"],hn:"Ihr Hotel steht nicht auf der Liste? Kein Problem — Sie können trotzdem bestellen. Die Liefergebühr bestätigen wir per WhatsApp.",rt:"Ihr Warenkorb wartet",rs:"{n} Artikel gespeichert",rg:"Bestellen"},
+    ar:{nf:"مش لاقي اللي بتدور عليه؟",nfp:"ابعتلنا على واتساب ونشوفلك متوفر ولا لا ونقولك السعر.",nfb:"اسأل على واتساب",nfm:"أهلاً، عندكم: ",pick:"اختار الفندق",del:"التوصيل",chk:"🏨 اعرف التوصيل لفندقك",chg:"تغيير",free:"مجاناً 🎉",conf:"هنأكد السعر على واتساب",trust:["✅ الدفع عند الاستلام","من غير دفع مقدم","💵 كاش أو 💳 فيزا"],hn:"فندقك مش في الليستة؟ مفيش مشكلة — تقدر تطلب عادي، وهنأكدلك سعر التوصيل على واتساب.",rt:"سلتك مستنياك",rs:"{n} منتج محفوظ",rg:"كمّل الطلب"}
   };
   function L(){ var l = (typeof displayLanguage === "string" && displayLanguage) || "en"; return TX[l] ? l : "en"; }
   function t(){ return TX[L()]; }
@@ -15465,24 +15467,26 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   function watchGrid(){ var g = document.getElementById("grid"); if(!g) return setTimeout(watchGrid, 400); new MutationObserver(noRes).observe(g, {childList:true}); }
   watchGrid();
 
-  /* 2 + 4) delivery row + trust line in the basket */
+  /* 2 + 4) clean basket summary: products, delivery to the hotel, total + one trust line */
   function cartExtras(){
     try{
       var sum = document.getElementById("cartSummary"), foot = document.getElementById("cartFooter");
       if(!sum || !foot || foot.style.display === "none") return;
-      var x = t(), v = hotelVal(), h = findH(v), html;
-      if(h){
-        var fee = h.free ? '<span class="free">' + esc(x.free) + '</span>' : '<span>' + esc(h.fee) + ' EGP • ' + esc(approxText(h.fee)) + '</span>';
-        html = '<div class="l"><b>🏨 ' + esc(h.name) + '</b>' + fee + '</div><div class="r">' + esc(x.chg) + ' ✎</div>';
-      } else if(v.length >= 2){
-        html = '<div class="l"><b>🏨 ' + esc(v) + '</b><span>' + esc(x.del) + ': ' + esc(x.conf) + '</span></div><div class="r">' + esc(x.chg) + ' ✎</div>';
-      } else html = esc(x.chk);
-      var d = sum.querySelector(".sc-cdel");
-      if(!d){ d = document.createElement("div"); sum.appendChild(d); d.addEventListener("click", function(){ track("cart_hotel_check", null); if(typeof window.scOpenHotelCheck === "function") window.scOpenHotelCheck(); }); }
-      d.className = "sc-cdel" + (h || v.length >= 2 ? "" : " ask");
-      d.innerHTML = html;
+      var x = t(), v = hotelVal(), h = findH(v), tot = 0, n = 0;
+      for(var k in cart){ var q = Number(cart[k]) || 0, p = products[parseInt(k)]; if(q > 0 && p){ tot += livePrice(p) * q; n += q; } }
+      var feeTxt, fee = 0, known = false;
+      if(h){ known = true; fee = h.free ? 0 : (Number(h.fee) || 0); feeTxt = h.free ? '<span class="sc-free">' + esc(x.free) + '</span>' : esc(fee + " EGP"); }
+      else if(v.length >= 2){ feeTxt = '<span class="sc-soft">' + esc(x.conf) + '</span>'; }
+      else { feeTxt = '<span class="sc-link">' + esc(x.pick) + ' ›</span>'; }
+      var all = tot + fee;
+      sum.innerHTML =
+        '<div class="cart-row"><span class="cart-row-label">' + esc(T("products")) + ' (' + n + ')</span><span class="cart-row-val">' + tot + ' EGP</span></div>'
+      + '<div class="cart-row sc-cdel2"><span class="cart-row-label">🏨 ' + esc(x.del) + (h || v.length >= 2 ? '<small>' + esc(h ? h.name : v) + ' ✎</small>' : '') + '</span><span class="cart-row-val">' + feeTxt + '</span></div>'
+      + '<div class="cart-row cart-total-row"><span class="cart-total-label">' + esc(T("total")) + '</span><span class="cart-total-val">' + all + ' EGP<small>' + esc(approxText(all)) + (known || v.length < 2 ? '' : ' + ' + esc(x.del.toLowerCase())) + '</small></span></div>';
+      var d = sum.querySelector(".sc-cdel2");
+      d.addEventListener("click", function(){ track("cart_hotel_check", null); if(typeof window.scOpenHotelCheck === "function") window.scOpenHotelCheck(); });
       var btn = document.getElementById("cartCheckoutBtn");
-      if(btn){ var tr = foot.querySelector(".sc-trust"); if(!tr){ tr = document.createElement("div"); tr.className = "sc-trust"; btn.insertAdjacentElement("afterend", tr); } var k = L(); if(tr.getAttribute("data-l") !== k){ tr.innerHTML = x.trust.map(function(s){ return '<span>' + esc(s) + '</span>'; }).join("<span>·</span>"); tr.setAttribute("data-l", k); } }
+      if(btn){ var tr = foot.querySelector(".sc-trust"); if(!tr){ tr = document.createElement("div"); tr.className = "sc-trust"; btn.insertAdjacentElement("afterend", tr); } tr.textContent = x.trust[0] + " · " + x.trust[1]; }
     }catch(e){}
   }
   if(typeof renderCart === "function"){ var _rc = renderCart; renderCart = function(){ var r = _rc.apply(this, arguments); cartExtras(); return r; }; }
