@@ -15262,7 +15262,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     ar:{e:"عرض لفترة محدودة",t:"توصيل مجاني",t2:"لـ {n} فندق مختار",note:"التوصيل المجاني للفنادق اللي في الليستة دي بس.",b:"اعرف فندقك",u:"حتى",mt:"التوصيل لفندقك مجاني؟",ph:"اكتب اسم الفندق…",lt:"فنادق التوصيل المجاني",yes:"🎉 التوصيل لـ {h} مجاني!",no:"التوصيل لـ {h}: {f} جنيه",nf:"مش لاقيين الفندق ده — كلمنا واتساب ونشوفلك.",shop:"ابدأ التسوق",wa:"اسأل على واتساب",free:"مجاناً",rec:"بيرشحونا",fb:"{p}% بيرشحونا",rv:"{n} تقييم",g:"تقييم {r}"}
   };
   var REV = { fb_pct:100, fb_n:110, g_rating:"5.0", g_n:74 };
-  var FB_URL = "https://www.facebook.com/share/18K8mNMfft/";
+  var FB_URL = "https://www.facebook.com/profile.php?id=100083581294203&sk=reviews";
   var G_URL = "https://www.google.com/maps/place/?q=place_id:ChIJz3J1UgCHUhQRPFgtITmletw";
   var WA = "201501401776";
   var FB_SVG = '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="#1877F2"/><path fill="#fff" d="M26.6 38V26.2h4l.6-4.6h-4.6v-2.9c0-1.3.4-2.2 2.3-2.2h2.4v-4.1c-.4-.1-1.9-.2-3.5-.2-3.5 0-5.9 2.1-5.9 6v3.4h-4v4.6h4V38z"/></svg>';
@@ -15286,12 +15286,12 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   function fit(){ try{ el.querySelectorAll(".sc-fit").forEach(function(n){ n.style.fontSize = ""; var box = n.closest(".sc-fd-l,.sc-rv-a") || n.parentNode, w = box.clientWidth || 1, f = parseFloat(getComputedStyle(n).fontSize), g = 0; while(n.scrollWidth > w + 1 && f > 9 && g++ < 30){ f -= 0.5; n.style.fontSize = f + "px"; } }); }catch(e){} }
   function rvHtml(){
     var t = x(), stars = '★★★★★';
-    return '<div class="sc-rv"><div class="sc-rv-a"><div class="sc-rv-av"><span style="background:#FDE3D3">😊</span><span style="background:#DCE8FB">👍</span><span style="background:#E3F5E9">💚</span></div>'
+    return '<a class="sc-rv" href="' + FB_URL + '" target="_blank" rel="noopener" style="text-decoration:none"><div class="sc-rv-a"><div class="sc-rv-av"><span style="background:#FDE3D3">😊</span><span style="background:#DCE8FB">👍</span><span style="background:#E3F5E9">💚</span></div>'
       + '<div class="sc-rv-big">' + esc(REV.fb_pct) + '%</div><div class="sc-rv-sub sc-fit" style="white-space:nowrap">' + esc(t.rec) + '</div></div>'
       + '<div class="sc-rv-b">'
-      + '<a class="sc-rv-row" href="' + FB_URL + '" target="_blank" rel="noopener">' + FB_SVG + '<div><b>Facebook</b><div class="sc-rv-st">' + stars + '</div><small>' + esc(t.fb.replace("{p}", REV.fb_pct)) + '</small><small class="n">(' + esc(t.rv.replace("{n}", REV.fb_n)) + ')</small></div></a>'
-      + '<a class="sc-rv-row" href="' + G_URL + '" target="_blank" rel="noopener">' + G_SVG + '<div><b>Google Maps</b><div class="sc-rv-st">' + stars + '</div><small>' + esc(t.g.replace("{r}", REV.g_rating)) + '</small><small class="n">(' + esc(t.rv.replace("{n}", REV.g_n)) + ')</small></div></a>'
-      + '</div></div>';
+      + '<div class="sc-rv-row">' + FB_SVG + '<div><b>Facebook</b><div class="sc-rv-st">' + stars + '</div><small>' + esc(t.fb.replace("{p}", REV.fb_pct)) + '</small><small class="n">(' + esc(t.rv.replace("{n}", REV.fb_n)) + ')</small></div></div>'
+      + '<div class="sc-rv-row">' + G_SVG + '<div><b>Google Maps</b><div class="sc-rv-st">' + stars + '</div><small>' + esc(t.g.replace("{r}", REV.g_rating)) + '</small><small class="n">(' + esc(t.rv.replace("{n}", REV.g_n)) + ')</small></div></div>'
+      + '</div></a>';
   }
   function slides(){ var a = []; if(promoOn()) a.push(fdHtml()); a.push(rvHtml()); return a; }
   function render(){
