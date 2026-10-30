@@ -15338,7 +15338,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   function list(q){
     var t = x(), box = ov.querySelector(".sc-hc-list"), lt = ov.querySelector(".sc-hc-lt"), arr = [];
     q = String(q || "").trim();
-    if(q.length < 2){ arr = (hotels || []).filter(function(h){ return h.free; }).sort(function(a, b){ return a.name.localeCompare(b.name); }); lt.textContent = t.lt + " (" + arr.length + ")"; }
+    if(q.length < 2){ arr = (hotels || []).filter(function(h){ return h.free; }).sort(function(a, b){ return a.name.localeCompare(b.name); }); lt.textContent = arr.length ? t.lt + " (" + arr.length + ")" : ""; var nt = ov.querySelector(".sc-hc-note"); if(nt) nt.style.display = arr.length ? "" : "none"; }
     else { try{ arr = scHotelMatches(q, 12); }catch(e){ arr = (hotels || []).filter(function(h){ return hotelMatchesQuery(h, q); }).slice(0, 12); } lt.textContent = ""; }
     box.innerHTML = arr.map(function(h){ return '<button type="button" class="sc-hc-it" data-n="' + esc(h.name) + '"><span>' + esc(h.name) + '</span>' + badge(h) + '</button>'; }).join("");
     if(q.length >= 2 && !arr.length) result(null, q);
