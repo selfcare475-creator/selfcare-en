@@ -15328,7 +15328,9 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     var inp = ov.querySelector(".sc-hc-in");
     inp.addEventListener("input", function(){ list(inp.value); ov.querySelector(".sc-hc-res").className = "sc-hc-res"; });
     list("");
-    setTimeout(function(){ try{ inp.focus(); }catch(e){} }, 250);
+    var saved = ""; try{ saved = localStorage.getItem("sc_hotel") || (document.getElementById("checkoutHotel") || {}).value || ""; }catch(e){}
+    if(saved && findHotelByInput(saved)) pick(findHotelByInput(saved).name);
+    else setTimeout(function(){ try{ inp.focus(); }catch(e){} }, 250);
     try{ window.scTrack && window.scTrack("fd_check_open", L(), true); }catch(e){}
   }
   function hcClose(){ if(ov){ ov.classList.remove("on"); document.body.style.overflow = ""; } }
