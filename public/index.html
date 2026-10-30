@@ -15189,23 +15189,23 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 .sc-hb-dots{display:flex;justify-content:center;gap:5px;margin-top:7px}
 .sc-hb-dots i{width:6px;height:6px;border-radius:999px;background:#d5dce6;transition:width .35s,background .35s;cursor:pointer}
 .sc-hb-dots i.on{width:20px;background:#D6501B}
-/* slide 1: free delivery */
-.sc-fd{position:relative;overflow:hidden;cursor:pointer;min-height:132px;padding:14px 16px;border-radius:22px;color:#fff;
-  background:radial-gradient(circle at 85% 20%,rgba(255,255,255,.18) 0 60px,transparent 61px),radial-gradient(circle at 105% 110%,rgba(255,255,255,.12) 0 90px,transparent 91px),linear-gradient(120deg,#E8561C 0%,#F07A2B 60%,#F59A3A 100%)}
-.sc-fd-l{position:relative;z-index:2;max-width:62%}
-.sc-fd-eb{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;background:rgba(255,255,255,.95);color:#C2410C;padding:3px 9px;border-radius:999px}
-.sc-fd-eb b{font-weight:900}
-.sc-fd-t{font-size:23px;font-weight:900;line-height:1.05;margin-top:8px;letter-spacing:-.3px;text-shadow:0 2px 10px rgba(120,40,0,.18)}
-.sc-fd-t2{font-size:14px;font-weight:800;opacity:.95;margin-top:2px}
-.sc-fd-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:#1F3151;color:#fff;font-weight:800;font-size:12.5px;padding:8px 14px;border-radius:999px;box-shadow:0 8px 18px rgba(31,49,81,.3)}
+/* slide 1: free delivery (fixed height, all languages) */
+.sc-fd{position:relative;overflow:hidden;cursor:pointer;height:128px;box-sizing:border-box;border-radius:22px;background:linear-gradient(90deg,#FFF6EE 0%,#FDE7D3 48%,#F9D5B5 72%);border:1px solid #F4D2B6}
+.sc-fd-l{position:absolute;z-index:2;left:14px;top:12px;bottom:12px;width:60%;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.sc-fd-eb{display:inline-flex;align-self:flex-start;align-items:center;gap:5px;max-width:100%;font-size:10px;font-weight:800;color:#C2410C;background:#fff;padding:3px 8px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 6px rgba(194,65,12,.08)}
+.sc-fd-t{font-size:21px;font-weight:900;line-height:1.05;color:#1F3151;letter-spacing:-.3px;white-space:nowrap}
+.sc-fd-t2{font-size:12.5px;font-weight:800;color:#D6501B;white-space:nowrap;margin-top:2px}
+.sc-fd-btn{display:inline-flex;align-self:flex-start;align-items:center;gap:6px;background:#E8561C;color:#fff;font-weight:800;font-size:12px;padding:7px 13px;border-radius:999px;box-shadow:0 6px 14px rgba(232,86,28,.3);white-space:nowrap}
 .sc-fd-btn span{display:inline-block;animation:scPbArrow 1.6s ease-in-out infinite}
-.sc-fd-art{position:absolute;right:6px;top:0;bottom:0;width:40%;z-index:1}
-.sc-fd-art .h{position:absolute;right:14px;bottom:14px;font-size:58px;filter:drop-shadow(0 8px 14px rgba(120,40,0,.25))}
-.sc-fd-art .m{position:absolute;left:0;bottom:16px;font-size:40px;animation:scFdRide 3.2s ease-in-out infinite;filter:drop-shadow(0 6px 10px rgba(120,40,0,.25))}
-.sc-fd-art .tag{position:absolute;right:4px;top:14px;background:#fff;color:#15803d;font-weight:900;font-size:12px;padding:4px 9px;border-radius:10px;transform:rotate(8deg);box-shadow:0 6px 14px rgba(0,0,0,.15);animation:scPbBob 3.8s ease-in-out infinite}
-@keyframes scFdRide{0%,100%{transform:translateX(0)}50%{transform:translateX(16px)}}
+.sc-fd-img{position:absolute;z-index:1;right:0;top:0;bottom:0;width:44%;background:#F9D5B5}
+.sc-fd-img img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;display:block}
+.sc-fd-img:before{content:"";position:absolute;left:0;top:0;bottom:0;width:30%;background:linear-gradient(90deg,#FBDDC2,rgba(249,213,181,0));z-index:1}
+.sc-fd-tag{position:absolute;z-index:3;right:10px;top:10px;background:#fff;color:#15803d;font-weight:900;font-size:10.5px;padding:3px 8px;border-radius:9px;box-shadow:0 4px 10px rgba(0,0,0,.1);animation:scPbBob 3.8s ease-in-out infinite}
+[dir=rtl] .sc-fd-l{left:auto;right:14px}
+[dir=rtl] .sc-fd-img{right:auto;left:0;transform:scaleX(-1)}
+[dir=rtl] .sc-fd-tag{right:auto;left:10px}
 /* slide 2: reviews */
-.sc-rv{min-height:132px;border-radius:22px;background:linear-gradient(135deg,#FFF7F1 0%,#FDEFE6 100%);border:1px solid #F6DFCF;display:flex;align-items:center;gap:10px;padding:12px 14px;position:relative;overflow:hidden;color:#1F3151}
+.sc-rv{height:128px;box-sizing:border-box;border-radius:22px;background:linear-gradient(135deg,#FFF7F1 0%,#FDEFE6 100%);border:1px solid #F6DFCF;display:flex;align-items:center;gap:10px;padding:12px 14px;position:relative;overflow:hidden;color:#1F3151}
 .sc-rv:after{content:"";position:absolute;right:-30px;bottom:-30px;width:110px;height:110px;border-radius:50% 0 50% 50%;background:rgba(240,122,43,.08);transform:rotate(20deg)}
 .sc-rv-a{flex:0 0 36%;text-align:center}
 .sc-rv-row small.n{font-weight:600;color:#7a869c}
@@ -15213,16 +15213,17 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 .sc-rv-av{display:flex;justify-content:center;margin-bottom:4px}
 .sc-rv-av span{width:30px;height:30px;border-radius:50%;border:2px solid #fff;margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 3px 8px rgba(31,49,81,.12)}
 .sc-rv-av span:first-child{margin-left:0}
-.sc-rv-big{font-size:34px;font-weight:900;line-height:1;letter-spacing:-1px;color:#13294B}
-.sc-rv-sub{font-size:12px;font-weight:700;color:#3b4b66}
-.sc-rv-b{flex:1;display:flex;flex-direction:column;gap:8px;border-left:1px solid #EAD5C6;padding-left:12px;min-width:0;position:relative;z-index:1}
+.sc-rv-big{font-size:30px;font-weight:900;line-height:1;letter-spacing:-1px;color:#13294B}
+.sc-rv-sub{font-size:11px;font-weight:700;color:#3b4b66}
+.sc-rv-b{flex:1;display:flex;flex-direction:column;gap:6px;border-left:1px solid #EAD5C6;padding-left:12px;min-width:0;position:relative;z-index:1}
 .sc-rv-row{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit}
-.sc-rv-row svg{flex:0 0 30px;width:30px;height:30px}
-.sc-rv-row b{display:block;font-size:13px;font-weight:900}
-.sc-rv-st{color:#F5B301;font-size:12px;letter-spacing:1px;line-height:1}
-.sc-rv-row small{display:block;font-size:11px;color:#4a5872;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-rv-row svg{flex:0 0 26px;width:26px;height:26px}
+.sc-rv-row b{display:block;font-size:12px;font-weight:900;line-height:1.1}
+.sc-rv-st{color:#F5B301;font-size:10px;letter-spacing:1px;line-height:1}
+.sc-rv-row small{display:block;font-size:10.5px;line-height:1.2;color:#4a5872;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 [dir=rtl] .sc-rv-b{border-left:0;border-right:1px solid #EAD5C6;padding-left:0;padding-right:12px}
-@media (min-width:700px){.sc-fd,.sc-rv{min-height:150px}.sc-fd{padding:20px 26px}.sc-fd-t{font-size:32px}.sc-fd-t2{font-size:17px}.sc-rv-big{font-size:46px}.sc-rv{padding:16px 26px}.sc-rv-row b{font-size:15px}}
+@media (min-width:700px){.sc-fd,.sc-rv{height:150px}.sc-fd-l{left:24px;top:16px;bottom:16px}.sc-fd-t{font-size:28px}.sc-fd-t2{font-size:15px}.sc-fd-eb{font-size:11px}.sc-fd-btn{font-size:13px}.sc-rv-big{font-size:40px}.sc-rv{padding:14px 26px}.sc-rv-row b{font-size:14px}.sc-rv-row small{font-size:12px}}
+.sc-hc-note{font-size:12px;font-weight:700;color:#92400e;background:#FFF4E5;border-radius:10px;padding:7px 10px;margin-top:10px}
 /* hotel checker */
 .sc-hc-ov{position:fixed;inset:0;background:rgba(15,25,45,.55);z-index:100000;display:none;align-items:flex-end;justify-content:center}
 .sc-hc-ov.on{display:flex}
@@ -15251,14 +15252,14 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
    Review numbers come from settings.trust_reviews (JSON) so they can be updated without code. */
 (function(){
   var TX = {
-    en:{e:"Limited offer",t:"FREE delivery",t2:"right to your hotel",b:"Check your hotel",u:"until",mt:"Is delivery free to your hotel?",ph:"Type your hotel name…",lt:"Hotels with free delivery",yes:"🎉 FREE delivery to {h}!",no:"Delivery to {h}: {f} EGP",nf:"We couldn't find this hotel — message us on WhatsApp and we'll check.",shop:"Start shopping",wa:"Ask on WhatsApp",free:"FREE",rec:"recommend us",fb:"{p}% recommend",rv:"{n} reviews",g:"{r} rating"},
-    cs:{e:"Omezená nabídka",t:"Doprava ZDARMA",t2:"až na váš hotel",b:"Ověřit můj hotel",u:"do",mt:"Je doprava do vašeho hotelu zdarma?",ph:"Napište název hotelu…",lt:"Hotely s dopravou zdarma",yes:"🎉 Doprava do {h} ZDARMA!",no:"Doprava do {h}: {f} EGP",nf:"Hotel jsme nenašli — napište nám na WhatsApp a ověříme to.",shop:"Nakupovat",wa:"Zeptat se na WhatsAppu",free:"ZDARMA",rec:"nás doporučuje",fb:"{p} % doporučuje",rv:"{n} hodnocení",g:"hodnocení {r}"},
-    sk:{e:"Obmedzená ponuka",t:"Doprava ZADARMO",t2:"až na váš hotel",b:"Overiť môj hotel",u:"do",mt:"Je doprava do vášho hotela zadarmo?",ph:"Napíšte názov hotela…",lt:"Hotely s dopravou zadarmo",yes:"🎉 Doprava do {h} ZADARMO!",no:"Doprava do {h}: {f} EGP",nf:"Hotel sme nenašli — napíšte nám na WhatsApp a overíme to.",shop:"Nakupovať",wa:"Opýtať sa na WhatsAppe",free:"ZADARMO",rec:"nás odporúča",fb:"{p} % odporúča",rv:"{n} hodnotení",g:"hodnotenie {r}"},
-    pl:{e:"Oferta limitowana",t:"Dostawa GRATIS",t2:"prosto do hotelu",b:"Sprawdź swój hotel",u:"do",mt:"Czy dostawa do Twojego hotelu jest darmowa?",ph:"Wpisz nazwę hotelu…",lt:"Hotele z darmową dostawą",yes:"🎉 Dostawa do {h} GRATIS!",no:"Dostawa do {h}: {f} EGP",nf:"Nie znaleźliśmy hotelu — napisz do nas na WhatsApp, sprawdzimy.",shop:"Zacznij zakupy",wa:"Zapytaj na WhatsApp",free:"GRATIS",rec:"poleca nas",fb:"{p}% poleca",rv:"{n} opinii",g:"ocena {r}"},
-    ru:{e:"Ограниченное предложение",t:"БЕСПЛАТНАЯ доставка",t2:"прямо в ваш отель",b:"Проверить мой отель",u:"до",mt:"Доставка в ваш отель бесплатная?",ph:"Введите название отеля…",lt:"Отели с бесплатной доставкой",yes:"🎉 Доставка в {h} БЕСПЛАТНО!",no:"Доставка в {h}: {f} EGP",nf:"Отель не найден — напишите нам в WhatsApp, мы проверим.",shop:"К покупкам",wa:"Спросить в WhatsApp",free:"БЕСПЛАТНО",rec:"рекомендуют нас",fb:"{p}% рекомендуют",rv:"{n} отзывов",g:"рейтинг {r}"},
-    ua:{e:"Обмежена пропозиція",t:"БЕЗКОШТОВНА доставка",t2:"прямо у ваш готель",b:"Перевірити мій готель",u:"до",mt:"Доставка у ваш готель безкоштовна?",ph:"Введіть назву готелю…",lt:"Готелі з безкоштовною доставкою",yes:"🎉 Доставка в {h} БЕЗКОШТОВНО!",no:"Доставка в {h}: {f} EGP",nf:"Готель не знайдено — напишіть нам у WhatsApp, ми перевіримо.",shop:"До покупок",wa:"Запитати у WhatsApp",free:"БЕЗКОШТОВНО",rec:"рекомендують нас",fb:"{p}% рекомендують",rv:"{n} відгуків",g:"рейтинг {r}"},
-    de:{e:"Begrenztes Angebot",t:"GRATIS Lieferung",t2:"direkt in Ihr Hotel",b:"Mein Hotel prüfen",u:"bis",mt:"Ist die Lieferung in Ihr Hotel gratis?",ph:"Hotelnamen eingeben…",lt:"Hotels mit Gratis-Lieferung",yes:"🎉 Lieferung nach {h} GRATIS!",no:"Lieferung nach {h}: {f} EGP",nf:"Hotel nicht gefunden – schreiben Sie uns auf WhatsApp, wir prüfen es.",shop:"Jetzt einkaufen",wa:"Per WhatsApp fragen",free:"GRATIS",rec:"empfehlen uns",fb:"{p} % Empfehlung",rv:"{n} Bewertungen",g:"Bewertung {r}"},
-    ar:{e:"عرض لفترة محدودة",t:"توصيل مجاني",t2:"لحد فندقك",b:"اعرف فندقك",u:"حتى",mt:"التوصيل لفندقك مجاني؟",ph:"اكتب اسم الفندق…",lt:"فنادق التوصيل المجاني",yes:"🎉 التوصيل لـ {h} مجاني!",no:"التوصيل لـ {h}: {f} جنيه",nf:"مش لاقيين الفندق ده — كلمنا واتساب ونشوفلك.",shop:"ابدأ التسوق",wa:"اسأل على واتساب",free:"مجاناً",rec:"بيرشحونا",fb:"{p}% بيرشحونا",rv:"{n} تقييم",g:"تقييم {r}"}
+    en:{e:"Limited offer",t:"FREE delivery",t2:"to {n} selected hotels",note:"Free delivery applies only to the hotels on this list.",b:"Check your hotel",u:"until",mt:"Is delivery free to your hotel?",ph:"Type your hotel name…",lt:"Hotels with free delivery",yes:"🎉 FREE delivery to {h}!",no:"Delivery to {h}: {f} EGP",nf:"We couldn't find this hotel — message us on WhatsApp and we'll check.",shop:"Start shopping",wa:"Ask on WhatsApp",free:"FREE",rec:"recommend us",fb:"{p}% recommend",rv:"{n} reviews",g:"{r} rating"},
+    cs:{e:"Omezená nabídka",t:"Doprava ZDARMA",t2:"do {n} vybraných hotelů",note:"Doprava zdarma platí jen pro hotely z tohoto seznamu.",b:"Ověřit můj hotel",u:"do",mt:"Je doprava do vašeho hotelu zdarma?",ph:"Napište název hotelu…",lt:"Hotely s dopravou zdarma",yes:"🎉 Doprava do {h} ZDARMA!",no:"Doprava do {h}: {f} EGP",nf:"Hotel jsme nenašli — napište nám na WhatsApp a ověříme to.",shop:"Nakupovat",wa:"Zeptat se na WhatsAppu",free:"ZDARMA",rec:"nás doporučuje",fb:"{p} % doporučuje",rv:"{n} hodnocení",g:"hodnocení {r}"},
+    sk:{e:"Obmedzená ponuka",t:"Doprava ZADARMO",t2:"do {n} vybraných hotelov",note:"Doprava zadarmo platí len pre hotely z tohto zoznamu.",b:"Overiť môj hotel",u:"do",mt:"Je doprava do vášho hotela zadarmo?",ph:"Napíšte názov hotela…",lt:"Hotely s dopravou zadarmo",yes:"🎉 Doprava do {h} ZADARMO!",no:"Doprava do {h}: {f} EGP",nf:"Hotel sme nenašli — napíšte nám na WhatsApp a overíme to.",shop:"Nakupovať",wa:"Opýtať sa na WhatsAppe",free:"ZADARMO",rec:"nás odporúča",fb:"{p} % odporúča",rv:"{n} hodnotení",g:"hodnotenie {r}"},
+    pl:{e:"Oferta limitowana",t:"Dostawa GRATIS",t2:"do {n} wybranych hoteli",note:"Darmowa dostawa dotyczy tylko hoteli z tej listy.",b:"Sprawdź swój hotel",u:"do",mt:"Czy dostawa do Twojego hotelu jest darmowa?",ph:"Wpisz nazwę hotelu…",lt:"Hotele z darmową dostawą",yes:"🎉 Dostawa do {h} GRATIS!",no:"Dostawa do {h}: {f} EGP",nf:"Nie znaleźliśmy hotelu — napisz do nas na WhatsApp, sprawdzimy.",shop:"Zacznij zakupy",wa:"Zapytaj na WhatsApp",free:"GRATIS",rec:"poleca nas",fb:"{p}% poleca",rv:"{n} opinii",g:"ocena {r}"},
+    ru:{e:"Ограниченное предложение",t:"БЕСПЛАТНАЯ доставка",t2:"в {n} отелей из списка",note:"Бесплатная доставка действует только для отелей из этого списка.",b:"Проверить мой отель",u:"до",mt:"Доставка в ваш отель бесплатная?",ph:"Введите название отеля…",lt:"Отели с бесплатной доставкой",yes:"🎉 Доставка в {h} БЕСПЛАТНО!",no:"Доставка в {h}: {f} EGP",nf:"Отель не найден — напишите нам в WhatsApp, мы проверим.",shop:"К покупкам",wa:"Спросить в WhatsApp",free:"БЕСПЛАТНО",rec:"рекомендуют нас",fb:"{p}% рекомендуют",rv:"{n} отзывов",g:"рейтинг {r}"},
+    ua:{e:"Обмежена пропозиція",t:"БЕЗКОШТОВНА доставка",t2:"у {n} готелів зі списку",note:"Безкоштовна доставка діє лише для готелів із цього списку.",b:"Перевірити мій готель",u:"до",mt:"Доставка у ваш готель безкоштовна?",ph:"Введіть назву готелю…",lt:"Готелі з безкоштовною доставкою",yes:"🎉 Доставка в {h} БЕЗКОШТОВНО!",no:"Доставка в {h}: {f} EGP",nf:"Готель не знайдено — напишіть нам у WhatsApp, ми перевіримо.",shop:"До покупок",wa:"Запитати у WhatsApp",free:"БЕЗКОШТОВНО",rec:"рекомендують нас",fb:"{p}% рекомендують",rv:"{n} відгуків",g:"рейтинг {r}"},
+    de:{e:"Begrenztes Angebot",t:"GRATIS Lieferung",t2:"zu {n} ausgewählten Hotels",note:"Gratis-Lieferung gilt nur für die Hotels auf dieser Liste.",b:"Mein Hotel prüfen",u:"bis",mt:"Ist die Lieferung in Ihr Hotel gratis?",ph:"Hotelnamen eingeben…",lt:"Hotels mit Gratis-Lieferung",yes:"🎉 Lieferung nach {h} GRATIS!",no:"Lieferung nach {h}: {f} EGP",nf:"Hotel nicht gefunden – schreiben Sie uns auf WhatsApp, wir prüfen es.",shop:"Jetzt einkaufen",wa:"Per WhatsApp fragen",free:"GRATIS",rec:"empfehlen uns",fb:"{p} % Empfehlung",rv:"{n} Bewertungen",g:"Bewertung {r}"},
+    ar:{e:"عرض لفترة محدودة",t:"توصيل مجاني",t2:"لـ {n} فندق مختار",note:"التوصيل المجاني للفنادق اللي في الليستة دي بس.",b:"اعرف فندقك",u:"حتى",mt:"التوصيل لفندقك مجاني؟",ph:"اكتب اسم الفندق…",lt:"فنادق التوصيل المجاني",yes:"🎉 التوصيل لـ {h} مجاني!",no:"التوصيل لـ {h}: {f} جنيه",nf:"مش لاقيين الفندق ده — كلمنا واتساب ونشوفلك.",shop:"ابدأ التسوق",wa:"اسأل على واتساب",free:"مجاناً",rec:"بيرشحونا",fb:"{p}% بيرشحونا",rv:"{n} تقييم",g:"تقييم {r}"}
   };
   var REV = { fb_pct:100, fb_n:110, g_rating:"5.0", g_n:74 };
   var FB_URL = "https://www.facebook.com/share/18K8mNMfft/";
@@ -15272,17 +15273,21 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"); }
   function promoOn(){ try{ return typeof scPromoActive === "function" && scPromoActive(); }catch(e){ return false; } }
   function untilTxt(){ try{ var d = new Date(window.SC_PROMO.until); return x().u + " " + d.getUTCDate() + "." + (d.getUTCMonth()+1) + "."; }catch(e){ return ""; } }
+  var IMG = "https://res.cloudinary.com/de4boyel3/image/upload/c_fill,g_north,w_360,h_330,f_auto,q_auto/v1793365052/banners/courier-pharmacy-bag.png";
+  function nFree(){ try{ return (hotels || []).filter(function(h){ return h.free; }).length; }catch(e){ return 0; } }
   function fdHtml(){
     var t = x();
-    return '<div class="sc-fd" data-hc="1"><div class="sc-fd-l"><div class="sc-fd-eb">⏳ <b>' + esc(t.e) + '</b>' + (untilTxt() ? ' · ' + esc(untilTxt()) : '') + '</div>'
-      + '<div class="sc-fd-t">' + esc(t.t) + '</div><div class="sc-fd-t2">' + esc(t.t2) + '</div>'
-      + '<div class="sc-fd-btn">' + esc(t.b) + ' <span>' + (L() === "ar" ? "←" : "→") + '</span></div></div>'
-      + '<div class="sc-fd-art" aria-hidden="true"><div class="tag">' + esc(t.free) + '</div><div class="h">🏨</div><div class="m">🛵</div></div></div>';
+    return '<div class="sc-fd" data-hc="1"><div class="sc-fd-l"><div class="sc-fd-eb">⏳ ' + esc(t.e) + (untilTxt() ? ' · ' + esc(untilTxt()) : '') + '</div>'
+      + '<div><div class="sc-fd-t sc-fit">' + esc(t.t) + '</div><div class="sc-fd-t2 sc-fit">' + esc(t.t2.replace("{n}", nFree())) + '</div></div>'
+      + '<div class="sc-fd-btn sc-fit">' + esc(t.b) + ' <span>' + (L() === "ar" ? "←" : "→") + '</span></div></div>'
+      + '<div class="sc-fd-img" aria-hidden="true"><img src="' + IMG + '" alt="" decoding="async"></div><div class="sc-fd-tag">' + esc(t.free) + '</div></div>';
   }
+  /* shrink a line until it fits its box (long languages stay on one line, banner height never changes) */
+  function fit(){ try{ el.querySelectorAll(".sc-fit").forEach(function(n){ n.style.fontSize = ""; var box = n.closest(".sc-fd-l,.sc-rv-a") || n.parentNode, w = box.clientWidth || 1, f = parseFloat(getComputedStyle(n).fontSize), g = 0; while(n.scrollWidth > w + 1 && f > 9 && g++ < 30){ f -= 0.5; n.style.fontSize = f + "px"; } }); }catch(e){} }
   function rvHtml(){
     var t = x(), stars = '★★★★★';
     return '<div class="sc-rv"><div class="sc-rv-a"><div class="sc-rv-av"><span style="background:#FDE3D3">😊</span><span style="background:#DCE8FB">👍</span><span style="background:#E3F5E9">💚</span></div>'
-      + '<div class="sc-rv-big">' + esc(REV.fb_pct) + '%</div><div class="sc-rv-sub">' + esc(t.rec) + '</div></div>'
+      + '<div class="sc-rv-big">' + esc(REV.fb_pct) + '%</div><div class="sc-rv-sub sc-fit" style="white-space:nowrap">' + esc(t.rec) + '</div></div>'
       + '<div class="sc-rv-b">'
       + '<a class="sc-rv-row" href="' + FB_URL + '" target="_blank" rel="noopener">' + FB_SVG + '<div><b>Facebook</b><div class="sc-rv-st">' + stars + '</div><small>' + esc(t.fb.replace("{p}", REV.fb_pct)) + '</small><small class="n">(' + esc(t.rv.replace("{n}", REV.fb_n)) + ')</small></div></a>'
       + '<a class="sc-rv-row" href="' + G_URL + '" target="_blank" rel="noopener">' + G_SVG + '<div><b>Google Maps</b><div class="sc-rv-st">' + stars + '</div><small>' + esc(t.g.replace("{r}", REV.g_rating)) + '</small><small class="n">(' + esc(t.rv.replace("{n}", REV.g_n)) + ')</small></div></a>'
@@ -15295,8 +15300,9 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     el.setAttribute("dir", L() === "ar" ? "rtl" : "ltr");
     el.innerHTML = '<div class="sc-hb-vp"><div class="sc-hb-tr">' + a.map(function(h){ return '<div class="sc-hb-s">' + h + '</div>'; }).join("") + '</div></div>'
       + (a.length > 1 ? '<div class="sc-hb-dots">' + a.map(function(_, i){ return '<i data-i="' + i + '"' + (i === slide ? ' class="on"' : '') + '></i>'; }).join("") + '</div>' : '');
-    el.setAttribute("data-k", L() + "|" + a.length);
+    el.setAttribute("data-k", L() + "|" + a.length + "|" + nFree());
     go(slide, true);
+    setTimeout(fit, 30); setTimeout(fit, 600);
   }
   function go(i, quiet){
     var tr = el.querySelector(".sc-hb-tr"), n = el.querySelectorAll(".sc-hb-s").length; if(!tr || !n) return;
@@ -15316,7 +15322,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
       ov.addEventListener("click", function(e){ if(e.target === ov || e.target.closest(".sc-hc-x") || e.target.closest("[data-shop]")) hcClose(); var it = e.target.closest(".sc-hc-it"); if(it) pick(it.getAttribute("data-n")); }); }
     ov.setAttribute("dir", L() === "ar" ? "rtl" : "ltr");
     ov.innerHTML = '<div class="sc-hc" role="dialog"><div class="sc-hc-h"><b>' + esc(t.mt) + '</b><button class="sc-hc-x" type="button" aria-label="close">✕</button></div>'
-      + '<input class="sc-hc-in" type="search" autocomplete="off" placeholder="' + esc(t.ph) + '"><div class="sc-hc-res"></div>'
+      + '<div class="sc-hc-note">ℹ️ ' + esc(t.note) + '</div><input class="sc-hc-in" type="search" autocomplete="off" placeholder="' + esc(t.ph) + '"><div class="sc-hc-res"></div>'
       + '<div class="sc-hc-lt"></div><div class="sc-hc-list"></div></div>';
     ov.classList.add("on"); document.body.style.overflow = "hidden";
     var inp = ov.querySelector(".sc-hc-in");
@@ -15361,7 +15367,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
         el.addEventListener("touchend", function(e){ if(sx === null) return; var dx = e.changedTouches[0].clientX - sx; sx = null; if(Math.abs(dx) > 40){ var fwd = dx < 0; if(L() === "ar") fwd = !fwd; go(slide + (fwd ? 1 : -1)); } }, {passive:true});
       }
       if(el.previousElementSibling !== top) top.insertAdjacentElement("afterend", el);
-      var k = L() + "|" + slides().length;
+      var k = L() + "|" + slides().length + "|" + nFree();
       if(el.getAttribute("data-k") !== k) render();
     }catch(e){}
   }
@@ -15369,6 +15375,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     if(!document.querySelector(".controls")) return setTimeout(start, 300);
     place(); restart();
     setInterval(place, 1000);
+    window.addEventListener("resize", function(){ clearTimeout(window.__scHbF); window.__scHbF = setTimeout(fit, 150); });
     fetch(SB_URL + "/rest/v1/settings?select=value&key=eq.trust_reviews", { headers: SB_HEADERS })
       .then(function(r){ return r.json(); })
       .then(function(rows){ try{ var v = JSON.parse((rows[0] || {}).value || "{}"); for(var k in v) REV[k] = v[k]; if(el){ el.removeAttribute("data-k"); place(); } }catch(e){} }).catch(function(){});
