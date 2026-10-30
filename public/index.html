@@ -14992,7 +14992,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     if(ov){
       ov.addEventListener("change", later, true);
       ov.addEventListener("input", function(e){ if(e.target && /checkoutPhone|checkoutHotel|checkoutNote/.test(e.target.id || "")) later(); }, true);
-      new MutationObserver(function(){ if(!ov.classList.contains("active")) save(); else consent(); }).observe(ov, { attributes:true, attributeFilter:["class"] });
+      new MutationObserver(function(){ if(!ov.classList.contains("active")) save(); }).observe(ov, { attributes:true, attributeFilter:["class"] });
       document.addEventListener("visibilitychange", function(){ if(document.visibilityState === "hidden" && ov.classList.contains("active")) save(); });
       window.addEventListener("pagehide", function(){ if(ov.classList.contains("active")) save(); });
     }
@@ -15010,7 +15010,8 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
         el.textContent = "🔒 " + (CONSENT[L()] || CONSENT.en);
       }catch(e){}
     }
-    consent();
+    /* notes under the WhatsApp field removed (T, 30/10: too crowded) */
+    try{ var st = document.createElement("style"); st.textContent = "#checkoutPhoneHelp,#scPhoneConsent{display:none !important}"; document.head.appendChild(st); }catch(e){}
 
     /* restore from ?cart=TOKEN */
     var tok = (location.search.match(/[?&]cart=([a-f0-9]{8,64})/i) || [])[1];
@@ -15179,6 +15180,202 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 })();
 </script>
 
+<style id="sc-home-banners-css">
+.sc-hb{grid-column:1/-1;margin:4px 14px 12px;position:relative;font-family:'Nunito',sans-serif}
+.sc-hb-vp{overflow:hidden;border-radius:22px;touch-action:pan-y}
+.sc-hb-tr{display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.sc-hb-s{flex:0 0 100%;min-width:0}
+.sc-hb-dots{display:flex;justify-content:center;gap:5px;margin-top:7px}
+.sc-hb-dots i{width:6px;height:6px;border-radius:999px;background:#d5dce6;transition:width .35s,background .35s;cursor:pointer}
+.sc-hb-dots i.on{width:20px;background:#D6501B}
+/* slide 1: free delivery */
+.sc-fd{position:relative;overflow:hidden;cursor:pointer;min-height:132px;padding:14px 16px;border-radius:22px;color:#fff;
+  background:radial-gradient(circle at 85% 20%,rgba(255,255,255,.18) 0 60px,transparent 61px),radial-gradient(circle at 105% 110%,rgba(255,255,255,.12) 0 90px,transparent 91px),linear-gradient(120deg,#E8561C 0%,#F07A2B 60%,#F59A3A 100%)}
+.sc-fd-l{position:relative;z-index:2;max-width:62%}
+.sc-fd-eb{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;background:rgba(255,255,255,.95);color:#C2410C;padding:3px 9px;border-radius:999px}
+.sc-fd-eb b{font-weight:900}
+.sc-fd-t{font-size:23px;font-weight:900;line-height:1.05;margin-top:8px;letter-spacing:-.3px;text-shadow:0 2px 10px rgba(120,40,0,.18)}
+.sc-fd-t2{font-size:14px;font-weight:800;opacity:.95;margin-top:2px}
+.sc-fd-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:#1F3151;color:#fff;font-weight:800;font-size:12.5px;padding:8px 14px;border-radius:999px;box-shadow:0 8px 18px rgba(31,49,81,.3)}
+.sc-fd-btn span{display:inline-block;animation:scPbArrow 1.6s ease-in-out infinite}
+.sc-fd-art{position:absolute;right:6px;top:0;bottom:0;width:40%;z-index:1}
+.sc-fd-art .h{position:absolute;right:14px;bottom:14px;font-size:58px;filter:drop-shadow(0 8px 14px rgba(120,40,0,.25))}
+.sc-fd-art .m{position:absolute;left:0;bottom:16px;font-size:40px;animation:scFdRide 3.2s ease-in-out infinite;filter:drop-shadow(0 6px 10px rgba(120,40,0,.25))}
+.sc-fd-art .tag{position:absolute;right:4px;top:14px;background:#fff;color:#15803d;font-weight:900;font-size:12px;padding:4px 9px;border-radius:10px;transform:rotate(8deg);box-shadow:0 6px 14px rgba(0,0,0,.15);animation:scPbBob 3.8s ease-in-out infinite}
+@keyframes scFdRide{0%,100%{transform:translateX(0)}50%{transform:translateX(16px)}}
+/* slide 2: reviews */
+.sc-rv{min-height:132px;border-radius:22px;background:linear-gradient(135deg,#FFF7F1 0%,#FDEFE6 100%);border:1px solid #F6DFCF;display:flex;align-items:center;gap:10px;padding:12px 14px;position:relative;overflow:hidden;color:#1F3151}
+.sc-rv:after{content:"";position:absolute;right:-30px;bottom:-30px;width:110px;height:110px;border-radius:50% 0 50% 50%;background:rgba(240,122,43,.08);transform:rotate(20deg)}
+.sc-rv-a{flex:0 0 36%;text-align:center}
+.sc-rv-row small.n{font-weight:600;color:#7a869c}
+.sc-rv-row>div{min-width:0}
+.sc-rv-av{display:flex;justify-content:center;margin-bottom:4px}
+.sc-rv-av span{width:30px;height:30px;border-radius:50%;border:2px solid #fff;margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 3px 8px rgba(31,49,81,.12)}
+.sc-rv-av span:first-child{margin-left:0}
+.sc-rv-big{font-size:34px;font-weight:900;line-height:1;letter-spacing:-1px;color:#13294B}
+.sc-rv-sub{font-size:12px;font-weight:700;color:#3b4b66}
+.sc-rv-b{flex:1;display:flex;flex-direction:column;gap:8px;border-left:1px solid #EAD5C6;padding-left:12px;min-width:0;position:relative;z-index:1}
+.sc-rv-row{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit}
+.sc-rv-row svg{flex:0 0 30px;width:30px;height:30px}
+.sc-rv-row b{display:block;font-size:13px;font-weight:900}
+.sc-rv-st{color:#F5B301;font-size:12px;letter-spacing:1px;line-height:1}
+.sc-rv-row small{display:block;font-size:11px;color:#4a5872;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+[dir=rtl] .sc-rv-b{border-left:0;border-right:1px solid #EAD5C6;padding-left:0;padding-right:12px}
+@media (min-width:700px){.sc-fd,.sc-rv{min-height:150px}.sc-fd{padding:20px 26px}.sc-fd-t{font-size:32px}.sc-fd-t2{font-size:17px}.sc-rv-big{font-size:46px}.sc-rv{padding:16px 26px}.sc-rv-row b{font-size:15px}}
+/* hotel checker */
+.sc-hc-ov{position:fixed;inset:0;background:rgba(15,25,45,.55);z-index:100000;display:none;align-items:flex-end;justify-content:center}
+.sc-hc-ov.on{display:flex}
+.sc-hc{background:#fff;width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:18px 16px 20px;max-height:86vh;display:flex;flex-direction:column;font-family:'Nunito',sans-serif;color:#1F3151;animation:scHcUp .28s ease}
+@keyframes scHcUp{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+@media (min-width:600px){.sc-hc-ov{align-items:center}.sc-hc{border-radius:24px}}
+.sc-hc-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sc-hc-h b{font-size:18px;font-weight:900}
+.sc-hc-x{border:0;background:#F1F5FA;width:36px;height:36px;border-radius:12px;font-size:18px;cursor:pointer;color:#1F3151}
+.sc-hc-in{margin-top:12px;width:100%;box-sizing:border-box;border:1.5px solid #dfe6ef;border-radius:14px;padding:12px 14px;font-size:16px;font-family:inherit;outline:none}
+.sc-hc-in:focus{border-color:#F07A2B}
+.sc-hc-res{margin-top:10px;border-radius:14px;padding:12px;font-weight:800;font-size:14px;display:none}
+.sc-hc-res.free{display:block;background:#E9F8EF;color:#126b39}
+.sc-hc-res.paid{display:block;background:#F1F5FA;color:#1F3151}
+.sc-hc-res.nf{display:block;background:#FFF4E5;color:#92400e}
+.sc-hc-res a,.sc-hc-res button{display:inline-block;margin-top:8px;background:#1F3151;color:#fff;border:0;border-radius:999px;padding:8px 14px;font-weight:800;font-size:13px;text-decoration:none;cursor:pointer;font-family:inherit}
+.sc-hc-lt{font-size:12px;font-weight:800;color:#6b7891;margin:12px 2px 6px;text-transform:uppercase;letter-spacing:.3px}
+.sc-hc-list{overflow:auto;display:flex;flex-direction:column;gap:6px;padding-bottom:4px}
+.sc-hc-it{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #eef1f5;background:#fbfcfe;border-radius:12px;padding:10px 12px;cursor:pointer;text-align:start;font-family:inherit;font-size:14px;color:#1F3151}
+.sc-hc-it span{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc-hc-it em{font-style:normal;font-size:11.5px;font-weight:900;white-space:nowrap;padding:3px 8px;border-radius:999px;background:#E9F8EF;color:#15803d}
+.sc-hc-it em.p{background:#F1F5FA;color:#4a5872}
+</style>
+<script id="sc-home-banners">
+/* Home banners (T, 30/10): slide 1 = free delivery to promo hotels (tap → hotel checker), slide 2 = real review ratings.
+   Review numbers come from settings.trust_reviews (JSON) so they can be updated without code. */
+(function(){
+  var TX = {
+    en:{e:"Limited offer",t:"FREE delivery",t2:"right to your hotel",b:"Check your hotel",u:"until",mt:"Is delivery free to your hotel?",ph:"Type your hotel name…",lt:"Hotels with free delivery",yes:"🎉 FREE delivery to {h}!",no:"Delivery to {h}: {f} EGP",nf:"We couldn't find this hotel — message us on WhatsApp and we'll check.",shop:"Start shopping",wa:"Ask on WhatsApp",free:"FREE",rec:"recommend us",fb:"{p}% recommend",rv:"{n} reviews",g:"{r} rating"},
+    cs:{e:"Omezená nabídka",t:"Doprava ZDARMA",t2:"až na váš hotel",b:"Ověřit můj hotel",u:"do",mt:"Je doprava do vašeho hotelu zdarma?",ph:"Napište název hotelu…",lt:"Hotely s dopravou zdarma",yes:"🎉 Doprava do {h} ZDARMA!",no:"Doprava do {h}: {f} EGP",nf:"Hotel jsme nenašli — napište nám na WhatsApp a ověříme to.",shop:"Nakupovat",wa:"Zeptat se na WhatsAppu",free:"ZDARMA",rec:"nás doporučuje",fb:"{p} % doporučuje",rv:"{n} hodnocení",g:"hodnocení {r}"},
+    sk:{e:"Obmedzená ponuka",t:"Doprava ZADARMO",t2:"až na váš hotel",b:"Overiť môj hotel",u:"do",mt:"Je doprava do vášho hotela zadarmo?",ph:"Napíšte názov hotela…",lt:"Hotely s dopravou zadarmo",yes:"🎉 Doprava do {h} ZADARMO!",no:"Doprava do {h}: {f} EGP",nf:"Hotel sme nenašli — napíšte nám na WhatsApp a overíme to.",shop:"Nakupovať",wa:"Opýtať sa na WhatsAppe",free:"ZADARMO",rec:"nás odporúča",fb:"{p} % odporúča",rv:"{n} hodnotení",g:"hodnotenie {r}"},
+    pl:{e:"Oferta limitowana",t:"Dostawa GRATIS",t2:"prosto do hotelu",b:"Sprawdź swój hotel",u:"do",mt:"Czy dostawa do Twojego hotelu jest darmowa?",ph:"Wpisz nazwę hotelu…",lt:"Hotele z darmową dostawą",yes:"🎉 Dostawa do {h} GRATIS!",no:"Dostawa do {h}: {f} EGP",nf:"Nie znaleźliśmy hotelu — napisz do nas na WhatsApp, sprawdzimy.",shop:"Zacznij zakupy",wa:"Zapytaj na WhatsApp",free:"GRATIS",rec:"poleca nas",fb:"{p}% poleca",rv:"{n} opinii",g:"ocena {r}"},
+    ru:{e:"Ограниченное предложение",t:"БЕСПЛАТНАЯ доставка",t2:"прямо в ваш отель",b:"Проверить мой отель",u:"до",mt:"Доставка в ваш отель бесплатная?",ph:"Введите название отеля…",lt:"Отели с бесплатной доставкой",yes:"🎉 Доставка в {h} БЕСПЛАТНО!",no:"Доставка в {h}: {f} EGP",nf:"Отель не найден — напишите нам в WhatsApp, мы проверим.",shop:"К покупкам",wa:"Спросить в WhatsApp",free:"БЕСПЛАТНО",rec:"рекомендуют нас",fb:"{p}% рекомендуют",rv:"{n} отзывов",g:"рейтинг {r}"},
+    ua:{e:"Обмежена пропозиція",t:"БЕЗКОШТОВНА доставка",t2:"прямо у ваш готель",b:"Перевірити мій готель",u:"до",mt:"Доставка у ваш готель безкоштовна?",ph:"Введіть назву готелю…",lt:"Готелі з безкоштовною доставкою",yes:"🎉 Доставка в {h} БЕЗКОШТОВНО!",no:"Доставка в {h}: {f} EGP",nf:"Готель не знайдено — напишіть нам у WhatsApp, ми перевіримо.",shop:"До покупок",wa:"Запитати у WhatsApp",free:"БЕЗКОШТОВНО",rec:"рекомендують нас",fb:"{p}% рекомендують",rv:"{n} відгуків",g:"рейтинг {r}"},
+    de:{e:"Begrenztes Angebot",t:"GRATIS Lieferung",t2:"direkt in Ihr Hotel",b:"Mein Hotel prüfen",u:"bis",mt:"Ist die Lieferung in Ihr Hotel gratis?",ph:"Hotelnamen eingeben…",lt:"Hotels mit Gratis-Lieferung",yes:"🎉 Lieferung nach {h} GRATIS!",no:"Lieferung nach {h}: {f} EGP",nf:"Hotel nicht gefunden – schreiben Sie uns auf WhatsApp, wir prüfen es.",shop:"Jetzt einkaufen",wa:"Per WhatsApp fragen",free:"GRATIS",rec:"empfehlen uns",fb:"{p} % Empfehlung",rv:"{n} Bewertungen",g:"Bewertung {r}"},
+    ar:{e:"عرض لفترة محدودة",t:"توصيل مجاني",t2:"لحد فندقك",b:"اعرف فندقك",u:"حتى",mt:"التوصيل لفندقك مجاني؟",ph:"اكتب اسم الفندق…",lt:"فنادق التوصيل المجاني",yes:"🎉 التوصيل لـ {h} مجاني!",no:"التوصيل لـ {h}: {f} جنيه",nf:"مش لاقيين الفندق ده — كلمنا واتساب ونشوفلك.",shop:"ابدأ التسوق",wa:"اسأل على واتساب",free:"مجاناً",rec:"بيرشحونا",fb:"{p}% بيرشحونا",rv:"{n} تقييم",g:"تقييم {r}"}
+  };
+  var REV = { fb_pct:100, fb_n:110, g_rating:"5.0", g_n:74 };
+  var FB_URL = "https://www.facebook.com/share/18K8mNMfft/";
+  var G_URL = "https://www.google.com/maps/place/?q=place_id:ChIJz3J1UgCHUhQRPFgtITmletw";
+  var WA = "201501401776";
+  var FB_SVG = '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="#1877F2"/><path fill="#fff" d="M26.6 38V26.2h4l.6-4.6h-4.6v-2.9c0-1.3.4-2.2 2.3-2.2h2.4v-4.1c-.4-.1-1.9-.2-3.5-.2-3.5 0-5.9 2.1-5.9 6v3.4h-4v4.6h4V38z"/></svg>';
+  var G_SVG = '<svg viewBox="0 0 48 48"><path fill="#34A853" d="M24 46s15-15.6 15-27.5C39 10 32.3 3 24 3S9 10 9 18.5C9 30.4 24 46 24 46z"/><path fill="#EA4335" d="M24 3C15.7 3 9 10 9 18.5c0 2.6.7 5.3 1.9 8L24 13z"/><path fill="#4285F4" d="M24 3v10l13.6 11.2c.9-2 1.4-3.9 1.4-5.7C39 10 32.3 3 24 3z"/><path fill="#FBBC04" d="M10.9 26.5c1.5 3.4 3.7 6.8 5.8 9.6L24 25.3V13z"/><circle cx="24" cy="18.5" r="5.8" fill="#fff"/></svg>';
+  var slide = 0, timer = null, curLang = "", el = null;
+  function L(){ var l = (typeof displayLanguage === "string" && displayLanguage) || "en"; return TX[l] ? l : "en"; }
+  function x(){ return TX[L()]; }
+  function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"); }
+  function promoOn(){ try{ return typeof scPromoActive === "function" && scPromoActive(); }catch(e){ return false; } }
+  function untilTxt(){ try{ var d = new Date(window.SC_PROMO.until); return x().u + " " + d.getUTCDate() + "." + (d.getUTCMonth()+1) + "."; }catch(e){ return ""; } }
+  function fdHtml(){
+    var t = x();
+    return '<div class="sc-fd" data-hc="1"><div class="sc-fd-l"><div class="sc-fd-eb">⏳ <b>' + esc(t.e) + '</b>' + (untilTxt() ? ' · ' + esc(untilTxt()) : '') + '</div>'
+      + '<div class="sc-fd-t">' + esc(t.t) + '</div><div class="sc-fd-t2">' + esc(t.t2) + '</div>'
+      + '<div class="sc-fd-btn">' + esc(t.b) + ' <span>' + (L() === "ar" ? "←" : "→") + '</span></div></div>'
+      + '<div class="sc-fd-art" aria-hidden="true"><div class="tag">' + esc(t.free) + '</div><div class="h">🏨</div><div class="m">🛵</div></div></div>';
+  }
+  function rvHtml(){
+    var t = x(), stars = '★★★★★';
+    return '<div class="sc-rv"><div class="sc-rv-a"><div class="sc-rv-av"><span style="background:#FDE3D3">😊</span><span style="background:#DCE8FB">👍</span><span style="background:#E3F5E9">💚</span></div>'
+      + '<div class="sc-rv-big">' + esc(REV.fb_pct) + '%</div><div class="sc-rv-sub">' + esc(t.rec) + '</div></div>'
+      + '<div class="sc-rv-b">'
+      + '<a class="sc-rv-row" href="' + FB_URL + '" target="_blank" rel="noopener">' + FB_SVG + '<div><b>Facebook</b><div class="sc-rv-st">' + stars + '</div><small>' + esc(t.fb.replace("{p}", REV.fb_pct)) + '</small><small class="n">(' + esc(t.rv.replace("{n}", REV.fb_n)) + ')</small></div></a>'
+      + '<a class="sc-rv-row" href="' + G_URL + '" target="_blank" rel="noopener">' + G_SVG + '<div><b>Google Maps</b><div class="sc-rv-st">' + stars + '</div><small>' + esc(t.g.replace("{r}", REV.g_rating)) + '</small><small class="n">(' + esc(t.rv.replace("{n}", REV.g_n)) + ')</small></div></a>'
+      + '</div></div>';
+  }
+  function slides(){ var a = []; if(promoOn()) a.push(fdHtml()); a.push(rvHtml()); return a; }
+  function render(){
+    var a = slides();
+    if(slide >= a.length) slide = 0;
+    el.setAttribute("dir", L() === "ar" ? "rtl" : "ltr");
+    el.innerHTML = '<div class="sc-hb-vp"><div class="sc-hb-tr">' + a.map(function(h){ return '<div class="sc-hb-s">' + h + '</div>'; }).join("") + '</div></div>'
+      + (a.length > 1 ? '<div class="sc-hb-dots">' + a.map(function(_, i){ return '<i data-i="' + i + '"' + (i === slide ? ' class="on"' : '') + '></i>'; }).join("") + '</div>' : '');
+    el.setAttribute("data-k", L() + "|" + a.length);
+    go(slide, true);
+  }
+  function go(i, quiet){
+    var tr = el.querySelector(".sc-hb-tr"), n = el.querySelectorAll(".sc-hb-s").length; if(!tr || !n) return;
+    slide = (i + n) % n;
+    var dir = L() === "ar" ? 1 : -1;
+    tr.style.transform = "translateX(" + (dir * slide * 100) + "%)";
+    el.querySelectorAll(".sc-hb-dots i").forEach(function(d, k){ d.classList.toggle("on", k === slide); });
+    if(!quiet) restart();
+  }
+  function restart(){ clearInterval(timer); timer = setInterval(function(){ if(document.visibilityState === "visible" && !document.querySelector(".sc-hc-ov.on")) go(slide + 1, true); }, 5500); }
+
+  /* hotel checker */
+  var ov = null;
+  function hcOpen(){
+    var t = x();
+    if(!ov){ ov = document.createElement("div"); ov.className = "sc-hc-ov"; document.body.appendChild(ov);
+      ov.addEventListener("click", function(e){ if(e.target === ov || e.target.closest(".sc-hc-x") || e.target.closest("[data-shop]")) hcClose(); var it = e.target.closest(".sc-hc-it"); if(it) pick(it.getAttribute("data-n")); }); }
+    ov.setAttribute("dir", L() === "ar" ? "rtl" : "ltr");
+    ov.innerHTML = '<div class="sc-hc" role="dialog"><div class="sc-hc-h"><b>' + esc(t.mt) + '</b><button class="sc-hc-x" type="button" aria-label="close">✕</button></div>'
+      + '<input class="sc-hc-in" type="search" autocomplete="off" placeholder="' + esc(t.ph) + '"><div class="sc-hc-res"></div>'
+      + '<div class="sc-hc-lt"></div><div class="sc-hc-list"></div></div>';
+    ov.classList.add("on"); document.body.style.overflow = "hidden";
+    var inp = ov.querySelector(".sc-hc-in");
+    inp.addEventListener("input", function(){ list(inp.value); ov.querySelector(".sc-hc-res").className = "sc-hc-res"; });
+    list("");
+    setTimeout(function(){ try{ inp.focus(); }catch(e){} }, 250);
+    try{ window.scTrack && window.scTrack("fd_check_open", L(), true); }catch(e){}
+  }
+  function hcClose(){ if(ov){ ov.classList.remove("on"); document.body.style.overflow = ""; } }
+  function badge(h){ var t = x(); return h.free ? '<em>' + esc(t.free) + ' 🎉</em>' : '<em class="p">' + esc(h.fee) + ' EGP</em>'; }
+  function list(q){
+    var t = x(), box = ov.querySelector(".sc-hc-list"), lt = ov.querySelector(".sc-hc-lt"), arr = [];
+    q = String(q || "").trim();
+    if(q.length < 2){ arr = (hotels || []).filter(function(h){ return h.free; }).sort(function(a, b){ return a.name.localeCompare(b.name); }); lt.textContent = t.lt + " (" + arr.length + ")"; }
+    else { try{ arr = scHotelMatches(q, 12); }catch(e){ arr = (hotels || []).filter(function(h){ return hotelMatchesQuery(h, q); }).slice(0, 12); } lt.textContent = ""; }
+    box.innerHTML = arr.map(function(h){ return '<button type="button" class="sc-hc-it" data-n="' + esc(h.name) + '"><span>' + esc(h.name) + '</span>' + badge(h) + '</button>'; }).join("");
+    if(q.length >= 2 && !arr.length) result(null, q);
+  }
+  function result(h, q){
+    var t = x(), r = ov.querySelector(".sc-hc-res");
+    if(!h){ r.className = "sc-hc-res nf"; r.innerHTML = esc(t.nf) + '<br><a href="https://wa.me/' + WA + '?text=' + encodeURIComponent((q || "") + " – free delivery?") + '" target="_blank" rel="noopener">' + esc(t.wa) + '</a>'; return; }
+    r.className = "sc-hc-res " + (h.free ? "free" : "paid");
+    r.innerHTML = esc((h.free ? t.yes : t.no).replace("{h}", h.name).replace("{f}", h.fee)) + '<br><button type="button" data-shop="1">' + esc(t.shop) + '</button>';
+  }
+  function pick(name){
+    var h = null; try{ h = findHotelByInput(name); }catch(e){}
+    ov.querySelector(".sc-hc-in").value = name;
+    result(h, name);
+    ov.querySelector(".sc-hc-list").innerHTML = ""; ov.querySelector(".sc-hc-lt").textContent = "";
+    if(h){ try{ selectHotel(h.name); }catch(e){} try{ var ch = document.getElementById("checkoutHotel"); if(ch) ch.value = h.name; }catch(e){} }
+    try{ window.scTrack && window.scTrack("fd_check", (h ? (h.free ? "free|" : "paid|") + h.name : "nf|" + name).slice(0, 120)); }catch(e){}
+  }
+
+  function place(){
+    try{
+      var top = document.querySelector(".controls"); if(!top) return;
+      if(!el){
+        el = document.createElement("div"); el.className = "sc-hb";
+        el.addEventListener("click", function(e){ var d = e.target.closest(".sc-hb-dots i"); if(d){ go(+d.getAttribute("data-i")); return; } if(e.target.closest("[data-hc]")) hcOpen(); });
+        var sx = null;
+        el.addEventListener("touchstart", function(e){ sx = e.touches[0].clientX; }, {passive:true});
+        el.addEventListener("touchend", function(e){ if(sx === null) return; var dx = e.changedTouches[0].clientX - sx; sx = null; if(Math.abs(dx) > 40){ var fwd = dx < 0; if(L() === "ar") fwd = !fwd; go(slide + (fwd ? 1 : -1)); } }, {passive:true});
+      }
+      if(el.previousElementSibling !== top) top.insertAdjacentElement("afterend", el);
+      var k = L() + "|" + slides().length;
+      if(el.getAttribute("data-k") !== k) render();
+    }catch(e){}
+  }
+  function start(){
+    if(!document.querySelector(".controls")) return setTimeout(start, 300);
+    place(); restart();
+    setInterval(place, 1000);
+    fetch(SB_URL + "/rest/v1/settings?select=value&key=eq.trust_reviews", { headers: SB_HEADERS })
+      .then(function(r){ return r.json(); })
+      .then(function(rows){ try{ var v = JSON.parse((rows[0] || {}).value || "{}"); for(var k in v) REV[k] = v[k]; if(el){ el.removeAttribute("data-k"); place(); } }catch(e){} }).catch(function(){});
+  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+})();
+</script>
+
 <style id="sc-partner-banner-small">
 /* smaller banner */
 .sc-pb{min-height:100px !important;padding:8px 12px 16px !important;border-radius:20px !important;margin:2px 14px 10px !important}
@@ -15266,10 +15463,8 @@ function scFreeWord(){ try{ return SC_FREE_TX[displayLanguage] || "FREE"; }catch
 function scPromoActive(){
   var p = window.SC_PROMO; if(!p || !p.code) return false;
   var now = Date.now(); if(!(now >= p.from && now <= p.until)) return false;
-  /* Czech/Slovak site language counts as the Czech partner (T, 26/10): no link needed */
-  try{ if(displayLanguage === "cs" || displayLanguage === "sk") return true; }catch(e){}
-  var c = null; try{ c = scRefGet(); }catch(e){}
-  return c !== null && String(c) === String(p.code);
+  /* 30/10 (T): free delivery to the promo hotels for everyone, all languages */
+  return true;
 }
 function scPromoApply(){
   var on = scPromoActive();
