@@ -15456,10 +15456,48 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     ov.querySelector(".sc-hc-list").innerHTML = ""; ov.querySelector(".sc-hc-lt").textContent = "";
     if(h){ try{ selectHotel(h.name); }catch(e){} try{ var ch = document.getElementById("checkoutHotel"); if(ch) ch.value = h.name; }catch(e){} try{ localStorage.setItem("sc_hotel", h.name); }catch(e){} }
     try{ var cp = document.getElementById("cartPanel"); if(cp && cp.classList.contains("open")) renderCart(); }catch(e){}
-    try{ window.scTrack && window.scTrack("fd_check", (h ? (h.free ? "free|" : "paid|") + h.name : "nf|" + name).slice(0, 120)); }catch(e){}
+    try{ window.scTrack && window.scTrack("fd_check", (h ? (h.free ? "free|" : "paid|") + h.name : "nf|" + name).slice(0, 120)); }catch(e){}    try{ window.dispatchEvent(new Event("schotel")); }catch(e){}
   }
 
   window.scOpenHotelCheck = function(){ hcOpen(); };
+
+  /* 31/10 (T): Talabat-style "Deliver to" bar above the search. One hotel choice, used everywhere. */
+  var LB = {
+    en:{to:"Deliver to",pick:"Choose your hotel",d:"delivery",fr:"FREE delivery 🎉"},
+    cs:{to:"Doručit do",pick:"Vyberte svůj hotel",d:"doprava",fr:"Doprava ZDARMA 🎉"},
+    sk:{to:"Doručiť do",pick:"Vyberte svoj hotel",d:"doprava",fr:"Doprava ZADARMO 🎉"},
+    pl:{to:"Dostawa do",pick:"Wybierz swój hotel",d:"dostawa",fr:"Dostawa GRATIS 🎉"},
+    ru:{to:"Доставка в",pick:"Выберите свой отель",d:"доставка",fr:"Доставка БЕСПЛАТНО 🎉"},
+    ua:{to:"Доставка в",pick:"Оберіть свій готель",d:"доставка",fr:"Доставка БЕЗКОШТОВНО 🎉"},
+    de:{to:"Liefern an",pick:"Hotel auswählen",d:"Lieferung",fr:"GRATIS Lieferung 🎉"},
+    ar:{to:"التوصيل لـ",pick:"اختار فندقك",d:"توصيل",fr:"توصيل مجاني 🎉"}
+  };
+  function curHotel(){
+    var v = ""; try{ v = localStorage.getItem("sc_hotel") || (document.getElementById("checkoutHotel") || {}).value || ""; }catch(e){}
+    try{ return v ? findHotelByInput(v.trim()) : null; }catch(e){ return null; }
+  }
+  window.scCurHotel = curHotel;
+  var lb = null;
+  function lbRender(){
+    try{
+      var ctl = document.querySelector(".controls"); if(!ctl) return;
+      if(!lb){
+        lb = document.createElement("button"); lb.type = "button"; lb.className = "sc-lb";
+        lb.addEventListener("click", function(){ try{ window.scTrack && window.scTrack("loc_bar_open", curHotel() ? "set" : "empty"); }catch(e){} hcOpen(); });
+        ctl.insertBefore(lb, ctl.firstChild);
+      }
+      var t = LB[L()] || LB.en, h = curHotel();
+      lb.setAttribute("dir", L() === "ar" ? "rtl" : "ltr");
+      lb.classList.toggle("set", !!h);
+      lb.innerHTML = '<span class="sc-lb-pin">📍</span><span class="sc-lb-txt"><small>' + esc(t.to) + '</small><b>' + esc(h ? h.name : t.pick) + ' <i>▾</i></b></span>'
+        + (h ? '<span class="sc-lb-fee' + (h.free ? ' free' : '') + '">' + (h.free ? esc(t.fr) : esc(h.fee) + ' EGP <small>' + esc(t.d) + '</small>') + '</span>' : '');
+    }catch(e){}
+  }
+  window.addEventListener("schotel", function(){ lbRender(); try{ if(typeof renderCart === "function") renderCart(); }catch(e){} });
+  document.addEventListener("change", function(e){ if(e.target && e.target.id === "checkoutHotel") setTimeout(lbRender, 50); }, true);
+  window.scLbRender = lbRender;
+  setInterval(function(){ if(lb){ var k = L() + "|" + (curHotel() || {}).name + "|" + ((curHotel() || {}).free ? 1 : 0); if(lb.getAttribute("data-k") !== k){ lb.setAttribute("data-k", k); lbRender(); } } }, 1500);
+
   function place(){
     try{
       var top = document.querySelector(".controls"); if(!top) return;
@@ -15477,7 +15515,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   }
   function start(){
     if(!document.querySelector(".controls")) return setTimeout(start, 300);
-    place(); restart();
+    place(); restart(); lbRender();
     setInterval(place, 1000);
     window.addEventListener("resize", function(){ clearTimeout(window.__scHbF); window.__scHbF = setTimeout(fit, 150); });
     fetch(SB_URL + "/rest/v1/settings?select=value&key=eq.trust_reviews", { headers: SB_HEADERS })
@@ -15489,6 +15527,30 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 </script>
 
 <style id="sc-retention-css">
+.sc-lb{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;margin:0 0 8px;padding:7px 12px;border:1px solid #E3E8EF;border-radius:12px;background:#fff;cursor:pointer;text-align:start;font:inherit;color:#1F3151;min-height:44px}
+.sc-lb-pin{font-size:18px;flex:none}
+.sc-lb-txt{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.15}
+.sc-lb-txt small{font-size:11px;color:#667085;font-weight:600}
+.sc-lb-txt b{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-lb-txt b i{font-style:normal;font-size:11px;color:#2563EB}
+.sc-lb:not(.set) .sc-lb-txt b{color:#2563EB}
+.sc-lb-fee{flex:none;font-size:12.5px;font-weight:800;background:#F1F5F9;border-radius:999px;padding:5px 10px;white-space:nowrap}
+.sc-lb-fee small{font-weight:600;color:#667085;font-size:11px}
+.sc-lb-fee.free{background:#E7F7EE;color:#12804B}
+.sc-ch-pick{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;border:1.5px dashed #93B4F0;background:#F5F9FF;color:#2563EB;border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.sc-ch-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;background:#F4F7FB;border-radius:10px;font-size:13.5px}
+.sc-ch-name{flex:1;font-weight:700;color:#1F3151;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc-ch-chg{flex:none;border:0;background:none;color:#2563EB;font-size:12px;font-weight:600;padding:0 2px;cursor:pointer;text-decoration:underline}
+.sc-ch-fee{font-weight:800;color:#1F3151;white-space:nowrap}
+.sc-ch-fee.free{color:#12804B}
+.sc-ch-box{position:relative}
+#scChIn{width:100%;box-sizing:border-box;border:1.5px solid #CBD5E1;border-radius:10px;padding:10px 12px;font-size:14px;background:#fff;outline:none}
+#scChIn:focus{border-color:#2563EB}
+.sc-ch-sugg{display:none;position:absolute;left:0;right:0;bottom:100%;margin-bottom:4px;background:#fff;border:1px solid #E2E8F0;border-radius:10px;box-shadow:0 8px 24px rgba(15,23,42,.14);z-index:30;max-height:230px;overflow:auto;grid-template-columns:1fr}
+.sc-ch-sugg button{display:flex;justify-content:space-between;gap:8px;border:0;border-bottom:1px solid #F1F5F9;background:#fff;padding:10px 12px;text-align:start;font-size:13.5px;cursor:pointer}
+.sc-ch-sugg button small{font-weight:700;color:#1F3151;white-space:nowrap}
+.sc-ch-nf{display:none;font-size:12px;color:#667085;padding:6px 2px 0;line-height:1.35}
+
 .sc-nores{grid-column:1/-1;margin:6px 4px 14px;background:#fff;border:1px solid #F4D2B6;border-radius:18px;padding:16px;text-align:center;font-family:'Nunito',sans-serif;color:#1F3151}
 .sc-nores b{display:block;font-size:16px;font-weight:900;margin-bottom:4px}
 .sc-nores p{margin:0 0 10px;font-size:13px;color:#4a5872;font-weight:700}
@@ -15570,16 +15632,73 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   watchGrid();
 
   /* basket summary: products only (T, 30/10: no hotel row, no notes under the button) */
+  /* basket summary (T, 31/10): products total + ONE hotel field. The hotel is typed once here and carried to
+     checkout / "My hotel"; if we already know it, only the delivery price line shows. */
+  var CH = {
+    en:{h:"Your hotel",ph:"Choose your hotel → delivery price",d:"Delivery",tot:"Total",ch:"change",fr:"FREE 🎉",nf:"Not on our list — order anyway, we'll confirm the delivery price on WhatsApp."},
+    cs:{h:"Váš hotel",ph:"Vyberte hotel → cena dopravy",d:"Doprava",tot:"Celkem",ch:"změnit",fr:"ZDARMA 🎉",nf:"Hotel není v seznamu — objednejte i tak, cenu dopravy potvrdíme na WhatsAppu."},
+    sk:{h:"Váš hotel",ph:"Vyberte hotel → cena dopravy",d:"Doprava",tot:"Spolu",ch:"zmeniť",fr:"ZADARMO 🎉",nf:"Hotel nie je v zozname — objednajte aj tak, cenu dopravy potvrdíme na WhatsAppe."},
+    pl:{h:"Twój hotel",ph:"Twój hotel → cena dostawy",d:"Dostawa",tot:"Razem",ch:"zmień",fr:"GRATIS 🎉",nf:"Hotelu nie ma na liście — zamów mimo to, cenę dostawy potwierdzimy na WhatsApp."},
+    ru:{h:"Ваш отель",ph:"Ваш отель → цена доставки",d:"Доставка",tot:"Итого",ch:"изменить",fr:"БЕСПЛАТНО 🎉",nf:"Отеля нет в списке — оформляйте заказ, цену доставки подтвердим в WhatsApp."},
+    ua:{h:"Ваш готель",ph:"Ваш готель → ціна доставки",d:"Доставка",tot:"Разом",ch:"змінити",fr:"БЕЗКОШТОВНО 🎉",nf:"Готелю немає у списку — замовляйте, ціну доставки підтвердимо у WhatsApp."},
+    de:{h:"Ihr Hotel",ph:"Ihr Hotel → Lieferpreis",d:"Lieferung",tot:"Gesamt",ch:"ändern",fr:"GRATIS 🎉",nf:"Nicht auf unserer Liste — trotzdem bestellen, den Lieferpreis bestätigen wir per WhatsApp."},
+    ar:{h:"فندقك",ph:"فندقك ← سعر التوصيل",d:"التوصيل",tot:"الإجمالي",ch:"تغيير",fr:"مجاناً 🎉",nf:"الفندق مش في الليستة — اطلب عادي، وهنأكدلك سعر التوصيل على واتساب."}
+  };
+  function ct(){ var l = (typeof displayLanguage === "string" && displayLanguage) || "en"; return CH[l] || CH.en; }
+  var chEdit = false;
+  function knownHotel(){
+    var v = ""; try{ v = (document.getElementById("checkoutHotel") || {}).value || localStorage.getItem("sc_hotel") || ""; }catch(e){}
+    return v ? findH(v.trim()) : null;
+  }
+  function chPick(name){
+    var h = findH(name); if(!h) return;
+    try{ localStorage.setItem("sc_hotel", h.name); }catch(e){}
+    try{ var ch = document.getElementById("checkoutHotel"); if(ch){ ch.value = h.name; ch.dispatchEvent(new Event("input", {bubbles:true})); ch.dispatchEvent(new Event("change", {bubbles:true})); } }catch(e){}
+    try{ var hi = document.getElementById("hotelInput"); if(hi) hi.value = h.name; }catch(e){}
+    chEdit = false; track("cart_hotel_pick", (h.free ? "free|" : "paid|") + h.name.slice(0, 80));
+    cartExtras();
+  }
+  function chSugg(inp){
+    var box = document.getElementById("scChSugg"), msg = document.getElementById("scChNf"); if(!box) return;
+    var q = inp.value.trim(), arr = [];
+    if(q.length >= 2){ try{ arr = scHotelMatches(q, 6); }catch(e){} }
+    box.innerHTML = arr.map(function(h){ return '<button type="button" data-h="' + esc(h.name) + '"><span>' + esc(h.name) + '</span><small>' + (h.free ? esc(ct().fr) : esc(h.fee) + ' EGP') + '</small></button>'; }).join("");
+    box.style.display = arr.length ? "grid" : "none";
+    if(msg) msg.style.display = (q.length >= 4 && !arr.length) ? "block" : "none";
+  }
   function cartExtras(){
     try{
       var sum = document.getElementById("cartSummary"), foot = document.getElementById("cartFooter");
       if(!sum || !foot || foot.style.display === "none") return;
       var tot = 0, n = 0;
       for(var k in cart){ var q = Number(cart[k]) || 0, p = products[parseInt(k)]; if(q > 0 && p){ tot += livePrice(p) * q; n += q; } }
-      sum.innerHTML = '<div class="cart-row cart-total-row" style="border:0;padding-top:0;margin-top:0"><span class="cart-total-label">' + esc(T("products")) + ' (' + n + ')</span><span class="cart-total-val">' + tot + ' EGP<small>' + esc(approxText(tot)) + '</small></span></div>';
+      var c = ct(), h = chEdit ? null : knownHotel(), html = '';
+      if(h){
+        html += '<div class="cart-row" style="border:0;padding:0 0 6px;margin:0"><span class="cart-row-label">' + esc(T("products")) + ' (' + n + ')</span><span class="cart-row-val">' + tot + ' EGP</span></div>';
+        var fee = h.free ? 0 : (Number(h.fee) || 0);
+        html += '<div class="sc-ch-row"><span class="sc-ch-name">🏨 ' + esc(h.name) + '</span><button type="button" class="sc-ch-chg">' + esc(c.ch) + '</button><span class="sc-ch-fee' + (h.free ? ' free' : '') + '">' + (h.free ? esc(c.fr) : fee + ' EGP') + '</span></div>';
+        var all = tot + fee;
+        html += '<div class="cart-row cart-total-row" style="margin-top:6px"><span class="cart-total-label">' + esc(c.tot) + '</span><span class="cart-total-val">' + all + ' EGP<small>' + esc(approxText(all)) + '</small></span></div>';
+      }else{
+        html += '<button type="button" class="sc-ch-pick">📍 ' + esc(c.ph) + '</button>';
+        html += '<div class="cart-row cart-total-row" style="margin-top:6px"><span class="cart-total-label">' + esc(T("products")) + ' (' + n + ')</span><span class="cart-total-val">' + tot + ' EGP<small>' + esc(approxText(tot)) + '</small></span></div>';
+      }
+      var hadFocus = document.activeElement && document.activeElement.id === "scChIn", typed = hadFocus ? document.activeElement.value : "";
+      sum.innerHTML = html;
+      var inp = document.getElementById("scChIn");
+      if(inp){
+        if(hadFocus){ inp.value = typed; inp.focus(); chSugg(inp); }
+        inp.addEventListener("input", function(){ chSugg(inp); });
+        inp.addEventListener("keydown", function(e){ if(e.key === "Enter"){ e.preventDefault(); var b = document.querySelector("#scChSugg button"); if(b) chPick(b.getAttribute("data-h")); } });
+        inp.addEventListener("blur", function(){ setTimeout(function(){ var v = inp.value.trim(); if(v.length >= 3 && !findH(v)){ try{ var ch = document.getElementById("checkoutHotel"); if(ch && !ch.value) ch.value = v; }catch(e){} } }, 200); });
+      }
       var tr = foot.querySelector(".sc-trust"); if(tr) tr.remove();
     }catch(e){}
   }
+  document.addEventListener("mousedown", function(e){ var b = e.target.closest && e.target.closest("#scChSugg button"); if(b){ e.preventDefault(); chPick(b.getAttribute("data-h")); } }, true);
+  document.addEventListener("click", function(e){
+    if(e.target.closest && e.target.closest(".sc-ch-chg, .sc-ch-pick")){ try{ track("cart_hotel_open", e.target.closest(".sc-ch-pick") ? "empty" : "change"); window.scOpenHotelCheck(); }catch(_){} }
+  }, true);
   if(typeof renderCart === "function"){ var _rc = renderCart; renderCart = function(){ var r = _rc.apply(this, arguments); cartExtras(); return r; }; }
 
   /* 3) hotel not on the list → reassuring note in checkout */
