@@ -15483,13 +15483,20 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
       var ctl = document.querySelector(".controls"); if(!ctl) return;
       if(!lb){
         lb = document.createElement("button"); lb.type = "button"; lb.className = "sc-lb";
-        lb.addEventListener("click", function(){ try{ window.scTrack && window.scTrack("loc_bar_open", curHotel() ? "set" : "empty"); }catch(e){} hcOpen(); });
+        lb.addEventListener("click", function(){ try{ window.scTrack && window.scTrack("loc_bar_open", curHotel() ? "set" : "empty"); }catch(e){} lpToggle(); });
         /* 31/10 (T): search collapses to a 🔍 icon next to the bar; tap slides the search field open */
         var row = document.createElement("div"); row.className = "sc-lb-row";
         var sb = document.createElement("button"); sb.type = "button"; sb.className = "sc-sbtn"; sb.setAttribute("aria-label", "Search"); sb.innerHTML = '<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>';
         sb.addEventListener("click", function(){ scSearchToggle(); });
         row.appendChild(lb); row.appendChild(sb);
         ctl.insertBefore(row, ctl.firstChild);
+        lp = document.createElement("div"); lp.className = "sc-lp";
+        lp.innerHTML = '<input type="text" class="sc-lp-in" autocomplete="off"><div class="sc-lp-list"></div><div class="sc-lp-nf"></div>';
+        row.insertAdjacentElement("afterend", lp);
+        var lin = lp.querySelector(".sc-lp-in");
+        lin.addEventListener("input", function(){ lpList(lin.value); });
+        lin.addEventListener("keydown", function(e){ if(e.key === "Enter"){ e.preventDefault(); var f = lp.querySelector(".sc-lp-it"); if(f) lpPick(f.getAttribute("data-n")); } if(e.key === "Escape") lpToggle(false); });
+        lp.addEventListener("mousedown", function(e){ var it = e.target.closest(".sc-lp-it"); if(it){ e.preventDefault(); lpPick(it.getAttribute("data-n")); } });
         ctl.classList.add("sc-s-col");
         var si = document.getElementById("searchInput");
         if(si){
@@ -15507,10 +15514,40 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   window.addEventListener("schotel", function(){ lbRender(); try{ if(typeof renderCart === "function") renderCart(); }catch(e){} });
   document.addEventListener("change", function(e){ if(e.target && e.target.id === "checkoutHotel") setTimeout(lbRender, 50); }, true);
   window.scLbRender = lbRender;
+  /* inline hotel picker under the bar (T, 31/10: no separate page — just type the hotel) */
+  var lp = null;
+  var LP = {en:{ph:"Type your hotel name…",nf:"Not on our list — you can still order, we'll confirm the delivery price on WhatsApp."},cs:{ph:"Napište název hotelu…",nf:"Hotel není v seznamu — objednat můžete i tak, cenu dopravy potvrdíme na WhatsAppu."},sk:{ph:"Napíšte názov hotela…",nf:"Hotel nie je v zozname — objednať môžete aj tak, cenu dopravy potvrdíme na WhatsAppe."},pl:{ph:"Wpisz nazwę hotelu…",nf:"Hotelu nie ma na liście — możesz zamówić, cenę dostawy potwierdzimy na WhatsApp."},ru:{ph:"Введите название отеля…",nf:"Отеля нет в списке — заказать можно, цену доставки подтвердим в WhatsApp."},ua:{ph:"Введіть назву готелю…",nf:"Готелю немає у списку — замовити можна, ціну доставки підтвердимо у WhatsApp."},de:{ph:"Hotelnamen eingeben…",nf:"Nicht auf unserer Liste — Sie können trotzdem bestellen, den Lieferpreis bestätigen wir per WhatsApp."},ar:{ph:"اكتب اسم فندقك…",nf:"الفندق مش في الليستة — تقدر تطلب عادي، وهنأكدلك سعر التوصيل على واتساب."}};
+  function lpT(){ return LP[L()] || LP.en; }
+  function lpToggle(open){
+    if(!lp) return; var ctl = document.querySelector(".controls");
+    if(open === undefined) open = !lp.classList.contains("on");
+    lp.classList.toggle("on", !!open); if(ctl) ctl.classList.toggle("sc-lp-open", !!open);
+    if(open){ try{ window.scSearchToggle && window.scSearchToggle(false); }catch(e){} var i = lp.querySelector(".sc-lp-in"); i.placeholder = lpT().ph; i.value = ""; lpList(""); setTimeout(function(){ try{ i.focus({preventScroll:true}); }catch(e){ i.focus(); } }, 60); }
+  }
+  window.scLpToggle = lpToggle;
+  function lpList(q){
+    var box = lp.querySelector(".sc-lp-list"), nf = lp.querySelector(".sc-lp-nf"), arr = [];
+    q = String(q || "").trim();
+    if(q.length >= 2){ try{ arr = scHotelMatches(q, 7); }catch(e){} }
+    else { arr = (hotels || []).filter(function(h){ return h.free; }).slice(0, 0); }
+    box.innerHTML = arr.map(function(h){ return '<button type="button" class="sc-lp-it" data-n="' + esc(h.name) + '"><span>' + esc(h.name) + '</span>' + badge(h) + '</button>'; }).join("");
+    nf.textContent = (q.length >= 4 && !arr.length) ? "ℹ️ " + lpT().nf : "";
+  }
+  function lpPick(name){
+    var h = null; try{ h = findHotelByInput(name); }catch(e){}
+    if(!h) return;
+    try{ localStorage.setItem("sc_hotel", h.name); }catch(e){}
+    try{ selectHotel(h.name); }catch(e){}
+    try{ var ch = document.getElementById("checkoutHotel"); if(ch){ ch.value = h.name; ch.dispatchEvent(new Event("change", {bubbles:true})); } }catch(e){}
+    try{ window.scTrack && window.scTrack("fd_check", ((h.free ? "free|" : "paid|") + h.name + "|bar").slice(0, 120)); }catch(e){}
+    lpToggle(false); lbRender();
+    try{ window.dispatchEvent(new Event("schotel")); }catch(e){}
+  }
   window.scSearchToggle = function(open){
     var ctl = document.querySelector(".controls"), si = document.getElementById("searchInput"); if(!ctl) return;
     if(open === undefined) open = !ctl.classList.contains("sc-s-open");
     ctl.classList.toggle("sc-s-open", !!open);
+    if(open){ try{ lpToggle(false); }catch(e){} }
     if(open && si){ try{ si.focus({preventScroll:true}); }catch(e){ si.focus(); } try{ window.scTrack && window.scTrack("search_open", L(), true); }catch(e){} }
     if(!open && si && si.value){ si.value = ""; try{ handleSearchInput(); }catch(e){} }
   };
@@ -15546,6 +15583,17 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 
 <style id="sc-retention-css">
 .sc-lb-row{display:flex;gap:8px;align-items:stretch}
+.sc-lp{max-height:0;opacity:0;overflow:hidden;transition:max-height .28s ease,opacity .2s ease,margin .28s ease;margin:0}
+.sc-lp.on{max-height:420px;opacity:1;margin-top:8px}
+.sc-lp-in{width:100%;box-sizing:border-box;border:1.5px solid #2563EB;border-radius:12px;padding:11px 12px;font-size:15px;background:#fff;outline:none}
+.sc-lp-list{display:grid;margin-top:6px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(15,23,42,.08)}
+.sc-lp-list:empty{display:none}
+.sc-lp-it{display:flex;justify-content:space-between;align-items:center;gap:8px;border:0;border-bottom:1px solid #F1F5F9;background:#fff;padding:11px 12px;text-align:start;font:inherit;font-size:14px;color:#1F3151;cursor:pointer}
+.sc-lp-it em{font-style:normal;font-weight:800;font-size:12.5px;color:#12804B;white-space:nowrap}
+.sc-lp-it em.p{color:#1F3151}
+.sc-lp-nf{font-size:12.5px;color:#667085;padding:6px 2px 0;line-height:1.35}
+.sc-lp-nf:empty{display:none}
+.controls.sc-lp-open .sc-lb{border-color:#2563EB}
 .sc-lb-row .sc-lb{flex:1;min-width:0;margin:0 !important}
 .sc-sbtn{flex:none;width:46px;border:1px solid #E3E8EF;border-radius:12px;background:#fff;color:#1F3151;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
 .controls.sc-s-open .sc-sbtn{background:#1F3151;color:#fff;border-color:#1F3151}
@@ -15660,9 +15708,9 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   /* basket summary (T, 31/10): products total + ONE hotel field. The hotel is typed once here and carried to
      checkout / "My hotel"; if we already know it, only the delivery price line shows. */
   var CH = {
-    en:{h:"Your hotel",ph:"Choose your hotel → delivery price",d:"Delivery",tot:"Total",ch:"change",fr:"FREE 🎉",nf:"Not on our list — order anyway, we'll confirm the delivery price on WhatsApp."},
-    cs:{h:"Váš hotel",ph:"Vyberte hotel → cena dopravy",d:"Doprava",tot:"Celkem",ch:"změnit",fr:"ZDARMA 🎉",nf:"Hotel není v seznamu — objednejte i tak, cenu dopravy potvrdíme na WhatsAppu."},
-    sk:{h:"Váš hotel",ph:"Vyberte hotel → cena dopravy",d:"Doprava",tot:"Spolu",ch:"zmeniť",fr:"ZADARMO 🎉",nf:"Hotel nie je v zozname — objednajte aj tak, cenu dopravy potvrdíme na WhatsAppe."},
+    en:{h:"Your hotel",ph:"Your hotel → delivery price",d:"Delivery",tot:"Total",ch:"change",fr:"FREE 🎉",nf:"Not on our list — order anyway, we'll confirm the delivery price on WhatsApp."},
+    cs:{h:"Váš hotel",ph:"Váš hotel → cena dopravy",d:"Doprava",tot:"Celkem",ch:"změnit",fr:"ZDARMA 🎉",nf:"Hotel není v seznamu — objednejte i tak, cenu dopravy potvrdíme na WhatsAppu."},
+    sk:{h:"Váš hotel",ph:"Váš hotel → cena dopravy",d:"Doprava",tot:"Spolu",ch:"zmeniť",fr:"ZADARMO 🎉",nf:"Hotel nie je v zozname — objednajte aj tak, cenu dopravy potvrdíme na WhatsAppe."},
     pl:{h:"Twój hotel",ph:"Twój hotel → cena dostawy",d:"Dostawa",tot:"Razem",ch:"zmień",fr:"GRATIS 🎉",nf:"Hotelu nie ma na liście — zamów mimo to, cenę dostawy potwierdzimy na WhatsApp."},
     ru:{h:"Ваш отель",ph:"Ваш отель → цена доставки",d:"Доставка",tot:"Итого",ch:"изменить",fr:"БЕСПЛАТНО 🎉",nf:"Отеля нет в списке — оформляйте заказ, цену доставки подтвердим в WhatsApp."},
     ua:{h:"Ваш готель",ph:"Ваш готель → ціна доставки",d:"Доставка",tot:"Разом",ch:"змінити",fr:"БЕЗКОШТОВНО 🎉",nf:"Готелю немає у списку — замовляйте, ціну доставки підтвердимо у WhatsApp."},
@@ -15682,6 +15730,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     try{ var hi = document.getElementById("hotelInput"); if(hi) hi.value = h.name; }catch(e){}
     chEdit = false; track("cart_hotel_pick", (h.free ? "free|" : "paid|") + h.name.slice(0, 80));
     cartExtras();
+    try{ window.scLbRender && window.scLbRender(); }catch(e){}
   }
   function chSugg(inp){
     var box = document.getElementById("scChSugg"), msg = document.getElementById("scChNf"); if(!box) return;
@@ -15705,7 +15754,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
         var all = tot + fee;
         html += '<div class="cart-row cart-total-row" style="margin-top:6px"><span class="cart-total-label">' + esc(c.tot) + '</span><span class="cart-total-val">' + all + ' EGP<small>' + esc(approxText(all)) + '</small></span></div>';
       }else{
-        html += '<button type="button" class="sc-ch-pick">📍 ' + esc(c.ph) + '</button>';
+        html += '<div class="sc-ch-box"><input id="scChIn" type="text" autocomplete="off" placeholder="📍 ' + esc(c.ph) + '"><div id="scChSugg" class="sc-ch-sugg"></div><div id="scChNf" class="sc-ch-nf">ℹ️ ' + esc(c.nf) + '</div></div>';
         html += '<div class="cart-row cart-total-row" style="margin-top:6px"><span class="cart-total-label">' + esc(T("products")) + ' (' + n + ')</span><span class="cart-total-val">' + tot + ' EGP<small>' + esc(approxText(tot)) + '</small></span></div>';
       }
       var hadFocus = document.activeElement && document.activeElement.id === "scChIn", typed = hadFocus ? document.activeElement.value : "";
@@ -15722,7 +15771,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   }
   document.addEventListener("mousedown", function(e){ var b = e.target.closest && e.target.closest("#scChSugg button"); if(b){ e.preventDefault(); chPick(b.getAttribute("data-h")); } }, true);
   document.addEventListener("click", function(e){
-    if(e.target.closest && e.target.closest(".sc-ch-chg, .sc-ch-pick")){ try{ track("cart_hotel_open", e.target.closest(".sc-ch-pick") ? "empty" : "change"); window.scOpenHotelCheck(); }catch(_){} }
+    if(e.target.closest && e.target.closest(".sc-ch-chg")){ try{ track("cart_hotel_open", "change"); }catch(_){} chEdit = true; cartExtras(); setTimeout(function(){ var i = document.getElementById("scChIn"); if(i) i.focus(); }, 30); }
   }, true);
   if(typeof renderCart === "function"){ var _rc = renderCart; renderCart = function(){ var r = _rc.apply(this, arguments); cartExtras(); return r; }; }
 
