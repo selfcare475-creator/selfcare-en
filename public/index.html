@@ -15488,12 +15488,15 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
         var row = document.createElement("div"); row.className = "sc-lb-row";
         var sb = document.createElement("button"); sb.type = "button"; sb.className = "sc-sbtn"; sb.setAttribute("aria-label", "Search"); sb.innerHTML = '<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>';
         sb.addEventListener("click", function(){ scSearchToggle(); });
-        row.appendChild(lb); row.appendChild(sb);
+        row.appendChild(lb);
         ctl.insertBefore(row, ctl.firstChild);
+        /* 31/10 (T): product search icon lives in the header, next to the language/currency chip */
+        var chip = document.getElementById("scPrefsChip");
+        if(chip && chip.parentNode){ sb.classList.add("sc-sbtn-h"); chip.parentNode.insertBefore(sb, chip); } else { row.appendChild(sb); }
         /* the bar itself becomes the text field (T, 31/10) */
         var fld = document.createElement("label"); fld.className = "sc-lp-fld";
         fld.innerHTML = '<span class="sc-lb-pin">📍</span><input type="text" class="sc-lp-in" autocomplete="off" enterkeyhint="search">';
-        row.insertBefore(fld, sb);
+        row.appendChild(fld);
         lp = document.createElement("div"); lp.className = "sc-lp";
         lp.innerHTML = '<div class="sc-lp-list"></div><div class="sc-lp-nf"></div>';
         row.insertAdjacentElement("afterend", lp);
@@ -15552,6 +15555,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     var ctl = document.querySelector(".controls"), si = document.getElementById("searchInput"); if(!ctl) return;
     if(open === undefined) open = !ctl.classList.contains("sc-s-open");
     ctl.classList.toggle("sc-s-open", !!open);
+    try{ var hb = document.querySelector(".sc-sbtn"); if(hb) hb.classList.toggle("on", !!open); }catch(e){}
     if(open){ try{ lpToggle(false); }catch(e){} }
     if(open && si){ try{ si.focus({preventScroll:true}); }catch(e){ si.focus(); } try{ window.scTrack && window.scTrack("search_open", L(), true); }catch(e){} }
     if(!open && si && si.value){ si.value = ""; try{ handleSearchInput(); }catch(e){} }
@@ -15605,6 +15609,12 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 .sc-lb-row .sc-lb{flex:1;min-width:0;margin:0 !important}
 .sc-sbtn{flex:none;width:46px;border:1px solid #E3E8EF;border-radius:12px;background:#fff;color:#1F3151;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
 .controls.sc-s-open .sc-sbtn{background:#1F3151;color:#fff;border-color:#1F3151}
+html body header .sc-sbtn-h{margin-left:auto;width:38px;height:38px;border-radius:999px;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.35);color:#fff}
+html body header .sc-sbtn-h + .sc-hchip{margin-left:0}
+html body header .sc-sbtn-h.on{background:#fff;color:#C24A17;border-color:#fff}
+html body header .logo{font-size:15px!important}
+@media(max-width:380px){html body header{gap:7px!important;padding:9px 10px!important}html body header .logo{font-size:13px!important}html body header .sc-hlogo{flex-basis:36px;width:36px;height:36px}html body header .sc-sbtn-h{width:34px;height:34px}html body header .sc-hchip{padding:6px 8px 6px 9px;font-size:12.5px;gap:4px}}
+@media(max-width:340px){html body header .logo{font-size:12px!important}html body header .sc-sbtn-h{width:32px;height:32px}}
 .controls.sc-s-col{gap:0 !important}
 .controls.sc-s-col .search-wrap{max-height:0;opacity:0;overflow:hidden;margin:0 !important;transform:translateY(-6px);transition:max-height .28s ease,opacity .2s ease,transform .28s ease,margin .28s ease}
 .controls.sc-s-col.sc-s-open .search-wrap{max-height:80px;opacity:1;transform:none;margin-top:8px !important;overflow:visible}
