@@ -7627,7 +7627,7 @@ function scNavUpdate(){
     if(l){ l.textContent = n > 0 ? String(approxText(sum)).replace(/^≈\s*/, "") : T("basket"); }
   }catch(e){}
 }
-function scNavSearch(){ var i = document.getElementById("searchInput"); if(!i) return; try{ i.scrollIntoView({block: "center", behavior: "smooth"}); }catch(e){} setTimeout(function(){ try{ i.focus({preventScroll: true}); }catch(e){ i.focus(); } }, 250); }
+function scNavSearch(){ var i = document.getElementById("searchInput"); if(!i) return; try{ if(window.scSearchToggle) window.scSearchToggle(true); }catch(e){} try{ i.scrollIntoView({block: "center", behavior: "smooth"}); }catch(e){} setTimeout(function(){ try{ i.focus({preventScroll: true}); }catch(e){ i.focus(); } }, 250); }
 function scNavHome(){ try{ window.scrollTo({top: 0, behavior: "smooth"}); }catch(e){ window.scrollTo(0, 0); } }
 
 /* product names: fit each name in its fixed 2-line box — smaller font (and 3 short lines) only when needed */
@@ -15484,7 +15484,18 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
       if(!lb){
         lb = document.createElement("button"); lb.type = "button"; lb.className = "sc-lb";
         lb.addEventListener("click", function(){ try{ window.scTrack && window.scTrack("loc_bar_open", curHotel() ? "set" : "empty"); }catch(e){} hcOpen(); });
-        ctl.insertBefore(lb, ctl.firstChild);
+        /* 31/10 (T): search collapses to a 🔍 icon next to the bar; tap slides the search field open */
+        var row = document.createElement("div"); row.className = "sc-lb-row";
+        var sb = document.createElement("button"); sb.type = "button"; sb.className = "sc-sbtn"; sb.setAttribute("aria-label", "Search"); sb.innerHTML = '<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>';
+        sb.addEventListener("click", function(){ scSearchToggle(); });
+        row.appendChild(lb); row.appendChild(sb);
+        ctl.insertBefore(row, ctl.firstChild);
+        ctl.classList.add("sc-s-col");
+        var si = document.getElementById("searchInput");
+        if(si){
+          if(si.value) ctl.classList.add("sc-s-open");
+          si.addEventListener("blur", function(){ setTimeout(function(){ if(!si.value.trim() && document.activeElement !== si) scSearchToggle(false); }, 150); });
+        }
       }
       var t = LB[L()] || LB.en, h = curHotel();
       lb.setAttribute("dir", L() === "ar" ? "rtl" : "ltr");
@@ -15496,6 +15507,13 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   window.addEventListener("schotel", function(){ lbRender(); try{ if(typeof renderCart === "function") renderCart(); }catch(e){} });
   document.addEventListener("change", function(e){ if(e.target && e.target.id === "checkoutHotel") setTimeout(lbRender, 50); }, true);
   window.scLbRender = lbRender;
+  window.scSearchToggle = function(open){
+    var ctl = document.querySelector(".controls"), si = document.getElementById("searchInput"); if(!ctl) return;
+    if(open === undefined) open = !ctl.classList.contains("sc-s-open");
+    ctl.classList.toggle("sc-s-open", !!open);
+    if(open && si){ try{ si.focus({preventScroll:true}); }catch(e){ si.focus(); } try{ window.scTrack && window.scTrack("search_open", L(), true); }catch(e){} }
+    if(!open && si && si.value){ si.value = ""; try{ handleSearchInput(); }catch(e){} }
+  };
   setInterval(function(){ if(lb){ var k = L() + "|" + (curHotel() || {}).name + "|" + ((curHotel() || {}).free ? 1 : 0); if(lb.getAttribute("data-k") !== k){ lb.setAttribute("data-k", k); lbRender(); } } }, 1500);
 
   function place(){
@@ -15527,6 +15545,13 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
 </script>
 
 <style id="sc-retention-css">
+.sc-lb-row{display:flex;gap:8px;align-items:stretch}
+.sc-lb-row .sc-lb{flex:1;min-width:0;margin:0 !important}
+.sc-sbtn{flex:none;width:46px;border:1px solid #E3E8EF;border-radius:12px;background:#fff;color:#1F3151;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.controls.sc-s-open .sc-sbtn{background:#1F3151;color:#fff;border-color:#1F3151}
+.controls.sc-s-col{gap:0 !important}
+.controls.sc-s-col .search-wrap{max-height:0;opacity:0;overflow:hidden;margin:0 !important;transform:translateY(-6px);transition:max-height .28s ease,opacity .2s ease,transform .28s ease,margin .28s ease}
+.controls.sc-s-col.sc-s-open .search-wrap{max-height:80px;opacity:1;transform:none;margin-top:8px !important;overflow:visible}
 .sc-lb{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;margin:0 0 8px;padding:7px 12px;border:1px solid #E3E8EF;border-radius:12px;background:#fff;cursor:pointer;text-align:start;font:inherit;color:#1F3151;min-height:44px}
 .sc-lb-pin{font-size:18px;flex:none}
 .sc-lb-txt{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.15}
