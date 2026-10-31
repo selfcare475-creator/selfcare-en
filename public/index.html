@@ -10905,6 +10905,81 @@ bestSellerRank = function(productName){
   return bestSellerRankMap.has(productName) ? bestSellerRankMap.get(productName) : 999;
 };
 
+
+/* 31/10 (T): typo-tolerant search. Runs ONLY when the normal search finds nothing,
+   so normal searching costs exactly the same as before. Vocabulary is built once, lazily. */
+var scFzVocab = null;
+var scFzAlias = {"ibisek":"hibiscus","ibisku":"hibiscus","ibiskovy":"hibiscus","ibiskv":"hibiscus","zinkovy":"zinc","zinek":"zinc","zinkova":"zinc","horcik":"magnesium","kolagen":"collagen","kollagen":"collagen","colegen":"collagen","asprin":"aspirin","aspirine":"aspirin","paracetamol":"panadol","ibuprofen":"brufen","ibalgin":"brufen","nurofen":"brufen","opalovaci":"sunscreen","sonnencreme":"sunscreen","repelent":"repellent","komar":"repellent","mucke":"repellent"};
+function scFzLev(a, b, max){
+  var la = a.length, lb = b.length; if(Math.abs(la - lb) > max) return max + 1;
+  var prev = new Array(lb + 1), cur = new Array(lb + 1), i, j;
+  for(j = 0; j <= lb; j++) prev[j] = j;
+  for(i = 1; i <= la; i++){
+    cur[0] = i; var rowMin = i, ca = a.charCodeAt(i - 1);
+    for(j = 1; j <= lb; j++){
+      var c = prev[j - 1] + (ca === b.charCodeAt(j - 1) ? 0 : 1);
+      if(prev[j] + 1 < c) c = prev[j] + 1;
+      if(cur[j - 1] + 1 < c) c = cur[j - 1] + 1;
+      cur[j] = c; if(c < rowMin) rowMin = c;
+    }
+    if(rowMin > max) return max + 1;
+    var t = prev; prev = cur; cur = t;
+  }
+  return prev[lb];
+}
+function scFzBuild(){
+  var set = Object.create(null);
+  products.forEach(function(p){ (p._searchName || normalizeText(p.name)).split(" ").forEach(function(w){ w = w.replace(/[+.\-]+$/, ""); if(w.length >= 3 && !/^[0-9.,%+-]+$/.test(w)) set[w] = 1; }); });
+  scFzVocab = Object.keys(set);
+  scFzGen = Object.keys(scFzGenMap);
+}
+/* active-ingredient names -> the brand we sell (typo tolerant too) */
+var scFzGenMap = {"azithromycin":"xithrone","azitromycin":"xithrone","azithromicin":"xithrone","amoxicillin":"ibiamox","amoxicilin":"ibiamox","paracetamol":"panadol","ibuprofen":"brufen","diclofenac":"voltaren","cetirizine":"zyrtec","fexofenadine":"telfast","loratadine":"claritine","esomeprazole":"nexium","levofloxacin":"tavanic","melatonin":"melatonin","ketoprofen":"profenid"};
+var scFzGen = [];
+function scFzWords(tok){
+  if(scFzAlias[tok]) return [scFzAlias[tok]];
+  if(tok.length < 4) return null;
+  var max = tok.length >= 6 ? 2 : 1, best = max + 1, out = [];
+  if(tok.length >= 5){
+    for(var g = 0; g < scFzGen.length; g++){
+      var gw = scFzGen[g], gd = scFzLev(tok, gw, max);
+      if(gw.length > tok.length){ var gd2 = scFzLev(tok, gw.slice(0, tok.length), max); if(gd2 < gd) gd = gd2; }
+      if(gd <= max) return [scFzGenMap[gw]];
+    }
+  }
+  for(var i = 0; i < scFzVocab.length; i++){
+    var w = scFzVocab[i], d = scFzLev(tok, w, max);
+    if(w.length > tok.length){ var d2 = scFzLev(tok, w.slice(0, tok.length), max); if(d2 < d) d = d2; }
+    if(d < best){ best = d; out = [w]; } else if(d === best && d <= max){ out.push(w); }
+  }
+  return best <= max ? out.slice(0, 6) : null;
+}
+function scFuzzySearch(q){
+  try{
+    if(!q || q.length < 4 || q.length > 40) return null;
+    if(!scFzVocab) scFzBuild();
+    var toks = q.split(" ").filter(function(t){ return t.length > 1; });
+    if(!toks.length || toks.length > 4) return null;
+    var groups = [], label = [], missed = 0;
+    for(var i = 0; i < toks.length; i++){
+      var t = toks[i], ws = scFzWords(t);
+      if(!ws){ if(t.length < 4) { groups.push([t]); label.push(t); continue; } missed++; continue; }
+      groups.push(ws); label.push(ws[0]);
+    }
+    /* a word we do not carry at all (e.g. "bisglicinate") is dropped; at least one real word must remain */
+    if(!groups.some(function(g){ return g[0].length >= 4; })) return null;
+    var res = [];
+    products.forEach(function(p, idx){
+      var name = p._searchName || normalizeText(p.name);
+      if(groups.every(function(g){ return g.some(function(w){ return name.indexOf(w) >= 0; }); })) res.push({p: p, idx: idx});
+    });
+    if(!res.length) return null;
+    res.sort(function(a, b){ return ((isOutOfStock(a.p.name) ? 1 : 0) - (isOutOfStock(b.p.name) ? 1 : 0)) || (categoryPriorityScore(b.p) - categoryPriorityScore(a.p)) || productSortKey(a.p).localeCompare(productSortKey(b.p)); });
+    return { list: res, label: label.join(" ") };
+  }catch(e){ return null; }
+}
+var scFzLastLogged = "";
+
 let searchDataCache = { raw: null, data: null };
 
 function getSearchData(query){
@@ -11516,6 +11591,14 @@ function renderGrid() {
   }else{
     filtered = getFastCategorySource(false) || [];
   }
+  let scFzLabel = "";
+  if(hasSearch && !filtered.length){
+    const fz = scFuzzySearch(searchData.q);
+    if(fz){
+      filtered = fz.list; scFzLabel = fz.label;
+      if(scFzLastLogged !== searchData.q){ scFzLastLogged = searchData.q; try{ if(typeof window.scTrack === "function") window.scTrack("search_fuzzy", (searchData.q + "|" + fz.label + "|" + fz.list.length).slice(0, 90)); }catch(e){} }
+    }
+  }
 
   const totalMatches = filtered.length;
   const renderedCount = Math.min(totalMatches, fastGridVisibleLimit);
@@ -11571,6 +11654,17 @@ function renderGrid() {
       </div>
     </div>`;
   }).join("") + fastLoadMoreHtml(renderedCount,totalMatches);
+  if(scFzLabel){
+    try{
+      var fzTx = {en:"Showing results for",cs:"Zobrazuji výsledky pro",sk:"Zobrazujem výsledky pre",pl:"Wyniki dla",ru:"Показаны результаты для",ua:"Показано результати для",uk:"Показано результати для",de:"Ergebnisse für",ar:"نتائج البحث عن"};
+      var fzD = document.createElement("div");
+      fzD.className = "sc-fz-note";
+      fzD.style.cssText = "grid-column:1/-1;font-size:13px;color:#667085;padding:2px 4px 4px";
+      fzD.textContent = (fzTx[displayLanguage] || fzTx.en) + ": ";
+      var fzB = document.createElement("b"); fzB.style.color = "#101828"; fzB.textContent = scFzLabel; fzD.appendChild(fzB);
+      grid.insertBefore(fzD, grid.firstChild);
+    }catch(e){}
+  }
   try{ scFitNames(); scFoldFix(); }catch(e){}
 }
 
