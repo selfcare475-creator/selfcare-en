@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><noscript><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 <style>
 :root {
   --primary: #2D4876;
@@ -11545,8 +11545,21 @@ async function buildFastCategoryBucketsAsync(){
   fastCategoryBuckets = buckets;
   if(typeof smoothRenderGridSoon === "function") smoothRenderGridSoon();
 }
+/* 1/11 (T): first screen fast — build only the Best-sellers list before the first paint,
+   build every other category right after (chunked). If a category is opened before that finishes,
+   build it all at once then (same result as before). */
+function buildTopOnlyBuckets(){
+  const b = makeFastBucketsObject();
+  if(b.top && b.top["Best sellers"]){
+    products.forEach((p, idx)=>{ if(isBestSeller(p.name)) b.top["Best sellers"].push({p, idx}); });
+    sortFastBucket(b.top["Best sellers"], "top", "Best sellers");
+  }
+  b.__partial = true;
+  fastCategoryBuckets = b;
+}
 function getFastCategorySource(hasSearch){
   if(hasSearch || !fastCategoryBuckets) return null;
+  if(fastCategoryBuckets.__partial && activeMain !== "top") buildFastCategoryBuckets();
   const sub = activeMain === "top" ? "Best sellers" : activeFilter;
   return (fastCategoryBuckets[activeMain] && fastCategoryBuckets[activeMain][sub]) ? fastCategoryBuckets[activeMain][sub] : [];
 }
@@ -12506,8 +12519,10 @@ loadSplitCatalogData().then(()=>{
   updateCartBadge();
   applyDynOverlayCache();
   try { if(typeof rebuildBestSellersFromProducts === "function") rebuildBestSellersFromProducts("en"); } catch(e){}
-  buildFastCategoryBuckets();
+  var scTopFirst = activeMain === "top" && !String(searchTerm || "").trim();
+  if(scTopFirst) buildTopOnlyBuckets(); else buildFastCategoryBuckets();
   buildFilters();
+  if(scTopFirst) setTimeout(function(){ if(fastCategoryBuckets && fastCategoryBuckets.__partial) buildFastCategoryBucketsAsync(); }, 400);
   requestAnimationFrame(()=>{ smoothRenderGridNow(); try{ var ms = Date.now() - (window.__scT0 || Date.now()); setTimeout(function(){ if(window.scTrack) window.scTrack("grid_ready", ms + "ms|" + (window.__scCatLocal ? "local" : "net")); }, 1500); }catch(e){} });
 
   scheduleNonCriticalWork(()=>{
