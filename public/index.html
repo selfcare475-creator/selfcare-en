@@ -6640,7 +6640,7 @@ body { padding-bottom: 34px !important; }
 header .cart-btn{white-space:nowrap;overflow:visible!important;position:relative}header .cart-btn .cart-badge{z-index:5}#cartBtnText{overflow:hidden;text-overflow:ellipsis}
 </style>
 <script>/* catalog: use the copy saved on this phone straight away (instant products on repeat visits), refresh it in the background */
-window.__scT0=Date.now();window.__scCat=(function(){function g(u,k){var net=fetch(u,{cache:"force-cache"}).then(function(r){return r.ok?r.text():null}).then(function(t){if(!t)return null;try{localStorage.setItem(k,u+"\n"+t)}catch(e){}return JSON.parse(t)}).catch(function(){return null});try{var c=localStorage.getItem(k);if(c){var i=c.indexOf("\n");if(c.slice(0,i)===u){window.__scCatLocal=1;return Promise.resolve(JSON.parse(c.slice(i+1)))}}}catch(e){}return net}try{return{p:g("products-en.json?v=35m1","sc_cat_p"),k:g("kits-en.json?v=45","sc_cat_k")}}catch(e){return null}})();</script>
+window.__scT0=Date.now();window.__scCat=(function(){function g(u,k){var net=fetch(u,{cache:"force-cache"}).then(function(r){return r.ok?r.text():null}).then(function(t){if(!t)return null;try{localStorage.setItem(k,u+"\n"+t)}catch(e){}return JSON.parse(t)}).catch(function(){return null});try{var c=localStorage.getItem(k);if(c){var i=c.indexOf("\n");if(c.slice(0,i)===u){window.__scCatLocal=1;return Promise.resolve(JSON.parse(c.slice(i+1)))}}}catch(e){}return net}try{return{p:g("products-en.json?v=35m2","sc_cat_p"),k:g("kits-en.json?v=45","sc_cat_k")}}catch(e){return null}})();</script>
 <style>
 @keyframes sc-wa-pulse {
   0%, 100% { transform: scale(1); box-shadow: 0 10px 24px rgba(37,211,102,.45); }
@@ -9707,105 +9707,26 @@ function requestGridRender(){
   });
 }
 
-const STATIC_BEST_SELLER_NAMES = [
-  "Antinal 24 capsules",
-  "Ozempic 1 mg injection pen",
-  "Voltaren gel 100 g",
-  "Augmentin 14 tablets",
-  "Acretin 0,05% cream",
-  "Acretin 0,025% cream",
-  "Azaderm cream",
-  "Bepanthen cream",
-  "Zovirax cream",
-  "Orly 30 capsules",
-  "Zyrtec 10 mg 20 tablets",
-  "Otrivin drops Adults",
-  "Panadol 48 tablets",
-  "OFF repellent spray",
-  "Attoveloce Vapo Rub",
-  "Omez 20 mg 14 capsules",
-  "Rennie 24 chewable tablets",
-  "Dermovate cream",
-  "Betaderm cream 30 g",
-  "Biotin 1000 mcg 60 tablets",
-  "Infinity Retinol Face Serum",
-  "Infinity Retinol Face Cream",
-  "Wegovy 1 mg injection pen",
-  "Panadol Extra 24 tablets",
-  "Brufen 600 mg 30 tablets",
-  "Amigraine 30 tablets",
-  "Catafast 9 sachets",
-  "Diclac 150 mg 20 tablets",
-  "Novalgin oblong 10 tablets",
-  "Diclac gel 4% 50 g",
-  "Dolphin gel",
-  "Gaviscon suspension",
-  "Motilium 40 tablets",
-  "Duspatalin Retard 30 capsules",
-  "Enterogermina 2 Billion oral suspension",
-  "Spasmo Digestin 30 tablets",
-  "Alzental suspension",
-  "ORS 10 sachets",
-  "Antinal syrup",
-  "Streptoquin 20 tablets",
-  "Xithrone 500 mg 5 tablets",
-  "Iverzine 24 tablets",
-  "G.C. MOL 6 sachets",
-  "Larypro lozenges",
-  "Normifrin spray",
-  "Bronchicum Ivy syrup",
-  "Bronchicum Elixir syrup",
-  "Coldatrexy cold & flu 30 tablets",
-  "Sinupret Forte 50 tablets",
-  "Crystal Menthol crystals",
-  "Fucidin cream",
-  "Thrombex gel 40 g",
-  "Daflon 500 mg 30 tablets",
-  "Genuphil 30 sachets",
-  "Genuphil 50 tablets",
-  "Polyfresh drops",
-  "Otal ear drops",
-  "Momento Sun Spray for Adults",
-  "Eva Sun & Sea Adult Lotion",
-  "Eva Sun & Sea Kids Lotion",
-  "Sea Shell Tanning Oil SPF 25",
-  "Nivea After Sun Body Lotion",
-  "Botox 24K Black Face Cream",
-  "Halla Cleopatra Camel Milk Cream 200 ml",
-  "Halla Cleopatra Aloe Vera gel",
-  "Halla Cleopatra Panthenol & Aloe Vera Foam",
-  "Eva Collagen+ 40 cream",
-  "Eva Skin Cream Glycerin",
-  "Eva Gold Collagen cream",
-  "Lotus Collagen Ampoules",
-  "Orgakera collagen mask 24K Gold",
-  "Bobana sheet mask with hyaluronic acid",
-  "Bobana Charcoal mask",
-  "Shaan Body Lotion",
-  "Seropipe Shampoo",
-  "OGX Biotin & Collagen Shampoo",
-  "Vatika shampoo Almond 180 ml",
-  "Vatika shampoo Coconut 180 ml",
-  "Vatika shampoo Olive 180 ml",
-  "Vatika shampoo black seed 180 ml",
-  "Vatika shampoo Argan – Anti-Breakage 180 ml",
-  "Essential 30 capsules",
-  "Black Seed 60 capsules",
-  "Limitless Man Max 30 tablets",
-  "Limitless Woman Max 30 tablets",
-  "Limitless Omega-3 30 capsules",
-  "Banox collagen sachets 30 pcs",
-  "Sleepez 3 mg 30 tablets",
-  "Miswak Gold toothpaste",
-  "Miswak Green toothpaste",
-  "Miswak toothpaste Mint",
-  "Dependent Whitening Toothpaste 50 ml"
-];
+const STATIC_BEST_SELLER_NAMES = /* synced with DB bestseller_order_en on 1/11 — keep in sync after re-ordering, or the grid repaints a few seconds after load */ ["Antinal 24 capsules", "Flu-C 6 sachets", "Ozempic 1 mg injection pen", "Voltaren gel 100 g", "Collagen 90 tablets Organic Nation", "Augmentin 14 tablets", "Acretin 0,05% cream", "Acretin 0,025% cream", "Azaderm cream", "Bepanthen cream", "Zovirax cream", "Orly 30 capsules", "Zyrtec 10 mg 20 tablets", "Mounjaro 2,5 mg injection pen", "Mounjaro 7,5 mg injection pen", "Mounjaro 12,5 mg injection pen", "Mounjaro 5 mg injection pen", "Mounjaro 15 mg injection pen", "Otrivin drops Adults", "Panadol Advance 48 tablets", "OFF repellent spray", "Attoveloce Vapo Rub", "Omez 20 mg 14 capsules", "Rennie 24 chewable tablets", "Dermovate cream", "Betaderm cream 30 g", "Biotin 1000 mcg 60 tablets", "Infinity Retinol Face Serum", "Infinity Retinol Face Cream", "Wegovy 1 mg injection pen", "Panadol Extra 24 tablets", "Brufen 600 mg 30 tablets", "Amigraine 30 tablets", "Catafast 9 sachets", "Diclac 150 mg 20 tablets", "Novalgin oblong 10 tablets", "Diclac gel 4% 50 g", "Dolphin gel", "Gaviscon suspension", "Motilium 40 tablets", "Duspatalin Retard 30 capsules", "Enterogermina 2 Billion oral suspension", "Spasmo Digestin 30 tablets", "Alzental suspension", "ORS 10 sachets", "Antinal syrup", "Streptoquin 20 tablets", "Xithrone 500 mg 5 tablets", "Iverzine 24 tablets", "G.C. MOL 6 sachets", "Larypro lozenges", "Normifrin spray", "Bronchicum Ivy syrup", "Bronchicum Elixir syrup", "Coldatrexy cold & flu 30 tablets", "Sinupret Forte 50 tablets", "Crystal Menthol crystals", "Fucidin cream", "Thrombex gel 40 g", "Daflon 500 mg 30 tablets", "Genuphil 30 sachets", "Genuphil 50 tablets", "Polyfresh drops", "Otal ear drops", "Momento Sun Spray for Adults", "Eva Sun & Sea Adult Lotion", "Eva Sun & Sea Kids Lotion", "Sea Shell Tanning Oil SPF 25", "Nivea After Sun Body Lotion", "Botox 24K Black Face Cream", "Halla Cleopatra Camel Milk Cream 200 ml", "Halla Cleopatra Aloe Vera gel", "Halla Cleopatra Panthenol & Aloe Vera Foam", "Eva Collagen+ 40 cream", "Eva Skin Cream Glycerin", "Eva Gold Collagen cream", "Lotus Collagen Ampoules", "Orgakera collagen mask 24K Gold", "Bobana sheet mask with hyaluronic acid", "Bobana Charcoal mask", "Shaan Body Lotion", "Seropipe Shampoo", "Wegovy 2,4 mg injection pen", "OGX Biotin & Collagen Shampoo", "Vatika shampoo Almond 180 ml", "Vatika shampoo Coconut 180 ml", "Vatika shampoo Olive 180 ml", "Vatika shampoo black seed 180 ml", "Vatika shampoo Argan – Anti-Breakage 180 ml", "Essential 30 capsules", "Black Seed 60 capsules", "Limitless Man Max 30 tablets", "Limitless Woman Max 30 tablets", "Limitless Omega-3 30 capsules", "Banox collagen sachets 30 pcs", "Sleepez 3 mg 30 tablets", "Miswak Gold toothpaste", "Miswak Green toothpaste", "Miswak toothpaste Mint", "Depurdent Whitening Toothpaste 50 ml", "Insect Bite Cream 50 gm", "EPICOPRED 20 mg – Prednisolone – 20 Orodispersible Tablets", "EPICOPRED 5 mg – Prednisolone – 30 Orodispersible Tablets", "Allergex 1.5% Topical Cream", "Raid Mosquito Killer – Electric Heater + Liquid Refill", "Dozova Melatonin 5 mg – 60 Capsules", "Eloud El Malky Golden Deodorant Cream", "Eloud El Malky Musk Dust Deodorant Cream 40 g", "Eloud El Malky Oud Spirit Deodorant Cream 40 gm", "Eloud El Malky Oud Fragrance Deodorant Cream 40 gm", "Eloud El Malky Oud Khaligy Deodorant Cream", "Tiger Plaster – Capsicum Bell Adhesive Plaster", "Ventolin Syrup Sugar Free 125 ml", "NIVEA SUN Intense Bronze SPF 6 Golden", "Strip Health Honey Flavor – 24 Lozenges", "Strip Health Orange Flavor – 24 Lozenges", "Lotus Massage Natural Capsaicin & Chilli 150 ml", "Lotus Natural Oils Coconut 60 ml", "Lotus Natural Oils Horsetail 60 ml", "Egy Ostrich Fat Massage Cream 150 gm", "Horas Skin Massage Cream with Ostrich Oil 145 gm", "Horas Massage Gel Apple Cider Vinegar 145 gm", "Lotus Natural Oils Olive 60 ml", "Faster Hair Back Black Garlic Advance", "Lotus Natural Oils Black Seed 60 ml", "Lotus Natural Oils Jojoba 60 ml", "Oilex Oil Garlic Collagen Ampoules", "Raw African Argan Oil Shampoo 300 ml", "Lotus Natural Oils Argan 60 ml", "Lotus Natural Oils Snake 60 ml", "Lotus Natural Oils Tea Tree 60 ml", "Eva charcoal sheet mask 3 pcs", "Eva sheet mask with Vitamin C 3 pcs", "Eva White Pearl Sheet Mask 3 pcs", "Performa Extra  Minoxidil 5%", "Testriol ( testosterone undecanoate) 3 ml", "Lamifen cream", "Ventolin inhaler", "Evaneotrim 60 tablets", "Hand sanitizer ( alcohol )", "Eva Senses In the Clouds Body Mist 240 ml", "Eva Senses Night Out Body Mist 240 ml", "Buscopan 20 tablets"];
 let bestSellerNames = STATIC_BEST_SELLER_NAMES.slice();
 const BEST_SELLER_TARGET_COUNT = 60;
 const BEST_SELLER_CACHE_HOURS = 48;
 const BEST_SELLER_CACHE_KEY = "scp_popular_products_48h_en";
 
+/* 1/11 (T): DB best-seller order by pharmacy code (names in products-en.json can differ from the admin names).
+   Applied before the first paint so the grid does not repaint when the DB order arrives. Re-sync after re-ordering. */
+const STATIC_BEST_SELLER_CODES = "SC031,SCX0153,SC109,SC032,SC298,SC010,SC148,SC152,SC052,SC024,SC094,SC012,SC041,SC229,SC225,SC227,SC230,SC232,SC036,SC020,SC040,SC303,SC047,SC075,SC007,SC155,SC366,SC314,SC261,SC102,SC053,SC021,SC097,SC025,SC029,SC422,SC049,SC159,SC084,SC203,SC037,SC071,SC430,SC431,SC073,SC417,SC008,SC038,SC003,SC089,SC002,SC001,SC087,SC090,SC046,SC423,SC151,SC034,SC056,SC035,SC022,SC023,SC005,SC220,SC245,SC240,SC238,SC241,SC239,SC319,SC143,SC343,SC338,SC125,SC346,SC126,SC149,SC147,SC142,SC140,SC262,SC286,SC110,SC312,SC119,SC112,SC115,SC113,SC174,SC027,SC017,SC043,SC044,SC026,SC304,SC394,SC132,SC130,SC234,SC320,SCX0038,SCX0030,SCX0031,SCX0032,SCX0033,SCX0034,1359,2479,2588,2749,4704,SCX0035,SCX0036,SCX0037,SCX0039,SCX0040,SCX0041,SCX0042,SCX0043,SCX0044,SCX0045,SCX0046,SCX0048,SCX0049,SCX0050,SCX0051,SCX0052,SCX0053,SCX0054,SCX0055,SCX0056,15387,SC133,SC136,SC138,SCX0012,SCX0013,SCX0014,SCX0015,SCX0018,SCX0028,SCX0118,SCX0134".split(",");
+function scApplyStaticBestCodes(){
+  try{
+    const byCode = new Map();
+    products.forEach(p=>{ [p.code, p.pharmacy_code].forEach(c=>{ if(c) byCode.set(String(c).trim().toLowerCase(), p.name); }); });
+    const out = [];
+    STATIC_BEST_SELLER_CODES.forEach(c=>{ const n = byCode.get(c.toLowerCase()); if(n && out.indexOf(n) < 0) out.push(n); });
+    if(out.length < 10) return;
+    bestSellerNames = out;
+    if(typeof bestSellerRankMap !== "undefined" && bestSellerRankMap && bestSellerRankMap.clear){ bestSellerRankMap.clear(); out.forEach((n, i)=>bestSellerRankMap.set(n, i)); }
+  }catch(e){}
+}
 function isBestSeller(productName){
   return bestSellerNames.includes(productName);
 }
@@ -11324,7 +11245,7 @@ function productSortKey(p){
   p._sortKey = `${productSubcat(p)} ${group} ${n}`;
   return p._sortKey;
 }
-const CATALOG_PRODUCTS_URL = "products-en.json?v=35m1";
+const CATALOG_PRODUCTS_URL = "products-en.json?v=35m2";
 const CATALOG_KITS_URL = "kits-en.json?v=45";
 let catalogDataLoaded = false;
 let catalogDataPromise = null;
@@ -12518,6 +12439,7 @@ loadSplitCatalogData().then(()=>{
   loadCart();
   updateCartBadge();
   applyDynOverlayCache();
+  scApplyStaticBestCodes();
   try { if(typeof rebuildBestSellersFromProducts === "function") rebuildBestSellersFromProducts("en"); } catch(e){}
   var scTopFirst = activeMain === "top" && !String(searchTerm || "").trim();
   if(scTopFirst) buildTopOnlyBuckets(); else buildFastCategoryBuckets();
