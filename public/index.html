@@ -15557,25 +15557,45 @@ html body header .sc-sbtn-h{margin-left:0!important}
 .sc-lb-h .sc-lb-txt{overflow:hidden}
 .sc-lb-h .sc-lb-txt b{min-width:0;flex:1}
 @media(max-width:959px){html body .sc-bnav{grid-template-columns:1fr 1.15fr 1fr 1fr!important}}
+/* 1/11 (T): smaller bottom bar, header and banners */
+@media(max-width:899px){
+  html body .sc-bnav{padding:3px 6px calc(3px + env(safe-area-inset-bottom))!important}
+  html body .sc-bnav .sc-bn-item{padding:2px 0!important;gap:1px!important;font-size:9.5px!important}
+  html body .sc-bnav .sc-bn-item svg{width:20px!important;height:20px!important}
+  html body .sc-bnav .sc-bn-cart{gap:1px!important;font-size:10px!important}
+  html body .sc-bnav .sc-bn-circle{width:46px!important;height:46px!important;margin-top:-20px!important;border-width:3px!important}
+  html body .sc-bnav .sc-bn-circle svg{width:21px!important;height:21px!important}
+  html body .sc-bnav #scNavBadge{min-width:17px;height:17px;line-height:17px;font-size:10px}
+  html body{padding-bottom:66px!important}
+}
+html body header{padding-top:6px!important;padding-bottom:7px!important;row-gap:4px!important}
+html body header .sc-hlogo{flex-basis:34px!important;width:34px!important;height:34px!important}
+html body header .sc-sbtn-h{width:32px!important;height:32px!important}
+html body header .sc-sbtn-h svg{width:17px;height:17px}
+html body header .sc-hchip{padding:5px 8px 5px 9px!important;font-size:12px!important}
+html body header .sc-hchip-arrow{width:15px!important;height:15px!important}
+.sc-lb-h .sc-lb{padding:3px 9px!important;border-radius:10px!important}
+.sc-lb-h .sc-lb-txt b{font-size:13px!important}
+.sc-lb-h .sc-lb-fee{font-size:11px!important;padding:2px 8px!important}
 /* compact banners (T, 31/10) */
-.sc-fd,.sc-rv{height:78px!important}
+.sc-fd,.sc-rv{height:64px!important}
 .sc-hb-vp{border-radius:16px}
 .sc-fd,.sc-rv{border-radius:16px!important}
 .sc-fd-eb,.sc-fd-tag{display:none!important}
-.sc-fd-l{top:9px!important;bottom:9px!important;width:64%!important;justify-content:space-between}
-.sc-fd-t{font-size:17px!important}
-.sc-fd-t2{font-size:11.5px!important;margin-top:1px}
-.sc-fd-btn{font-size:11px!important;padding:4px 10px!important;box-shadow:none!important}
+.sc-fd-l{top:7px!important;bottom:7px!important;width:64%!important;justify-content:space-between}
+.sc-fd-t{font-size:15px!important}
+.sc-fd-t2{font-size:10.5px!important;margin-top:0}
+.sc-fd-btn{font-size:10px!important;padding:3px 9px!important;box-shadow:none!important}
 .sc-fd-img{width:36%!important}
 .sc-rv{padding:0 12px!important;gap:0!important;text-decoration:none}
 .sc-rv:after{display:none}
 .sc-rv2{flex:1;display:flex;align-items:center;gap:8px;min-width:0;justify-content:center}
-.sc-rv2 svg{flex:0 0 30px;width:30px;height:30px}
-.sc-rv2 b{display:block;font-size:17px;font-weight:900;line-height:1.05;color:#13294B;white-space:nowrap}
+.sc-rv2 svg{flex:0 0 24px;width:24px;height:24px}
+.sc-rv2 b{display:block;font-size:15px;font-weight:900;line-height:1.05;color:#13294B;white-space:nowrap}
 .sc-rv2 b em{font-style:normal;color:#F5B301;font-size:12px;letter-spacing:1px;margin-left:3px}
-.sc-rv2 small{display:block;font-size:11px;font-weight:700;color:#4a5872;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sc-rv-sep{width:1px;align-self:stretch;margin:14px 6px;background:#EAD5C6;flex:none}
-@media (min-width:700px){.sc-fd,.sc-rv{height:92px!important}.sc-fd-t{font-size:22px!important}.sc-rv2 b{font-size:21px}}
+.sc-rv2 small{display:block;font-size:10px;font-weight:700;color:#4a5872;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-rv-sep{width:1px;align-self:stretch;margin:12px 6px;background:#EAD5C6;flex:none}
+@media (min-width:700px){.sc-fd,.sc-rv{height:80px!important}.sc-fd-t{font-size:22px!important}.sc-rv2 b{font-size:21px}}
 .sc-lb-row{display:flex;gap:8px;align-items:stretch}
 .sc-lp{max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease;margin:0}
 .sc-lp.on{max-height:420px;opacity:1}
