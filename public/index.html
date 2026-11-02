@@ -15702,6 +15702,41 @@ function scFeeLabel(h){
     }).catch(function(){});
 })();
 </script>
+
+<script id="sc-browse-track">
+/* 2026-11-02 (T approved, 1-week study): what non-searching visitors do. No personal data.
+   geo  = phone time zone (are Czech visitors already in Egypt or still at home?)
+   cat  = category tapped · prod = product opened · exit = how far they scrolled + time on page */
+(function(){
+  function tr(ev, info, uniq){ try{ if(typeof window.scTrack === "function") window.scTrack(ev, info, uniq); }catch(e){} }
+  var t0 = Date.now(), maxY = 0, nCat = 0, nProd = 0, seenProd = {}, lastCat = "", lastExit = "";
+  try{
+    var tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || "?"), off = -new Date().getTimezoneOffset();
+    tr("geo", tz + "|" + (off >= 0 ? "+" : "") + off, true);
+  }catch(e){}
+  function userClick(){ try{ var e = window.event; return !!(e && (e.type === "click" || e.type === "pointerup" || e.type === "touchend")); }catch(_){ return false; } }
+  function wrap(name, fn){ try{ var o = window[name]; if(typeof o !== "function") return; window[name] = function(){ try{ fn.apply(this, arguments); }catch(_){} return o.apply(this, arguments); }; }catch(e){} }
+  wrap("setMainCategory", function(k){ if(!userClick()) return; var v = "main:" + k; if(v === lastCat) return; lastCat = v; nCat++; tr("cat", v); });
+  wrap("setFilter", function(c){ if(!userClick()) return; var v = "sub:" + c; if(v === lastCat) return; lastCat = v; nCat++; tr("cat", v); });
+  wrap("openModal", function(i){
+    try{ var p = (typeof products !== "undefined") ? products[i] : null; if(!p) return; var key = String(p.code || p.name || i);
+      if(seenProd[key]) return; seenProd[key] = 1; nProd++;
+      tr("prod", (String(p.name || "").slice(0, 60) + "|" + (typeof activeMain !== "undefined" ? activeMain : "") + "|" + Math.round(maxY / Math.max(1, innerHeight) * 10) / 10)); }catch(_){}
+  });
+  addEventListener("scroll", function(){ var y = scrollY || document.documentElement.scrollTop || 0; if(y > maxY) maxY = y; }, {passive: true});
+  function cartN(){ try{ var n = 0; for(var k in cart) n += Number(cart[k]) || 0; return n; }catch(e){ return 0; } }
+  function exit(){
+    try{
+      var screens = Math.round(maxY / Math.max(1, innerHeight) * 10) / 10;
+      var info = "screens=" + screens + "|t=" + Math.round((Date.now() - t0) / 1000) + "s|cat=" + nCat + "|prod=" + nProd + "|cart=" + cartN();
+      var key = screens + "|" + nCat + "|" + nProd + "|" + cartN();
+      if(key === lastExit) return; lastExit = key; tr("exit", info);
+    }catch(e){}
+  }
+  document.addEventListener("visibilitychange", function(){ if(document.visibilityState === "hidden") exit(); });
+  addEventListener("pagehide", exit);
+})();
+</script>
 </body>
 </html>
 
