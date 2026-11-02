@@ -12273,11 +12273,14 @@ function renderCheckout(){
   const hotelInputValue = (document.getElementById("checkoutHotel")?.value || "").trim();
   const selectedHotel = findHotelByInput(hotelInputValue);
   const hotel = selectedHotel ? selectedHotel.name : hotelInputValue;
-  const deliveryFee = selectedHotel ? (Number(selectedHotel.fee) || 0) : 0;
+  const scFullFee = selectedHotel ? (Number(selectedHotel.fee) || 0) : 0;
+  /* ride-along (STAGING 2026-11-02): an order already goes to this hotel at the chosen day+time → delivery free (server re-checks: orders_ride_guard) */
+  let scRide = null; try{ scRide = (typeof scRideState === "function") ? scRideState(selectedHotel) : null; }catch(e){ scRide = null; }
+  const deliveryFee = (scRide && scRide.match) ? 0 : scFullFee;
   // الزر يشتغل طالما العميل كتب أي اسم فندق
   const hotelValid = hotelInputValue.length >= 2;
   const deliveryText = hotel
-    ? (selectedHotel && selectedHotel.free ? scFeeLabel(selectedHotel) : (deliveryFee ? `${deliveryFee} EGP • ${approxText(deliveryFee)}` : T("selectHotelSugg")))
+    ? ((scRide && scRide.match) ? `<s style="opacity:.6">${scFullFee} EGP</s> <b style="color:#2e7d32">${scRideTxt("free")} 🛵</b>` : (selectedHotel && selectedHotel.free ? scFeeLabel(selectedHotel) : (deliveryFee ? `${deliveryFee} EGP • ${approxText(deliveryFee)}` : T("selectHotelSugg"))))
     : T("selectHotel");
 
   const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || "cash";
@@ -12353,6 +12356,7 @@ function renderCheckout(){
     source_code: scSiteCode(), /* 61 English · 72 Czech & other languages · 51 Slovak */
     branch: scBranch()
   };
+  if(scRide && scRide.match) window.__pendingOrder.free_delivery = "ride";
   btn.onclick = async function(e){
     e.preventDefault();
     if(!window.__pendingOrder) return;
@@ -12569,6 +12573,7 @@ installFastScrollLoader();
 
     
 
+    <div id="scRideBox" class="sc-ride" style="display:none"></div>
     <button type="button" class="sc-co-when" id="scCoWhen" onclick="scToggleWhen()"><span class="sc-co-when-l"><span id="scCoWhenLabel">Delivery time</span><b>📅 <span id="scCoWhenText">Today · 12 PM</span></b></span><span class="sc-co-edit"><span id="scCoWhenEdit">Change</span> ✎</span></button>
     <div class="checkout-grid checkout-date-time-grid">
       <div class="checkout-section">
@@ -15981,6 +15986,71 @@ function scFeeLabel(h){
     }).catch(function(){});
 })();
 </script>
+
+<script>
+/* ride-along free delivery (STAGING only, 2026-11-02, T approved test): hotels with fee >= 300 EGP.
+   If an order is already going to the same hotel on the same day+time, the next order for that slot gets free delivery.
+   Slots come from SQL hotel_ride_slots(p_hotel); the server trigger orders_ride_guard re-checks every 'ride' order. */
+var SC_RIDE_MIN = 300, SC_RIDE_CACHE = {}, SC_RIDE_SHOWN = {};
+var SC_RIDE_TXT = {
+  en:{offer:"🛵 A delivery is already going to your hotel {d} at {t}. Choose this time and your delivery is FREE (save {f} EGP).",btn:"Choose {t}",on:"✅ Free delivery: you ride along with an order already going to your hotel {d} at {t}.",free:"FREE",today:"today",tomorrow:"tomorrow"},
+  cs:{offer:"🛵 Do vašeho hotelu už jede doručení {d} v {t}. Vyberte tento čas a doručení máte ZDARMA (ušetříte {f} EGP).",btn:"Vybrat {t}",on:"✅ Doručení zdarma: přidáte se k objednávce, která už jede do vašeho hotelu {d} v {t}.",free:"ZDARMA",today:"dnes",tomorrow:"zítra"},
+  sk:{offer:"🛵 Do vášho hotela už ide doručenie {d} o {t}. Vyberte tento čas a doručenie máte ZADARMO (ušetríte {f} EGP).",btn:"Vybrať {t}",on:"✅ Doručenie zadarmo: pridáte sa k objednávke, ktorá už ide do vášho hotela {d} o {t}.",free:"ZADARMO",today:"dnes",tomorrow:"zajtra"},
+  pl:{offer:"🛵 Do Twojego hotelu jedzie już dostawa {d} o {t}. Wybierz tę godzinę, a dostawa będzie GRATIS (oszczędzasz {f} EGP).",btn:"Wybierz {t}",on:"✅ Dostawa gratis: dołączasz do zamówienia, które już jedzie do Twojego hotelu {d} o {t}.",free:"GRATIS",today:"dziś",tomorrow:"jutro"},
+  de:{offer:"🛵 Eine Lieferung fährt schon {d} um {t} zu Ihrem Hotel. Wählen Sie diese Zeit und die Lieferung ist GRATIS (Sie sparen {f} EGP).",btn:"{t} wählen",on:"✅ Gratis-Lieferung: Sie fahren mit einer Bestellung mit, die {d} um {t} zu Ihrem Hotel geht.",free:"GRATIS",today:"heute",tomorrow:"morgen"},
+  ru:{offer:"🛵 В ваш отель уже едет доставка {d} в {t}. Выберите это время — доставка БЕСПЛАТНО (экономия {f} EGP).",btn:"Выбрать {t}",on:"✅ Бесплатная доставка: ваш заказ поедет вместе с заказом в ваш отель {d} в {t}.",free:"БЕСПЛАТНО",today:"сегодня",tomorrow:"завтра"},
+  uk:{offer:"🛵 До вашого готелю вже їде доставка {d} о {t}. Оберіть цей час — доставка БЕЗКОШТОВНО (економія {f} EGP).",btn:"Обрати {t}",on:"✅ Безкоштовна доставка: ваше замовлення поїде разом із замовленням у ваш готель {d} о {t}.",free:"БЕЗКОШТОВНО",today:"сьогодні",tomorrow:"завтра"},
+  ar:{offer:"🛵 فيه توصيل رايح فندقك {d} الساعة {t}. اختار المعاد ده والتوصيل مجاني (توفر {f} جنيه).",btn:"اختار {t}",on:"✅ توصيل مجاني: طلبك هيروح مع طلب رايح فندقك {d} الساعة {t}.",free:"مجاني",today:"النهارده",tomorrow:"بكره"}
+};
+function scRideLang(){ var l="en"; try{ l=String(displayLanguage||"en"); }catch(e){} if(l==="ua") l="uk"; return SC_RIDE_TXT[l]?l:"en"; }
+function scRideTxt(k,v){ var s=(SC_RIDE_TXT[scRideLang()][k]||SC_RIDE_TXT.en[k]||""); v=v||{}; return s.replace(/\{(\w)\}/g,function(_,x){ return v[x]!=null?v[x]:""; }); }
+function scRideTimeLabel(t){ try{ if(scRideLang()==="en" && typeof formatDeliveryTime12==="function") return formatDeliveryTime12(t); }catch(e){} return t; }
+function scRideFetch(name){
+  var c = SC_RIDE_CACHE[name];
+  if(c && (c.loading || Date.now()-c.at < 180000)) return;
+  SC_RIDE_CACHE[name] = {loading:true, at:Date.now(), slots:(c&&c.slots)||[]};
+  fetch(SB_URL+"/rest/v1/rpc/hotel_ride_slots",{method:"POST",headers:SB_HEADERS,body:JSON.stringify({p_hotel:name})})
+    .then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; })
+    .then(function(j){ SC_RIDE_CACHE[name] = {at:Date.now(), slots:Array.isArray(j)?j:[]}; try{ renderCheckout(); }catch(e){} });
+}
+/* returns {match, slot} and paints the offer box; null when the hotel does not qualify */
+function scRideState(h){
+  var box = document.getElementById("scRideBox");
+  var hide = function(){ if(box){ box.style.display="none"; box.innerHTML=""; } return null; };
+  if(!h || h.free || (Number(h.fee)||0) < SC_RIDE_MIN || typeof SB_URL === "undefined") return hide();
+  scRideFetch(h.name);
+  var c = SC_RIDE_CACHE[h.name], ts = document.getElementById("deliveryTime"), ds = document.getElementById("deliveryDay");
+  if(!c || !c.slots || !c.slots.length || !ts || !ds) return hide();
+  var ok = c.slots.filter(function(s){ var o = Array.from(ts.options).find(function(x){ return x.value===s.time; }); return !!o && !(s.day==="Today" && o.disabled); });
+  if(!ok.length) return hide();
+  var match = ok.find(function(s){ return s.day===ds.value && s.time===ts.value; }) || null;
+  var show = match || ok[0];
+  var v = {d: scRideTxt(show.day==="Today"?"today":"tomorrow"), t: scRideTimeLabel(show.time), f: Number(h.fee)||0};
+  if(box){
+    box.style.display = "block";
+    box.className = "sc-ride" + (match ? " sc-ride-on" : "");
+    box.innerHTML = match ? scRideTxt("on", v)
+      : scRideTxt("offer", v) + ' <button type="button" class="sc-ride-btn" onclick="scRidePick(\'' + show.day + '\',\'' + show.time + '\')">' + scRideTxt("btn", v) + '</button>';
+  }
+  var key = h.name + "|" + show.day + "|" + show.time;
+  if(!SC_RIDE_SHOWN[key]){ SC_RIDE_SHOWN[key] = 1; try{ if(typeof window.scTrack==="function") window.scTrack("ride_offer", (h.name+"|"+show.day+" "+show.time+"|fee="+h.fee).slice(0,90)); }catch(e){} }
+  return {match: !!match, slot: show};
+}
+function scRidePick(day, time){
+  var ds = document.getElementById("deliveryDay"), ts = document.getElementById("deliveryTime");
+  if(!ds || !ts) return;
+  ds.value = day; try{ updateDeliveryTimeOptions(); }catch(e){}
+  ts.value = time;
+  try{ if(typeof scSyncWhen === "function") scSyncWhen(); }catch(e){}
+  try{ renderCheckout(); }catch(e){}
+  try{ if(typeof window.scTrack==="function") window.scTrack("ride_pick", (day+" "+time).slice(0,90)); }catch(e){}
+}
+</script>
+<style>
+.sc-ride{margin:8px 0 10px;padding:10px 12px;border-radius:12px;background:#fff8e1;border:1.5px solid #ffb300;font-size:13.5px;line-height:1.4;color:#4e342e}
+.sc-ride.sc-ride-on{background:#e8f5e9;border-color:#43a047;color:#1b5e20;font-weight:600}
+.sc-ride-btn{display:block;margin-top:8px;width:100%;padding:9px;border:0;border-radius:10px;background:#ff7a00;color:#fff;font-weight:700;font-size:14px;cursor:pointer}
+</style>
 </body>
 </html>
 
