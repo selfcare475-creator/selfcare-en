@@ -7321,7 +7321,7 @@ var displayLanguage = (function(){
 var displayCurrency = (function(){
   var s = null; try{ s = localStorage.getItem("sc_cur"); }catch(e){}
   if(["GBP","EUR","USD","CZK"].indexOf(s) >= 0) return s;
-  return displayLanguage === "en" ? "GBP" : (displayLanguage === "ru" ? "USD" : "EUR");
+  return displayLanguage === "en" ? "GBP" : (displayLanguage === "ru" ? "USD" : (displayLanguage === "cs" ? "CZK" : "EUR")); /* 3/11/2026 (T): Czech → Kč by default */
 })();
 try{ document.documentElement.lang = SC_HTML_LANG[displayLanguage] || "en"; }catch(e){}
 
@@ -7547,7 +7547,7 @@ function setDisplayLanguage(l, opts){
   displayLanguage = l;
   try{ localStorage.setItem("sc_lang", l); }catch(e){}
   /* picking a language always sets its currency: English → £, Russian → $, every other language (Czech included) → € ; the customer can still change it after */
-  displayCurrency = l === "en" ? "GBP" : (l === "ru" ? "USD" : "EUR");
+  displayCurrency = l === "en" ? "GBP" : (l === "ru" ? "USD" : (l === "cs" ? "CZK" : "EUR")); /* 3/11/2026 (T): Czech → Kč */
   try{ localStorage.removeItem("sc_cur"); }catch(e){}
   scApplyStaticTexts();
   try{ if(typeof scPromoApply === "function") scPromoApply(); }catch(e){}
