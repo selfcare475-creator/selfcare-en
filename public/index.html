@@ -9717,7 +9717,7 @@ const BEST_SELLER_CACHE_KEY = "scp_popular_products_48h_en";
 /* 1/11 (T): DB best-seller order by pharmacy code (names in products-en.json can differ from the admin names).
    Applied before the first paint so the grid does not repaint when the DB order arrives. Re-sync after re-ordering. */
 const STATIC_BEST_SELLER_CODES = "SC031,SCX0153,SC109,SC032,SC298,SC010,SC148,SC152,SC052,SC024,SC094,SC012,SC041,SC229,SC225,SC227,SC230,SC232,SC036,SC020,SC040,SC303,SC047,SC075,SC007,SC155,SC366,SC314,SC261,SC102,SC053,SC021,SC097,SC025,SC029,SC422,SC049,SC159,SC084,SC203,SC037,SC071,SC430,SC431,SC073,SC417,SC008,SC038,SC003,SC089,SC002,SC001,SC087,SC090,SC046,SC423,SC151,SC034,SC056,SC035,SC022,SC023,SC005,SC220,SC245,SC240,SC238,SC241,SC239,SC319,SC143,SC343,SC338,SC125,SC346,SC126,SC149,SC147,SC142,SC140,SC262,SC286,SC110,SC312,SC119,SC112,SC115,SC113,SC174,SC027,SC017,SC043,SC044,SC026,SC304,SC394,SC132,SC130,SC234,SC320,SCX0038,SCX0030,SCX0031,SCX0032,SCX0033,SCX0034,1359,2479,2588,2749,4704,SCX0035,SCX0036,SCX0037,SCX0039,SCX0040,SCX0041,SCX0042,SCX0043,SCX0044,SCX0045,SCX0046,SCX0048,SCX0049,SCX0050,SCX0051,SCX0052,SCX0053,SCX0054,SCX0055,SCX0056,15387,SC133,SC136,SC138,SCX0012,SCX0013,SCX0014,SCX0015,SCX0018,SCX0028,SCX0118,SCX0134".split(",");
-/* 3/11/2026 (T): Czech visitors — keep the first 3 rows of Best sellers, then the 50 products Czech customers order most
+/* 3/11/2026 (T): Czech visitors — Best sellers start with the 50 products Czech customers order most
    (orders, last 90 days, by number of orders). Static list = no repaint; re-sync when needed. */
 const SC_CZ_TOP_CODES = "SC031,SC132,SC032,SC036,SC151,SC001,SC002,SC021,SC130,SC089,SC053,SC234,SC075,SC046,SC320,SC148,SC049,SC113,SC159,SC143,SC220,SC423,SC126,SC097,SC041,SC003,SC034,SC152,SC020,SC174,SC005,SC155,SC010,2749,2588,SC112,SC008,SC027,SC346,SC417,SC119,SC094,SC056,SC047,SC115,SC068,1359,SC029,SC124,SC035".split(",");
 window.__scBestBase = null;
@@ -9732,7 +9732,7 @@ function scLangBest(base){
   try{
     var byCode = new Map();
     products.forEach(function(p){ [p.code, p.pharmacy_code].forEach(function(c){ if(c) byCode.set(String(c).trim().toLowerCase(), p.name); }); });
-    var k = 3 * scGridCols(), out = base.slice(0, k), seen = new Set(out);
+    var out = [], seen = new Set(); /* 3/11 (T): Czech top-50 first, from the very first card */
     SC_CZ_TOP_CODES.forEach(function(c){ var n = byCode.get(c.toLowerCase()); if(n && !seen.has(n)){ seen.add(n); out.push(n); } });
     base.forEach(function(n){ if(!seen.has(n)){ seen.add(n); out.push(n); } });
     return out;
