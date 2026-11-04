@@ -85,6 +85,39 @@ a.btn{min-height:clamp(54px,11.4dvh,100px);padding:6px 14px;gap:clamp(12px,1.8dv
 .foot p+p{margin-top:2px}
 /* very short screens: allow scrolling rather than clipping */
 @media (max-height:540px){body{height:auto;min-height:100dvh;overflow:auto}main{justify-content:flex-start;gap:12px}}
+
+/* ===== Hero "Order Online" — the main action on this page ===== */
+a.hero{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:clamp(8px,1.4dvh,12px);padding:clamp(14px,2.4dvh,22px) clamp(16px,2.4dvh,20px);border-radius:clamp(20px,2.8dvh,26px);text-decoration:none;color:#fff;
+  background:linear-gradient(135deg,#E8662C 0%,var(--orange) 45%,var(--orange-dark) 100%);
+  box-shadow:0 10px 28px rgba(214,80,27,.38),0 2px 6px rgba(214,80,27,.25);
+  animation:heroGlow 2.6s ease-in-out infinite;-webkit-tap-highlight-color:transparent;transition:transform .12s}
+a.hero:active{transform:scale(.982)}
+a.hero:focus-visible{outline:3px solid rgba(45,72,118,.55);outline-offset:3px}
+a.hero::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:45%;pointer-events:none;
+  background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.28) 50%,transparent 100%);transform:skewX(-18deg);animation:heroShine 3.2s ease-in-out infinite}
+.hero-top{display:flex;align-items:center;gap:clamp(12px,1.8dvh,16px)}
+.hero-ic{flex:0 0 auto;width:clamp(48px,7.4dvh,62px);height:clamp(48px,7.4dvh,62px);border-radius:16px;background:rgba(255,255,255,.18);display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.hero-ic svg{width:clamp(26px,4dvh,32px);height:clamp(26px,4dvh,32px);animation:cartBob 2.6s ease-in-out infinite}
+.hero-tx{flex:1;min-width:0}
+.hero-tx strong{display:block;font-size:clamp(22px,3.4dvh,28px);font-weight:900;line-height:1.05;letter-spacing:.2px}
+.hero-tx span{display:block;font-size:clamp(13.5px,1.9dvh,15.5px);font-weight:800;opacity:.95;margin-top:4px}
+.hero-go{flex:0 0 auto;width:clamp(36px,5.2dvh,44px);height:clamp(36px,5.2dvh,44px);border-radius:50%;background:#fff;color:var(--orange);display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.hero-go svg{width:20px;height:20px;animation:arrowNudge 1.3s ease-in-out infinite}
+.hero-chips{display:flex;flex-wrap:wrap;gap:6px}
+.hero-chips i{font-style:normal;font-size:clamp(11.5px,1.6dvh,13px);font-weight:800;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.28);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;background:rgba(255,255,255,.95);color:var(--orange-dark);padding:3px 9px 3px 8px;border-radius:999px}
+.badge-live b{width:7px;height:7px;border-radius:50%;background:#1faa53;box-shadow:0 0 0 0 rgba(31,170,83,.6);animation:livePing 1.6s ease-out infinite}
+.badge-live{white-space:nowrap}
+/* phones shorter than the full layout: let the page scroll instead of clipping the bottom */
+@media (max-height:640px){body{height:auto;min-height:100dvh;overflow:auto}main{justify-content:flex-start;gap:14px;padding-bottom:6px}}
+@keyframes heroGlow{0%,100%{box-shadow:0 10px 28px rgba(214,80,27,.32),0 2px 6px rgba(214,80,27,.22)}50%{box-shadow:0 14px 38px rgba(214,80,27,.55),0 2px 6px rgba(214,80,27,.3)}}
+@keyframes heroShine{0%{left:-60%}55%,100%{left:130%}}
+@keyframes arrowNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@keyframes cartBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(-4deg)}}
+@keyframes livePing{0%{box-shadow:0 0 0 0 rgba(31,170,83,.6)}100%{box-shadow:0 0 0 8px rgba(31,170,83,0)}}
+@media (prefers-reduced-motion:reduce){a.hero,a.hero::after,.hero-ic svg,.hero-go svg,.badge-live b{animation:none}a.hero::after{display:none}}
+/* secondary links are a bit slimmer so the hero has room on one screen */
+a.btn{min-height:clamp(50px,9.4dvh,84px)}
 </style>
 </head>
 <body>
@@ -97,6 +130,17 @@ a.btn{min-height:clamp(54px,11.4dvh,100px);padding:6px 14px;gap:clamp(12px,1.8dv
 </header>
 
 <main>
+  <section class="group">
+    <a class="hero" href="https://selfcare-en.com" aria-label="Order online – delivered to your hotel">
+      <span class="hero-top">
+        <span class="hero-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3h2.6l2.4 11.6a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21 7H6"/></svg></span>
+        <span class="hero-tx"><strong>Order Online</strong><span>Delivered to your hotel in Hurghada</span></span>
+        <span class="hero-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </span>
+      <span class="hero-chips" aria-hidden="true"><span class="badge-live"><b></b>Open now</span><i>⏱ Order in 1 minute</i><i>💵 Pay on delivery</i><i>🏨 Hotel delivery</i></span>
+    </a>
+  </section>
+
   <section class="group">
   <p class="label">Our pharmacies</p>
   <nav class="links" aria-label="Pharmacy locations">
@@ -127,14 +171,17 @@ a.btn{min-height:clamp(54px,11.4dvh,100px);padding:6px 14px;gap:clamp(12px,1.8dv
       <span class="tx"><strong>Follow Us on Facebook</strong><span>News, offers &amp; updates</span></span>
       <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
     </a>
-    <a class="btn primary" href="https://selfcare-en.com">
-      <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3h2.6l2.4 11.6a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21 7H6"/></svg></span>
-      <span class="tx"><strong>Order Online</strong><span>Delivered to your hotel</span></span>
-      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
-    </a>
   </nav>
   </section>
 </main>
+<script>
+/* "Open now" only while the pharmacy is open (12 PM – 12 AM, Cairo time); otherwise say when it opens */
+(function(){try{
+  var h=+new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Cairo',hour:'2-digit',hour12:false}).format(new Date())%24;
+  var b=document.querySelector('.badge-live'); if(!b) return;
+  if(h<12){ b.lastChild.textContent='Opens 12 PM'; b.firstChild.style.background='#f0a020'; }
+}catch(e){}})();
+</script>
 
 <footer class="foot">
   <p><b>Self Care Pharmacy</b> · Hurghada, Egypt</p>
