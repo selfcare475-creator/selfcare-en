@@ -181,6 +181,14 @@ a.btn{min-height:clamp(50px,9.4dvh,84px)}
   var b=document.querySelector('.badge-live'); if(!b) return;
   if(h<12){ b.lastChild.textContent='Opens 12 PM'; b.firstChild.style.background='#f0a020'; }
 }catch(e){}})();
+/* carry ad tracking (utm_*, gclid) from this page into the full shop, so orders from ads are still attributed.
+   Never carries shop=care: Order Online always opens the full shop. */
+(function(){try{
+  var q=new URLSearchParams(location.search), keep=new URLSearchParams();
+  q.forEach(function(v,k){ if(/^utm_|^gclid$|^gbraid$|^wbraid$/i.test(k)) keep.set(k,v); });
+  if(!keep.toString()) return;
+  var a=document.querySelector('a.hero'); var u=new URL(a.href); keep.forEach(function(v,k){u.searchParams.set(k,v);}); a.href=u.toString();
+}catch(e){}})();
 </script>
 
 <footer class="foot">
