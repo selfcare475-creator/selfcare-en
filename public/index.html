@@ -12376,7 +12376,8 @@ function renderCheckout(){
     status: "New",
     source: "web",
     source_code: scSiteCode(), /* 61 English · 72 Czech & other languages · 51 Slovak */
-    branch: scBranch()
+    branch: scBranch(),
+    attribution: (typeof window.scAttr === "function" ? window.scAttr() : null)
   };
   btn.onclick = async function(e){
     e.preventDefault();
@@ -14910,6 +14911,29 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init); else init();
 })();
 </script>
+<script id="sc-attribution">
+/* Ad attribution: remembers which ad/campaign brought the visitor (last touch, 7 days)
+   so each order row says e.g. "facebook/paid/uk_nov26/reel_sunburn_engagers". No personal data. */
+(function(){
+  var KEY = "sc_attr", TTL = 7 * 864e5;
+  function clean(v){ return String(v || "").replace(/[^\w.\-]/g, "").slice(0, 60); }
+  try{
+    var q = new URLSearchParams(location.search), a = "";
+    if(q.get("utm_source") || q.get("utm_campaign")){
+      a = [q.get("utm_source"), q.get("utm_medium"), q.get("utm_campaign"), q.get("utm_content")].map(clean).join("/");
+    } else if(q.get("gclid") || q.get("gbraid") || q.get("wbraid")){
+      a = "google/cpc";
+    } else if(q.get("fbclid")){
+      a = "facebook/click";
+    }
+    if(a){ try{ localStorage.setItem(KEY, JSON.stringify({ a: a, t: Date.now() })); }catch(e){} window.__scAttrNew = a; }
+  }catch(e){}
+  window.scAttr = function(){
+    try{ var s = JSON.parse(localStorage.getItem(KEY) || "null"); if(s && s.a && Date.now() - s.t < TTL) return s.a; }catch(e){}
+    return window.__scAttrNew || null;
+  };
+})();
+</script>
 <script id="sc-funnel">
 /* Customer-journey tracking: one row per step, no personal data. Read in the admin "رحلة العميل" tab. */
 (function(){
@@ -14932,6 +14956,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     }
     window.scTrack = send;
     send("visit", (document.referrer || "").replace(/^https?:\/\//, "").split("/")[0] || "direct", true);
+    if(window.__scAttrNew) send("campaign", window.__scAttrNew, true);
 
     function cartCount(){ try{ var n = 0; for(var k in cart) n += Number(cart[k]) || 0; return n; }catch(e){ return 0; } }
     var touched = false, lastN = null;
