@@ -8939,7 +8939,7 @@ function livePrice(product){
 /* promoters: ?ref=<code> (from selfcare-en.com/<code>) is kept 30 days; the last promoter link wins; sent with the order as promoter_code */
 function scRefGet(){try{var __q=new URLSearchParams(location.search),u=__q.get("ref")||__q.get("p"),now=Date.now();if(u&&/^\d{1,6}$/.test(u)){localStorage.setItem("sc_ref",JSON.stringify({c:+u,t:now}));}else if(!localStorage.getItem("sc_ref")){var m=document.cookie.match(/(?:^|; )sc_ref=(\d{1,6})\.(\d+)/);if(m)localStorage.setItem("sc_ref",JSON.stringify({c:+m[1],t:+m[2]}));}var r=JSON.parse(localStorage.getItem("sc_ref")||"null");if(r&&r.c&&now-r.t<2592e6)return r.c;}catch(e){}return null}
 function scRefField(){var c=scRefGet();var o=c?{promoter_code:c}:{};try{var h=findHotelByInput((document.getElementById("checkoutHotel")||{}).value||"");if(h&&h.free&&(c||(window.SC_PROMO&&SC_PROMO.code)))o.free_delivery="promo"+(c||SC_PROMO.code);}catch(e){}return o}
-try{scRefGet();var __scU=new URL(location.href);if(__scU.searchParams.has("ref")||__scU.searchParams.has("p")){__scU.searchParams.delete("ref");__scU.searchParams.delete("p");history.replaceState(history.state,"",__scU.pathname+__scU.search+__scU.hash);}}catch(e){}
+try{var __scRq=new URLSearchParams(location.search),__scRin=__scRq.get("ref")||__scRq.get("p");scRefGet();try{if(__scRin){var __scRs=null;try{__scRs=localStorage.getItem("sc_ref");}catch(_e){__scRs="ls_blocked";}window.__scRefArrived=String(__scRin).slice(0,8)+"|saved="+(__scRs&&__scRs.indexOf('"c":'+Number(__scRin))>=0?"yes":"no:"+String(__scRs).slice(0,40));}}catch(_e){}var __scU=new URL(location.href);if(__scU.searchParams.has("ref")||__scU.searchParams.has("p")){__scU.searchParams.delete("ref");__scU.searchParams.delete("p");history.replaceState(history.state,"",__scU.pathname+__scU.search+__scU.hash);}}catch(e){}
 async function saveOrderToDashboard(order){
   try {
     await fetch(SB_URL + "/rest/v1/orders", { method:"POST", headers:SB_HEADERS, body:JSON.stringify(order) });
@@ -14958,6 +14958,8 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     window.scTrack = send;
     send("visit", (document.referrer || "").replace(/^https?:\/\//, "").split("/")[0] || "direct", true);
     if(window.__scAttrNew) send("campaign", window.__scAttrNew, true);
+    /* 8/11/2026 (T): promoter-link check — did ?ref / ?p arrive and get saved on this phone? (temporary, remove after the check) */
+    if(window.__scRefArrived) send("ref_in", window.__scRefArrived, true);
 
     function cartCount(){ try{ var n = 0; for(var k in cart) n += Number(cart[k]) || 0; return n; }catch(e){ return 0; } }
     var touched = false, lastN = null;
@@ -14983,7 +14985,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     if(typeof createConfirmedOrder === "function"){
       var _co = createConfirmedOrder;
       createConfirmedOrder = async function(){
-        try{ var r = await _co.apply(this, arguments); send("order", r && r.id ? "#" + r.id : null); return r; }
+        try{ var r = await _co.apply(this, arguments); send("order", r && r.id ? "#" + r.id : null); try{ var __pc = (typeof scRefGet === "function") ? scRefGet() : "nofn"; send("ref_at_order", (r && r.id ? "#" + r.id : "?") + "|" + (__pc == null ? "none" : __pc)); }catch(_e){} return r; }
         catch(err){ send("order_error", (err && err.message) || String(err)); throw err; }
       };
     }
