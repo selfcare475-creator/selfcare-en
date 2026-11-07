@@ -14921,6 +14921,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     var q = new URLSearchParams(location.search), a = "";
     if(q.get("utm_source") || q.get("utm_campaign")){
       a = [q.get("utm_source"), q.get("utm_medium"), q.get("utm_campaign"), q.get("utm_content")].map(clean).join("/");
+      if(q.get("utm_term")) a += "/" + clean(q.get("utm_term")); /* ad set tag, e.g. engagers / travellers */
     } else if(q.get("gclid") || q.get("gbraid") || q.get("wbraid")){
       a = "google/cpc";
     } else if(q.get("fbclid")){
