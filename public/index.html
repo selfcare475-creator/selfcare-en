@@ -8184,8 +8184,8 @@ function scCzPackToEn(name){
   var R=[
     [/šumivých\s+tablet(?![\p{L}])/giu,"effervescent tablets"],[/šumivých\s+sáčků(?![\p{L}])/giu,"effervescent sachets"],
     [/žvýkacích\s+tablet(?![\p{L}])/giu,"chewable tablets"],[/orodispergovatelných\s+tablet(?![\p{L}])/giu,"orodispersible tablets"],
-    [/ústních\s+filmů(?![\p{L}])/giu,"oral films"],[/(?<![\p{L}])kapslí(?![\p{L}])/giu,"capsules"],[/(?<![\p{L}])sáčků(?![\p{L}])/giu,"sachets"],
-    [/(?<![\p{L}])ampulí(?![\p{L}])/giu,"ampoules"],[/(?<![\p{L}])čípků(?![\p{L}])/giu,"suppositories"],[/(\d+\s*)tablet(?![\p{L}])/giu,"$1tablets"],[/(?<![\p{L}])šampon(?![\p{L}])/giu,"shampoo"],[/(?<![\p{L}])česnek(?![\p{L}])/giu,"garlic"]
+    [/ústních\s+filmů(?![\p{L}])/giu,"oral films"],[/(^|[^\p{L}])kapslí(?![\p{L}])/giu,"$1capsules"],[/(^|[^\p{L}])sáčků(?![\p{L}])/giu,"$1sachets"],
+    [/(^|[^\p{L}])ampulí(?![\p{L}])/giu,"$1ampoules"],[/(^|[^\p{L}])čípků(?![\p{L}])/giu,"$1suppositories"],[/(\d+\s*)tablet(?![\p{L}])/giu,"$1tablets"],[/(^|[^\p{L}])šampon(?![\p{L}])/giu,"$1shampoo"],[/(^|[^\p{L}])česnek(?![\p{L}])/giu,"$1garlic"]
   ];
   R.forEach(function(r){ n=n.replace(r[0],r[1]); });
   return n;
