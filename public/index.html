@@ -10407,6 +10407,8 @@ var DB_SUB_TO_SITE = {
 /* v-subs-extra: per-product placement by pharmacy code (herbal teas, gym) */
 var SC_CODE_SUB = {}; /* placements now live in the DB subcategory */
 /* kids items also shown under Skin & body > Baby & kids (they stay in their own section too) */
+/* products also shown in a 2nd section: code -> [[mainKey, sub]] */
+var SC_EXTRA_PLACEMENT = {"SCX0188":[["supplements","Gym & fitness"]]};
 var SC_KIDS_CODES = ["SCX0149","SCX0132","1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139"];
 var SC_KIDS_CARE_CODES = ["SCX0149","SCX0132","1368","14840","SC157","SC313","SCX0022","SCX0023","SCX0024","SCX0123","SCX0148","SCX0138","SCX0139"];
 function productSubcat(p){
@@ -11445,6 +11447,7 @@ function buildFastCategoryBuckets(){
     const sub = productSubcat(p);
     if(buckets[main] && buckets[main][sub]) buckets[main][sub].push(item);
     try{ if(sub !== "Baby & kids" && buckets.skin && buckets.skin["Baby & kids"] && SC_KIDS_CODES.indexOf(productCodeValue(p)) > -1) buckets.skin["Baby & kids"].push(item); }catch(e){}
+    try{ (SC_EXTRA_PLACEMENT[productCodeValue(p)]||[]).forEach(function(pl){ if(pl[1]!==sub && buckets[pl[0]] && buckets[pl[0]][pl[1]]) buckets[pl[0]][pl[1]].push(item); }); }catch(e){}
     if(buckets.tourist){
       (categoryGroups.tourist.subs || []).forEach(tourSub=>{
         if(tourSub === "Care Kits" || tourSub === "Beauty Kits") return;
@@ -11480,6 +11483,7 @@ async function buildFastCategoryBucketsAsync(){
       const sub = productSubcat(p);
       if(buckets[main] && buckets[main][sub]) buckets[main][sub].push(item);
       try{ if(sub !== "Baby & kids" && buckets.skin && buckets.skin["Baby & kids"] && SC_KIDS_CODES.indexOf(productCodeValue(p)) > -1) buckets.skin["Baby & kids"].push(item); }catch(e){}
+    try{ (SC_EXTRA_PLACEMENT[productCodeValue(p)]||[]).forEach(function(pl){ if(pl[1]!==sub && buckets[pl[0]] && buckets[pl[0]][pl[1]]) buckets[pl[0]][pl[1]].push(item); }); }catch(e){}
       if(buckets.tourist){
         (categoryGroups.tourist.subs || []).forEach(tourSub=>{
           if(tourSub === "Care Kits" || tourSub === "Beauty Kits") return;
