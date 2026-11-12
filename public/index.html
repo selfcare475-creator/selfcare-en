@@ -6873,6 +6873,10 @@ header .cart-badge{background:#1f2f52!important;color:#fff!important;border-colo
 <script type="text/javascript">
 (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","zajpm4bnxl");
 </script>
+<style>
+.hotel-suggestions button.sc-ma,.checkout-hotel-suggestions button.sc-ma{background:#FFF4E0 !important;border-left:4px solid #E58A00 !important}
+.sc-ma-tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#E58A00;color:#fff;font-style:normal;font-size:11px;font-weight:800;vertical-align:middle;white-space:nowrap}
+</style>
 </head>
 <body>
 
@@ -9274,11 +9278,12 @@ function scApplyHotelRows(rows){
         const h=hotels[i];
         if(fee>0) h.fee=fee;
         h.feeBefore=feeBefore;
+        h.region=String(row.region||"");
         if(!Array.isArray(h.aliases)) h.aliases=[];
         const have=new Set([h.name].concat(h.aliases).map(normalizeHotelText));
         al.forEach(a=>{ const k=normalizeHotelText(a); if(k && !have.has(k)){ h.aliases.push(a); have.add(k); } });
       }else{
-        hotels.push({name:name, fee:fee, feeBefore:feeBefore, aliases:al});
+        hotels.push({name:name, fee:fee, feeBefore:feeBefore, aliases:al, region:String(row.region||"")});
       }
     });
     scSyncHotelDatalist();
@@ -9321,7 +9326,7 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
 
 async function loadExtraHotels(){
   try{
-    const r=await fetch(SB_URL+"/rest/v1/hotel_delivery_fees?select=hotel_name,fee_egp,fee_before,aliases,promo_free&is_active=eq.true&order=id.asc&limit=2000",{headers:SB_HEADERS});
+    const r=await fetch(SB_URL+"/rest/v1/hotel_delivery_fees?select=hotel_name,fee_egp,fee_before,aliases,promo_free,region&is_active=eq.true&order=id.asc&limit=2000",{headers:SB_HEADERS});
     if(!r.ok)return;
     const rows=await r.json();
     if(!Array.isArray(rows)) return;
@@ -9386,6 +9391,11 @@ function productStock(idx){
   return Number.isFinite(products[idx]?.stock) ? products[idx].stock : 99;
 }
 
+/* v-marsa-alam: Marsa Alam hotels (hotel_delivery_fees.region='marsa_alam') get a coloured tag in the
+   hotel list and can only be delivered from tomorrow (no same-day). The database checks reschedules too. */
+function scIsNextDayHotel(h){ return !!(h && h.region === "marsa_alam"); }
+function scMATag(h){ return scIsNextDayHotel(h) ? ' <em class="sc-ma-tag">Marsa Alam</em>' : ""; }
+function scMANote(){ return scPick({en:"Marsa Alam area: delivery from tomorrow only (no same-day delivery).",cs:"Oblast Marsa Alam: doručení nejdříve zítra (ne v tentýž den).",sk:"Oblasť Marsa Alam: doručenie najskôr zajtra (nie v ten istý deň).",pl:"Rejon Marsa Alam: dostawa najwcześniej jutro (nie tego samego dnia).",ru:"Район Марса-Алам: доставка только со следующего дня.",ua:"Район Марса-Алам: доставка лише з наступного дня.",de:"Gebiet Marsa Alam: Lieferung frühestens morgen (nicht am selben Tag)."}); }
 function showHotelSuggestions(){
   const input = document.getElementById("hotelInput");
   const box = document.getElementById("hotelSuggestions");
@@ -9400,8 +9410,8 @@ function showHotelSuggestions(){
   }
 
   box.innerHTML = matches.map(h =>
-    `<button type="button" onclick="selectHotel('${escapeJsString(h.name)}')">
-      <span>${h.name}</span>
+    `<button type="button" class="${scIsNextDayHotel(h)?'sc-ma':''}" onclick="selectHotel('${escapeJsString(h.name)}')">
+      <span>${h.name}${scMATag(h)}</span>
       <small>${scFeeLabel(h)}</small>
     </button>`
   ).join("");
@@ -11900,6 +11910,23 @@ function updateDeliveryTimeOptions(){
   const note = document.getElementById("deliveryTimingNote");
   if(!daySelect || !timeSelect) return true;
 
+  /* v-marsa-alam: next-day only */
+  let maHotel = false;
+  try{ maHotel = scIsNextDayHotel(findHotelByInput((document.getElementById("checkoutHotel")?.value || "").trim())); }catch(e){}
+  const todayOpt = Array.from(daySelect.options).find(o => o.value === "Today");
+  if(todayOpt){ todayOpt.disabled = maHotel; todayOpt.hidden = maHotel; }
+  if(maHotel && daySelect.value === "Today" && Array.from(daySelect.options).some(o => o.value === "Tomorrow")) daySelect.value = "Tomorrow";
+  try{
+    let maNote = document.getElementById("scMANoteBox");
+    if(maHotel && !maNote && daySelect.parentElement){
+      maNote = document.createElement("div"); maNote.id = "scMANoteBox";
+      maNote.style.cssText = "margin-top:6px;padding:8px 10px;background:#FFF4E0;color:#8a4b00;border-left:4px solid #E58A00;border-radius:8px;font-size:12.5px;font-weight:700;line-height:1.4";
+      daySelect.parentElement.appendChild(maNote);
+    }
+    if(maNote){ maNote.textContent = scMANote(); maNote.style.display = maHotel ? "" : "none"; }
+    if(maHotel){ const g = document.querySelector("#checkoutOverlay .checkout-date-time-grid"); if(g && !g.classList.contains("sc-open")){ g.classList.add("sc-open"); const w = document.getElementById("scCoWhen"); if(w) w.classList.add("sc-open"); } }
+  }catch(e){}
+
   const isToday = daySelect.value === "Today";
   const minToday = getTodayMinimumDeliveryMinutes();
   let hasAvailableToday = false;
@@ -11924,7 +11951,9 @@ function updateDeliveryTimeOptions(){
   }
 
   if(note){
-    if(daySelect.value === "Today"){
+    if(maHotel){
+      note.textContent = scMANote();
+    } else if(daySelect.value === "Today"){
       const earliest = minToday < 24*60 ? formatTimeFromMinutes(minToday) : T("tomorrowWord");
       note.textContent = T("minTime",{m:MIN_DELIVERY_MINUTES,t:earliest});
     } else {
@@ -11976,8 +12005,8 @@ function showCheckoutHotelSuggestions(){
   }
 
   box.innerHTML = matches.map(h =>
-    `<button type="button" onclick="selectCheckoutHotel('${escapeJsString(h.name)}')">
-      <span>${h.name}</span>
+    `<button type="button" class="${scIsNextDayHotel(h)?'sc-ma':''}" onclick="selectCheckoutHotel('${escapeJsString(h.name)}')">
+      <span>${h.name}${scMATag(h)}</span>
       <small>${scFeeLabel(h)}</small>
     </button>`
   ).join("");
