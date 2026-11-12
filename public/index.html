@@ -11920,8 +11920,8 @@ function updateDeliveryTimeOptions(){
     let maNote = document.getElementById("scMANoteBox");
     if(maHotel && !maNote && daySelect.parentElement){
       maNote = document.createElement("div"); maNote.id = "scMANoteBox";
-      maNote.style.cssText = "margin-top:6px;padding:8px 10px;background:#FFF4E0;color:#8a4b00;border-left:4px solid #E58A00;border-radius:8px;font-size:12.5px;font-weight:700;line-height:1.4";
-      daySelect.parentElement.appendChild(maNote);
+      maNote.style.cssText = "grid-column:1/-1;width:100%;box-sizing:border-box;margin-top:2px;padding:8px 10px;background:#FFF4E0;color:#8a4b00;border-left:4px solid #E58A00;border-radius:8px;font-size:12.5px;font-weight:700;line-height:1.4";
+      (daySelect.closest(".checkout-date-time-grid") || daySelect.parentElement).appendChild(maNote);
     }
     if(maNote){ maNote.textContent = scMANote(); maNote.style.display = maHotel ? "" : "none"; }
     if(maHotel){ const g = document.querySelector("#checkoutOverlay .checkout-date-time-grid"); if(g && !g.classList.contains("sc-open")){ g.classList.add("sc-open"); const w = document.getElementById("scCoWhen"); if(w) w.classList.add("sc-open"); } }
