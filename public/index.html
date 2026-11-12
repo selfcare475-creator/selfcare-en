@@ -9395,7 +9395,7 @@ function productStock(idx){
    hotel list and can only be delivered from tomorrow (no same-day). The database checks reschedules too. */
 function scIsNextDayHotel(h){ return !!(h && h.region === "marsa_alam"); }
 function scMATag(h){ return scIsNextDayHotel(h) ? ' <em class="sc-ma-tag">Marsa Alam</em>' : ""; }
-function scMANote(){ return scPick({en:"Marsa Alam area: delivery from tomorrow only (no same-day delivery).",cs:"Oblast Marsa Alam: doručení nejdříve zítra (ne v tentýž den).",sk:"Oblasť Marsa Alam: doručenie najskôr zajtra (nie v ten istý deň).",pl:"Rejon Marsa Alam: dostawa najwcześniej jutro (nie tego samego dnia).",ru:"Район Марса-Алам: доставка только со следующего дня.",ua:"Район Марса-Алам: доставка лише з наступного дня.",de:"Gebiet Marsa Alam: Lieferung frühestens morgen (nicht am selben Tag)."}); }
+function scMANote(){ return scPick({en:"Marsa Alam area: delivery from tomorrow only (no same-day delivery), between 2 PM and 7 PM.",cs:"Oblast Marsa Alam: doručení nejdříve zítra (ne v tentýž den), mezi 14:00 a 19:00.",sk:"Oblasť Marsa Alam: doručenie najskôr zajtra (nie v ten istý deň), medzi 14:00 a 19:00.",pl:"Rejon Marsa Alam: dostawa najwcześniej jutro (nie tego samego dnia), w godz. 14:00–19:00.",ru:"Район Марса-Алам: доставка только со следующего дня, с 14:00 до 19:00.",ua:"Район Марса-Алам: доставка лише з наступного дня, з 14:00 до 19:00.",de:"Gebiet Marsa Alam: Lieferung frühestens morgen (nicht am selben Tag), zwischen 14 und 19 Uhr."}); }
 function showHotelSuggestions(){
   const input = document.getElementById("hotelInput");
   const box = document.getElementById("hotelSuggestions");
@@ -11933,14 +11933,17 @@ function updateDeliveryTimeOptions(){
 
   Array.from(timeSelect.options).forEach(option => {
     const minutes = timeToMinutes(option.value);
-    const shouldDisable = isToday && minutes !== null && minutes < minToday;
+    const maOut = maHotel && minutes !== null && (minutes < 14*60 || minutes > 19*60); /* Marsa Alam: 2–7 PM only */
+    const shouldDisable = maOut || (isToday && minutes !== null && minutes < minToday);
     option.disabled = shouldDisable;
+    option.hidden = maOut;
     if(isToday && !shouldDisable) hasAvailableToday = true;
   });
 
   if(isToday && !hasAvailableToday){
     daySelect.value = "Tomorrow";
-    Array.from(timeSelect.options).forEach(option => option.disabled = false);
+    Array.from(timeSelect.options).forEach(option => { const mm = timeToMinutes(option.value); const out = maHotel && mm !== null && (mm < 14*60 || mm > 19*60); option.disabled = out; option.hidden = out; });
+    if(timeSelect.selectedOptions[0]?.disabled){ const fa = Array.from(timeSelect.options).find(o => !o.disabled); if(fa) timeSelect.value = fa.value; }
     if(note) note.textContent = T("todayGone");
     return false;
   }
