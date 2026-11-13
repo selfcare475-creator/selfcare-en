@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" translate="no">
 <head>
+<!-- Google Ads conversion tracking (AW-18514862496, conversion "Website order") -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18514862496"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18514862496');</script>
 <meta name="google" content="notranslate">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14997,7 +15000,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     if(typeof createConfirmedOrder === "function"){
       var _co = createConfirmedOrder;
       createConfirmedOrder = async function(){
-        try{ var r = await _co.apply(this, arguments); send("order", r && r.id ? "#" + r.id : null); try{ var __pc = (typeof scRefGet === "function") ? scRefGet() : "nofn"; send("ref_at_order", (r && r.id ? "#" + r.id : "?") + "|" + (__pc == null ? "none" : __pc)); }catch(_e){} return r; }
+        try{ var r = await _co.apply(this, arguments); send("order", r && r.id ? "#" + r.id : null); try{ var __o = arguments[0] || {}; var __v = Number(__o.total || (r && r.total) || 0); if(typeof gtag === "function" && r && r.id) gtag('event','conversion',{'send_to':'AW-18514862496/VS3fCOjih7gdEKDDyfxE','value':__v>0?__v:1.0,'currency':'EGP','transaction_id':String(r.id)}); }catch(_g){} try{ var __pc = (typeof scRefGet === "function") ? scRefGet() : "nofn"; send("ref_at_order", (r && r.id ? "#" + r.id : "?") + "|" + (__pc == null ? "none" : __pc)); }catch(_e){} return r; }
         catch(err){ send("order_error", (err && err.message) || String(err)); throw err; }
       };
     }
