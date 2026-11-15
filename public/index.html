@@ -4,6 +4,14 @@
 <!-- Google Ads conversion tracking (AW-18514862496, conversion "Website order") -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18514862496"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18514862496');</script>
+<!-- TikTok Pixel (DBT43Q3C77UCDH70MOL0, "Self Care Website") -->
+<script>
+!function (w, d, t) {
+  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+  ttq.load('DBT43Q3C77UCDH70MOL0');
+  ttq.page();
+}(window, document, 'ttq');
+</script>
 <meta name="google" content="notranslate">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14981,9 +14989,9 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     ["pointerdown","keydown","touchstart"].forEach(function(t){ document.addEventListener(t, function(){ touched = true; }, {capture:true, passive:true}); });
     if(typeof saveCart === "function"){ var _sc = saveCart; saveCart = function(){ var r = _sc.apply(this, arguments); try{ var n = cartCount();
       if(!touched){ if(n > 0) send("cart_restored", "items:" + n, true); }
-      else if(n > (lastN || 0)) send("cart", null, true);
+      else if(n > (lastN || 0)){ send("cart", null, true); try{ if(window.ttq) ttq.track("AddToCart"); }catch(_t){} }
       lastN = n; }catch(_){} return r; }; }
-    if(typeof openCheckout === "function"){ var _oc = openCheckout; openCheckout = function(){ send("checkout", "items:" + cartCount(), true); return _oc.apply(this, arguments); }; }
+    if(typeof openCheckout === "function"){ var _oc = openCheckout; openCheckout = function(){ send("checkout", "items:" + cartCount(), true); try{ if(window.ttq) ttq.track("InitiateCheckout"); }catch(_t){} return _oc.apply(this, arguments); }; }
     document.addEventListener("click", function(e){
       try{
         var b = e.target && e.target.closest && e.target.closest("#finalCheckoutBtn"); if(!b) return;
@@ -15000,7 +15008,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     if(typeof createConfirmedOrder === "function"){
       var _co = createConfirmedOrder;
       createConfirmedOrder = async function(){
-        try{ var r = await _co.apply(this, arguments); send("order", r && r.id ? "#" + r.id : null); try{ var __o = arguments[0] || {}; var __v = Number(__o.total || (r && r.total) || 0); if(typeof gtag === "function" && r && r.id) gtag('event','conversion',{'send_to':'AW-18514862496/VS3fCOjih7gdEKDDyfxE','value':__v>0?__v:1.0,'currency':'EGP','transaction_id':String(r.id)}); }catch(_g){} try{ var __pc = (typeof scRefGet === "function") ? scRefGet() : "nofn"; send("ref_at_order", (r && r.id ? "#" + r.id : "?") + "|" + (__pc == null ? "none" : __pc)); }catch(_e){} return r; }
+        try{ var r = await _co.apply(this, arguments); send("order", r && r.id ? "#" + r.id : null); try{ var __o = arguments[0] || {}; var __v = Number(__o.total || (r && r.total) || 0); if(typeof gtag === "function" && r && r.id) gtag('event','conversion',{'send_to':'AW-18514862496/VS3fCOjih7gdEKDDyfxE','value':__v>0?__v:1.0,'currency':'EGP','transaction_id':String(r.id)}); }catch(_g){} try{ if(window.ttq && r && r.id){ var __tv = Number(__o.total || (r && r.total) || 0); ttq.track('PlaceAnOrder',{value:__tv>0?__tv:1,currency:'EGP',content_type:'product'},{event_id:'po_'+r.id}); ttq.track('CompletePayment',{value:__tv>0?__tv:1,currency:'EGP',content_type:'product'},{event_id:'cp_'+r.id}); } }catch(_t){} try{ var __pc = (typeof scRefGet === "function") ? scRefGet() : "nofn"; send("ref_at_order", (r && r.id ? "#" + r.id : "?") + "|" + (__pc == null ? "none" : __pc)); }catch(_e){} return r; }
         catch(err){ send("order_error", (err && err.message) || String(err)); throw err; }
       };
     }
