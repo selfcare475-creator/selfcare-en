@@ -219,6 +219,7 @@ a.btn{min-height:clamp(50px,9.4dvh,84px)}
   var labels=document.querySelectorAll('.label'); if(labels[0]) labels[0].textContent='Наши аптеки'; if(labels[1]) labels[1].textContent='Связаться с нами';
   var tx=document.querySelectorAll('a.btn .tx'), bt=[['Главная аптека','Аптека Dr. Thomas'],['Второй филиал','Аптека Dr. Awny'],['Написать в WhatsApp','+20 150 140 1776'],['Мы в Facebook','Новости и акции']];
   for(var j=0;j<tx.length&&j<bt.length;j++){ tx[j].querySelector('strong').textContent=bt[j][0]; tx[j].querySelector('span').textContent=bt[j][1]; }
+  var fb=document.querySelector('a.btn .ic.fb'); if(fb) fb.closest('a').href='https://www.facebook.com/profile.php?id=61596281158021';
   var fp=document.querySelector('.foot p'); if(fp) fp.innerHTML='<b>Аптека Self Care</b> · Хургада, Египет';
   var h=document.querySelector('a.hero');
   if(h){ var u=new URL(h.href); u.pathname='/101'; u.searchParams.delete('lang'); h.href=u.toString(); h.setAttribute('aria-label','Заказать онлайн – доставка в ваш отель'); }
