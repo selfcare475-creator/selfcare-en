@@ -188,7 +188,7 @@ a.btn{min-height:clamp(50px,9.4dvh,84px)}
    Never carries shop=care: Order Online always opens the full shop. */
 (function(){try{
   var q=new URLSearchParams(location.search), keep=new URLSearchParams();
-  q.forEach(function(v,k){ if(/^utm_|^gclid$|^gbraid$|^wbraid$/i.test(k)) keep.set(k,v); });
+  q.forEach(function(v,k){ if(/^utm_|^gclid$|^gbraid$|^wbraid$|^ttclid$/i.test(k)) keep.set(k,v); });
   if(!keep.toString()) return;
   var a=document.querySelector('a.hero'); var u=new URL(a.href); keep.forEach(function(v,k){u.searchParams.set(k,v);}); a.href=u.toString();
 }catch(e){}})();
@@ -198,5 +198,31 @@ a.btn{min-height:clamp(50px,9.4dvh,84px)}
   <p><b>Self Care Pharmacy</b> · Hurghada, Egypt</p>
   <p><a href="https://wa.me/201501401776">+20 150 140 1776</a> · <a href="mailto:selfcare475@gmail.com">selfcare475@gmail.com</a></p>
 </footer>
+<script>
+/* Russian version: ?lang=ru (TikTok ads / Russian links), or a Russian/Ukrainian phone when no ?lang is given.
+   Order Online then opens the shop in Russian via /101 (TikTok promoter code), keeping any ad tracking params. */
+(function(){try{
+  var q=new URLSearchParams(location.search), l=(q.get('lang')||'').toLowerCase().slice(0,2);
+  if(!l){ var n=(navigator.languages&&navigator.languages[0])||navigator.language||''; n=n.toLowerCase().slice(0,2); if(n==='ru'||n==='uk') l='ru'; }
+  if(l!=='ru') return;
+  document.documentElement.lang='ru';
+  document.title='Аптека Self Care Хургада – ссылки';
+  var T=function(sel,txt){ var e=document.querySelector(sel); if(e) e.textContent=txt; };
+  T('.hdr h1','Аптека Self Care');
+  T('.hdr p','Хургада · доставка в отель');
+  T('.hero-tx strong','Заказать онлайн');
+  T('.hero-tx span','Доставка в ваш отель в Хургаде');
+  var b=document.querySelector('.badge-live');
+  if(b){ b.lastChild.textContent=(b.lastChild.textContent.indexOf('Opens')>-1)?'Откроется в 12:00':'Открыто'; }
+  var chips=document.querySelectorAll('.hero-chips i'), ct=['⏱ Заказ за 1 минуту','💵 Оплата при получении','🏨 Доставка в отель'];
+  for(var i=0;i<chips.length&&i<ct.length;i++) chips[i].textContent=ct[i];
+  var labels=document.querySelectorAll('.label'); if(labels[0]) labels[0].textContent='Наши аптеки'; if(labels[1]) labels[1].textContent='Связаться с нами';
+  var tx=document.querySelectorAll('a.btn .tx'), bt=[['Главная аптека','Аптека Dr. Thomas'],['Второй филиал','Аптека Dr. Awny'],['Написать в WhatsApp','+20 150 140 1776'],['Мы в Facebook','Новости и акции']];
+  for(var j=0;j<tx.length&&j<bt.length;j++){ tx[j].querySelector('strong').textContent=bt[j][0]; tx[j].querySelector('span').textContent=bt[j][1]; }
+  var fp=document.querySelector('.foot p'); if(fp) fp.innerHTML='<b>Аптека Self Care</b> · Хургада, Египет';
+  var h=document.querySelector('a.hero');
+  if(h){ var u=new URL(h.href); u.pathname='/101'; u.searchParams.delete('lang'); h.href=u.toString(); h.setAttribute('aria-label','Заказать онлайн – доставка в ваш отель'); }
+}catch(e){}})();
+</script>
 </body>
 </html>
