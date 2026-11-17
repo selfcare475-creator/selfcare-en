@@ -84,6 +84,7 @@ body{background:var(--bg);color:var(--ink);font:500 15px/1.45 "Plus Jakarta Sans
 body>footer{margin:28px -16px -40px;box-shadow:0 -1px 0 var(--line)}
 @media(max-width:370px){.stat{padding:12px}.stat .hd{gap:6px;font-size:11.5px}.stat .ic{width:24px;height:24px}.stat .ic svg{width:14px;height:14px}}
 .loading{padding:120px 0;text-align:center;color:var(--muted);font-weight:700}
+.howvid{display:block;width:100%;max-width:360px;margin:10px auto 0;border-radius:14px;background:#000;aspect-ratio:9/16}
 </style>
 </head>
 <body>
@@ -100,6 +101,7 @@ body>footer{margin:28px -16px -40px;box-shadow:0 -1px 0 var(--line)}
     ru:{ocu:'Заказы (покупатели)',buyers:'Покупателей',cb:'Покупатели',worth:'Ваш заработок',p7:'Баллы · за 7 дней',paidT:'Выплачено всего',hist:'Динамика заработка',note2:'Ваш заработок начисляется с заказов новых клиентов, пришедших по вашей ссылке или QR-коду (учитывается 30 дней после визита). Отменённые заказы не считаются. Обновляется автоматически.',partner:"Партнёр",hi:"Здравствуйте",code:"Код",balance:"Ваши баллы",since:"с последней выплаты",start:"с начала",orders:"заказов",sales:"Продажи",visits:"Переходы",d7:"за 7 дней",vs:"к прошлым 7 дням",allTime:"всего",points:"Баллы",yourLink:"Ваша ссылка",copy:"Копировать",copied:"Скопировано ✓",share:"Поделиться",chart:"Статистика",last30:"Последние 30 дней",last14:"Последние 14 дней",cv:"Переходы",co:"Заказы",cp:"Баллы",payouts:"Выплаты",noPay:"Выплат пока нет",pts:"б.",paid:"Выплачено",note:"Баллы начисляются за заказы новых клиентов, пришедших по вашей ссылке или QR-коду (учитываются 30 дней после перехода). Отменённые заказы не учитываются. Данные обновляются в реальном времени.",bad:"Ссылка недействительна. Попросите вашу партнёрскую ссылку в Self Care Pharmacy.",paused:"Ваша партнёрская ссылка сейчас приостановлена."},
     uk:{ocu:'Замовлення (покупці)',buyers:'Покупців',cb:'Покупці',worth:'Ваш заробіток',p7:'Бали · за 7 днів',paidT:'Виплачено всього',hist:'Динаміка заробітку',note2:'Ваш заробіток нараховується із замовлень нових клієнтів, які прийшли за вашим посиланням або QR-кодом (враховується 30 днів після візиту). Скасовані замовлення не враховуються. Оновлюється автоматично.',partner:"Партнер",hi:"Вітаємо",code:"Код",balance:"Ваші бали",since:"з останньої виплати",start:"з початку",orders:"замовлень",sales:"Продажі",visits:"Переходи",d7:"за 7 днів",vs:"до попередніх 7 днів",allTime:"всього",points:"Бали",yourLink:"Ваше посилання",copy:"Копіювати",copied:"Скопійовано ✓",share:"Поділитися",chart:"Статистика",last30:"Останні 30 днів",last14:"Останні 14 днів",cv:"Переходи",co:"Замовлення",cp:"Бали",payouts:"Виплати",noPay:"Виплат поки немає",pts:"б.",paid:"Виплачено",note:"Бали нараховуються за замовлення нових клієнтів, які прийшли за вашим посиланням або QR-кодом (враховуються 30 днів після переходу). Скасовані замовлення не враховуються. Дані оновлюються в реальному часі.",bad:"Посилання недійсне. Попросіть ваше партнерське посилання у Self Care Pharmacy.",paused:"Ваше партнерське посилання зараз призупинено."}
   };
+  var VID = {en:"How it works", cs:"Jak to funguje", sk:"Ako to funguje", pl:"Jak to działa", de:"So funktioniert es", ru:"Как это работает", uk:"Як це працює"};
   var LOC = {en:"en-GB", cs:"cs-CZ", sk:"sk-SK", pl:"pl-PL", de:"de-DE", ru:"ru-RU", uk:"uk-UA"};
   var IC = {
     eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -183,7 +185,9 @@ body>footer{margin:28px -16px -40px;box-shadow:0 -1px 0 var(--line)}
     h += '<div class="card"><h3>' + L.payouts + '</h3>' + ((D.payouts || []).length ? D.payouts.map(function(q){
       return '<div class="pay"><span class="ic">' + IC.gift + '</span><div class="t"><b>' + L.paid + ' · ' + dt(q.paid_at) + '</b></div><div class="p">' + egp(q.amount) + ' EGP</div></div>';
     }).join("") : '<div class="empty">' + L.noPay + '</div>') + '</div>';
-    h += '<p class="note">' + L.note2 + '</p><div class="foot">Self Care Pharmacy · Hurghada</div>';
+    h += '<p class="note">' + L.note2 + '</p>';
+    h += '<div class="card"><h3>' + (VID[document.documentElement.lang] || VID.en) + '</h3><video class="howvid" controls playsinline preload="none" poster="/media/partner-how-it-works.jpg"><source src="/media/partner-how-it-works.mp4" type="video/mp4"></video></div>';
+    h += '<div class="foot">Self Care Pharmacy · Hurghada</div>';
     app.innerHTML = h;
   }
   app.addEventListener("click", function(e){
