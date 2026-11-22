@@ -9,10 +9,20 @@ function scIsBot(req){ const ua = req.headers.get("User-Agent") || ""; return !u
 /* one visit per device per promoter per 24h: cookie sc_seen_<code>=<lang> */
 function scSeen(req, code){ const m = (req.headers.get("Cookie") || "").match(new RegExp("(?:^|; )sc_seen_" + code + "=([a-z]{2})")); return m ? m[1] : null; }
 function scSeenCookie(code, lang){ return "sc_seen_" + code + "=" + (lang || "en") + "; Path=/; Max-Age=86400; SameSite=Lax; Secure"; }
-function scHit(code, host){
+/* a person = same IP + same browser (hashed, nothing personal is stored) → lets the dashboards show visits (people) */
+async function scVid(req){
+  try{
+    const ip = req.headers.get("CF-Connecting-IP") || req.headers.get("X-Forwarded-For") || "";
+    const ua = req.headers.get("User-Agent") || "";
+    const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("sc|" + ip + "|" + ua));
+    return Array.from(new Uint8Array(h)).slice(0, 12).map(b => b.toString(16).padStart(2, "0")).join("");
+  }catch(e){ return null; }
+}
+async function scHit(code, host, req){
+  const vid = req ? await scVid(req) : null;
   return fetch(SC_SB + "/rest/v1/rpc/promoter_hit", { method: "POST",
     headers: { apikey: SC_SB_KEY, Authorization: "Bearer " + SC_SB_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ p_code: Number(code), p_host: host }) }).then(r => r.ok ? r.json() : null).catch(() => null);
+    body: JSON.stringify(vid ? { p_code: Number(code), p_host: host, p_vid: vid } : { p_code: Number(code), p_host: host }) }).then(r => r.ok ? r.json() : null).catch(() => null);
 }
 /* promoter short link: /<code> -> log the visit (once a day per device, never robots), remember the code (30 days), open the site in the promoter's language */
 async function scPromoter(context, url, code){
@@ -20,7 +30,7 @@ async function scPromoter(context, url, code){
     const req = context.request;
     if(scIsBot(req)) return new Response(null, { status: 302, headers: { Location: "/", "Cache-Control": "no-store" } });
     let lang = scSeen(req, code);
-    if(!lang) lang = await scHit(code, url.hostname);
+    if(!lang) lang = await scHit(code, url.hostname, req);
     if(lang){
       const dest = new URL("/", url);
       if(lang !== "en" && lang !== "ar") dest.searchParams.set("lang", lang);
@@ -43,7 +53,7 @@ export async function onRequest(context){
   try{
     const u1 = new URL(context.request.url), rf = u1.searchParams.get("ref");
     if(rf && /^\d{1,6}$/.test(rf) && (u1.pathname === "/" || u1.pathname === "/index.html") && !scIsBot(context.request) && !scSeen(context.request, rf)){
-      context.waitUntil(scHit(rf, "via-ref"));
+      context.waitUntil(scHit(rf, "via-ref", context.request));
       seenSet = scSeenCookie(rf, (u1.searchParams.get("lang") || "en").toLowerCase().slice(0, 2));
     }
     const pp = u1.searchParams.get("p");
