@@ -15139,6 +15139,26 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
     /* notes under the WhatsApp field removed (T, 30/10: too crowded) */
     try{ var st = document.createElement("style"); st.textContent = "#checkoutPhoneHelp,#scPhoneConsent{display:none !important}"; document.head.appendChild(st); }catch(e){}
 
+    /* 23/11/2026 (T): "delivery fee too high" reply -> X% off the delivery fee for this basket only.
+       The link's token is sent with the order as free_delivery="half:TOKEN"; the database re-checks it
+       (orders_cart_discount_guard) and recomputes the fee from the hotel list, so a faked flag gets the normal fee. */
+    window.scHalfApply = function(){
+      var s = window.SC_HALF; if(!s) return;
+      try{ var h = findHotelByInput(s.hotel || ""); if(!h || h.free) return;
+        var base = Number(h.halfBase || h.fee) || 0; if(base <= 0) return;
+        h.halfBase = base; h.feeBefore = base; h.fee = Math.round(base * (100 - s.pct) / 100); }catch(e){}
+    };
+    try{
+      var __ar = scApplyHotelRows;
+      scApplyHotelRows = function(){ var r = __ar.apply(this, arguments); try{ window.scHalfApply(); }catch(e){} return r; };
+    }catch(e){}
+    try{
+      var __rf = scRefField;
+      scRefField = function(){ var o = __rf.apply(this, arguments); try{ var s = window.SC_HALF; if(s && !o.free_delivery){
+        var a = findHotelByInput((document.getElementById("checkoutHotel") || {}).value || ""), b = findHotelByInput(s.hotel || "");
+        if(a && b && a === b) o.free_delivery = "half:" + s.tok; } }catch(e){} return o; };
+    }catch(e){}
+
     /* restore from ?cart=TOKEN */
     var tok = (location.search.match(/[?&]cart=([a-f0-9]{8,64})/i) || [])[1];
     if(!tok) return;
@@ -15168,6 +15188,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
           if(!added){ try{ window.scTrack && window.scTrack("cart_recover_fail", "no_stock"); }catch(e){} return; }
           var hi = document.getElementById("hotelInput"), ch = document.getElementById("checkoutHotel");
           if(d.hotel){ if(hi) hi.value = d.hotel; if(ch) ch.value = d.hotel; }
+          if(Number(d.fee_pct) > 0 && d.hotel){ window.SC_HALF = { tok: tok, pct: Number(d.fee_pct), hotel: d.hotel }; window.scHalfApply(); try{ renderCart(); }catch(e){} }
           openCheckout();
           if(d.room){ var n = document.getElementById("checkoutNote"); if(n && !n.value) n.value = d.room; }
           if(d.phone) setPhone(String(d.phone));
