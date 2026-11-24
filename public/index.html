@@ -15421,7 +15421,7 @@ window.scMobility = { open() { host.hidden = false; start(); }, close() { host.h
   function x(){ return TX[L()]; }
   function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"); }
   function promoOn(){ try{ return typeof scPromoActive === "function" && scPromoActive(); }catch(e){ return false; } }
-  function untilTxt(){ try{ var d = new Date(window.SC_PROMO.until); return x().u + " " + d.getUTCDate() + "." + (d.getUTCMonth()+1) + "."; }catch(e){ return ""; } }
+  function untilTxt(){ try{ /* 24/11 (T): open-ended offer — no end date shown when the end is more than a year away */ if(window.SC_PROMO.until - Date.now() > 365*864e5) return ""; var d = new Date(window.SC_PROMO.until); return x().u + " " + d.getUTCDate() + "." + (d.getUTCMonth()+1) + "."; }catch(e){ return ""; } }
   var IMG = "https://res.cloudinary.com/de4boyel3/image/upload/c_fill,g_north,w_360,h_330,f_auto,q_auto/v1793365052/banners/courier-pharmacy-bag.png";
   function nFree(){ try{ return (hotels || []).filter(function(h){ return h.free; }).length; }catch(e){ return 0; } }
   function fdHtml(){
