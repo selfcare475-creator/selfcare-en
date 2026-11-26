@@ -10099,13 +10099,22 @@ searchConcepts.push(
   { keys:["blood pressure","high blood pressure","heart medicine","pressure medicine"], terms:["concor","coveram","coversyl","aspirin protect","plavix","blood pressure"] }
 );
 
+/* search also finds products by ACTIVE INGREDIENT and by USE, in every language;
+   a "sound-alike" copy lets Czech/Polish/German spellings match too (ivermektin = ivermectin, doksycyklin = doxycycline) */
+function scSearchPhon(t){
+  return String(t || "").replace(/ph/g,"f").replace(/th/g,"t").replace(/ck/g,"k").replace(/qu/g,"kv").replace(/x/g,"ks").replace(/c/g,"k").replace(/y/g,"i").replace(/w/g,"v").replace(/([a-z])\1+/g,"$1");
+}
 function productSearchText(p){
-  if(p._searchText) return p._searchText;
+  const sig = (p.name || "") + "|" + (p.active || "") + "|" + (p.use_en || "") + "|" + displayLanguage;
+  if(p._searchText && p._searchSig === sig) return p._searchText;
   const sub = productSubcat(p);
   const main = categoryGroups[productMainKey(p)]?.label || "";
-  const base = [p.name, p.name_cz || "", displayLanguage !== "en" ? pName(p) : "", p.desc, p.desc_cz || "", p.use_cz || "", displayLanguage !== "en" ? productUseFor(p) : "", p.cat, p.cat_cz || "", sub, cleanCatLabel(sub), catLabel(cleanCatLabel(sub)), main].join(" ");
+  let useNow = ""; try{ useNow = productUseFor(p) || ""; }catch(e){}
+  const base = [p.name, p.name_cz || "", displayLanguage !== "en" ? pName(p) : "", p.active || "", p.use_en || "", p.desc, p.desc_cz || "", p.use_cz || "", useNow, p.cat, p.cat_cz || "", sub, cleanCatLabel(sub), catLabel(cleanCatLabel(sub)), main].join(" ");
   p._searchText = normalizeText(base);
+  p._searchPh = scSearchPhon(p._searchText);
   p._searchName = normalizeText(p.name);
+  p._searchSig = sig;
   p._sortKey = null;
   return p._searchText;
 }
@@ -10131,6 +10140,11 @@ function productMatchesSearch(p, searchData){
   if(hay.includes(q)) return true;
   if(data.tokens.length && data.tokens.every(t => hay.includes(t))) return true;
   if(data.conceptTerms.some(term => hay.includes(term))) return true;
+  if(data.qPh && data.qPh.length >= 3){
+    const ph = p._searchPh || scSearchPhon(hay);
+    if(ph.includes(data.qPh)) return true;
+    if(data.tokensPh.length && data.tokensPh.every(t => ph.includes(t))) return true;
+  }
   return false;
 }
 
@@ -10997,7 +11011,10 @@ function getSearchData(query){
   const q = normalizeText(raw);
   const tokens = q.split(" ").filter(t => t.length > 1);
   const conceptTerms = conceptTermsForQuery(q);
-  searchDataCache = { raw, data: { raw, q, tokens, conceptTerms } };
+  const scDePl = t => (t.length > 5 && /[^s]s$/.test(t)) ? t.slice(0, -1) : t; /* "electrolytes" also finds "electrolyte" */
+  const tokensPh = scSearchPhon(q).split(" ").filter(t => t.length > 2).map(scDePl);
+  const qPh = tokensPh.join(" ");
+  searchDataCache = { raw, data: { raw, q, tokens, conceptTerms, qPh, tokensPh } };
   return searchDataCache.data;
 }
 
@@ -11006,7 +11023,6 @@ function prepareProductCaches(){
     productSubcat(p);
     productMainKey(p);
     categoryPriorityScore(p);
-    productSearchText(p);
     productSortKey(p);
   });
 }
@@ -11608,19 +11624,15 @@ function renderGrid() {
 
   let filtered;
   if(hasSearch){
-    filtered = products.map((p,idx)=>({p,idx})).filter(meta => productMatchesSearch(meta.p, searchData)).sort((a,b)=> {
-      const stockDelta = (isOutOfStock(a.p.name) ? 1 : 0) - (isOutOfStock(b.p.name) ? 1 : 0);
-      if (stockDelta) return stockDelta;
-      return (productSearchScore(b.p, searchData) - productSearchScore(a.p, searchData)) ||
-             (categoryPriorityScore(b.p) - categoryPriorityScore(a.p)) ||
-             productSortKey(a.p).localeCompare(productSortKey(b.p));
-    });
+    filtered = products.map((p,idx)=>({p,idx})).filter(meta => productMatchesSearch(meta.p, searchData));
+    filtered.forEach(m => { m.oos = isOutOfStock(m.p.name) ? 1 : 0; m.sc = productSearchScore(m.p, searchData); m.cp = categoryPriorityScore(m.p); m.sk = productSortKey(m.p); });
+    filtered.sort((a,b)=> (a.oos - b.oos) || (b.sc - a.sc) || (b.cp - a.cp) || a.sk.localeCompare(b.sk));
   }else{
     filtered = getFastCategorySource(false) || [];
   }
   let scFzLabel = "";
   if(hasSearch && !filtered.length){
-    const fz = scFuzzySearch(searchData.q);
+    const fz = scFuzzySearch(searchData.q) || (typeof scTypoSearch === "function" ? scTypoSearch(searchData.q) : null);
     if(fz){
       filtered = fz.list; scFzLabel = fz.label;
       if(scFzLastLogged !== searchData.q){ scFzLastLogged = searchData.q; try{ if(typeof window.scTrack === "function") window.scTrack("search_fuzzy", (searchData.q + "|" + fz.label + "|" + fz.list.length).slice(0, 90)); }catch(e){} }
@@ -15962,6 +15974,41 @@ function scFeeLabel(h){
 #checkoutOverlay .final-checkout-btn{height:46px!important;min-height:46px!important;margin-top:4px!important}
 #checkoutOverlay .checkout-help{display:none!important}
 </style>
+
+<script id="sc-search-v2">
+/* search text is prepared in small pieces while the phone is idle, so typing in search never freezes the page */
+(function(){
+  function warm(){
+    try{
+      var list = (typeof products !== "undefined" && products) || [], i = 0;
+      (function step(dl){
+        var t0 = Date.now();
+        while(i < list.length && (Date.now() - t0) < 8){ try{ productSearchText(list[i]); }catch(e){} i++; }
+        if(i < list.length) (window.requestIdleCallback ? requestIdleCallback(step, {timeout: 600}) : setTimeout(step, 30));
+      })();
+    }catch(e){}
+  }
+  window.addEventListener("load", function(){ setTimeout(warm, 6000); setTimeout(warm, 20000); });
+})();
+/* one-letter typos in product names (e.g. "monja" → Mounjaro), only when nothing else matched */
+function scTypoSearch(q){
+  try{
+    var orig = normalizeText(q).trim();
+    q = scSearchPhon(orig);
+    if(q.length < 4 || q.indexOf(" ") >= 0) return null;
+    function d1(a, b){ if(Math.abs(a.length - b.length) > 1) return false; var i = 0, j = 0, e = 0; while(i < a.length && j < b.length){ if(a[i] === b[j]){ i++; j++; continue; } if(++e > 1) return false; if(a.length > b.length) i++; else if(b.length > a.length) j++; else { i++; j++; } } return e + (a.length - i) + (b.length - j) <= 1; }
+    var res = [];
+    products.forEach(function(p, idx){
+      var words = scSearchPhon(p._searchName || normalizeText(p.name)).split(" ");
+      for(var k = 0; k < words.length; k++){ var w = words[k]; if(w.length < 4) continue;
+        for(var L = q.length - 1; L <= q.length + 1; L++){ if(L >= 4 && L <= w.length && d1(q, w.slice(0, L))){ res.push({p: p, idx: idx}); return; } } }
+    });
+    if(!res.length || res.length > 40) return null;
+    res.sort(function(a, b){ return ((isOutOfStock(a.p.name) ? 1 : 0) - (isOutOfStock(b.p.name) ? 1 : 0)) || (categoryPriorityScore(b.p) - categoryPriorityScore(a.p)); });
+    return { list: res, label: orig };
+  }catch(e){ return null; }
+}
+</script>
 </body>
 </html>
 
