@@ -12381,7 +12381,7 @@ function renderCheckout(){
   document.getElementById("checkoutTotalBox").innerHTML = `
     <div class="checkout-total-row"><span>${T("delivery")}</span><span>${deliveryText}</span></div>
     ${cardFee ? `<div class="checkout-total-row"><span>${T("visaFee")}</span><span>${cardFee} EGP • ${approxText(cardFee)}</span></div>` : ``}
-    <div class="checkout-total-row final"><span>${T("total")}</span><span>${finalTotal} EGP<br><small>${approxText(finalTotal)}</small></span></div>
+    <div class="checkout-total-row final"><span>${T("total")}</span><span>${finalTotal} EGP <small>${approxText(finalTotal)}</small></span></div>
     ${displayCurrency === "CZK" ? `<div class="payment-note" style="display:block;margin-top:8px">${T("czkText")}</div>` : ``}
   `;
 
@@ -15938,6 +15938,30 @@ function scFeeLabel(h){
   }
 })();
 </script>
+
+<style id="sc-co-onepage-v1">
+/* checkout fits on ONE screen on every phone (no scrolling): tighter spacing, same fields */
+#checkoutOverlay .checkout-sheet{overflow-y:auto}
+#checkoutOverlay .checkout-head{padding:0 2px 4px!important;margin-bottom:2px!important}
+#checkoutOverlay .checkout-head h2{font-size:20px!important}
+#checkoutOverlay .close-checkout{width:32px!important;height:32px!important}
+#checkoutOverlay .checkout-section{padding:4px 2px!important}
+#checkoutOverlay .checkout-section > label{margin-bottom:3px!important;font-size:12.5px!important}
+#checkoutOverlay .checkout-input{height:40px!important;min-height:40px!important}
+#checkoutOverlay .phone-row, #checkoutOverlay .sc-tp-wrap, #checkoutOverlay .sc-tp-hit{height:40px!important;min-height:40px!important}
+#checkoutOverlay .checkout-date-time-grid{padding:0!important}
+#checkoutOverlay .payment-options{min-height:0!important}
+#checkoutOverlay .payment-option{height:38px!important;min-height:38px!important;margin-bottom:0!important}
+#checkoutOverlay .payment-option input{height:36px!important}
+#checkoutOverlay .payment-note{margin-top:3px!important}
+#checkoutOverlay .sc-co-foot{margin-top:4px!important;padding:6px 14px 8px!important}
+#checkoutOverlay .checkout-total-box{padding:6px 10px!important;margin:0 0 6px!important}
+#checkoutOverlay .checkout-total-row{margin-bottom:2px!important}
+#checkoutOverlay .checkout-total-row.final{margin-top:4px!important;padding-top:5px!important;align-items:baseline}
+#checkoutOverlay .checkout-total-row.final small{font-size:12px;font-weight:700;opacity:.75}
+#checkoutOverlay .final-checkout-btn{height:46px!important;min-height:46px!important;margin-top:4px!important}
+#checkoutOverlay .checkout-help{display:none!important}
+</style>
 </body>
 </html>
 
