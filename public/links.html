@@ -233,5 +233,32 @@ a.btn{min-height:clamp(50px,9.4dvh,84px)}
   if(h){ var u=new URL(h.href); u.pathname='/101'; u.searchParams.delete('lang'); h.href=u.toString(); h.setAttribute('aria-label','Заказать онлайн – доставка в ваш отель'); }
 }catch(e){}})();
 </script>
+<script>
+/* Czech version (27/11/2026): ?lang=cs (Google Ads Czech/Slovak ad group), or a Czech/Slovak phone when no ?lang is given.
+   Order Online opens the shop in Czech, keeping any ad tracking params (no promoter code: Google orders stay Google's). */
+(function(){try{
+  var q=new URLSearchParams(location.search), l=(q.get('lang')||'').toLowerCase().slice(0,2);
+  if(!l){ var n=(navigator.languages&&navigator.languages[0])||navigator.language||''; n=n.toLowerCase().slice(0,2); if(n==='cs'||n==='sk') l='cs'; }
+  if(l==='sk') l='cs';
+  if(l!=='cs') return;
+  document.documentElement.lang='cs';
+  document.title='Lékárna Self Care Hurghada – odkazy';
+  var T=function(sel,txt){ var e=document.querySelector(sel); if(e) e.textContent=txt; };
+  T('.hdr h1','Lékárna Self Care');
+  T('.hdr p','Hurghada · doručení do hotelu');
+  T('.hero-tx strong','Objednat online');
+  T('.hero-tx span','Doručíme až do vašeho hotelu v Hurghadě');
+  var b=document.querySelector('.badge-live');
+  if(b){ b.lastChild.textContent=(b.lastChild.textContent.indexOf('Opens')>-1)?'Otevíráme ve 12:00':'Otevřeno'; }
+  var chips=document.querySelectorAll('.hero-chips i'), ct=['⏱ Objednávka za 1 minutu','💵 Platba při převzetí','🏨 Doručení do hotelu'];
+  for(var i=0;i<chips.length&&i<ct.length;i++) chips[i].textContent=ct[i];
+  var labels=document.querySelectorAll('.label'); if(labels[0]) labels[0].textContent='Naše lékárny'; if(labels[1]) labels[1].textContent='Kontakt';
+  var tx=document.querySelectorAll('a.btn .tx'), bt=[['Hlavní lékárna','Lékárna Dr. Thomas'],['Druhá pobočka','Lékárna Dr. Awny'],['Napište nám na WhatsApp','+20 150 140 1776'],['Jsme na Facebooku','Novinky a akce']];
+  for(var j=0;j<tx.length&&j<bt.length;j++){ tx[j].querySelector('strong').textContent=bt[j][0]; tx[j].querySelector('span').textContent=bt[j][1]; }
+  var fp=document.querySelector('.foot p'); if(fp) fp.innerHTML='<b>Lékárna Self Care</b> · Hurghada, Egypt';
+  var h=document.querySelector('a.hero');
+  if(h){ var u=new URL(h.href); u.searchParams.set('lang','cs'); h.href=u.toString(); h.setAttribute('aria-label','Objednat online – doručení do hotelu'); }
+}catch(e){}})();
+</script>
 </body>
 </html>
