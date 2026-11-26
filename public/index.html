@@ -6953,6 +6953,7 @@ header .cart-badge{background:#1f2f52!important;color:#fff!important;border-colo
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">✕</button>
+    <button class="modal-share" id="mShare" type="button" onclick="scShareProduct()" aria-label="Share"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg><span id="mShareTxt">Share</span></button>
     <div class="modal-img"><img id="mImg" src="" alt="" onerror="imageFallback(this)"></div>
     <div class="modal-body">
       <div class="modal-name" id="mName"></div>
@@ -8919,6 +8920,7 @@ async function loadDynamicProducts(){
     });
     products.forEach((p, idx) => { p._idx = idx; });
     dynOutOfStockNames = __dynOOS; try{ scCartResolvePending(true); }catch(e){}
+    window.__scDynLoaded = true; try{ if(window.scShareItemReady) window.scShareItemReady(); }catch(e){}
     /* v-instant-img: cache admin overlays so returning visitors see new images/prices/locks INSTANTLY on next load */
     try{
       var __ov = (rows||[]).filter(function(p){return p.is_active!==false;}).map(function(p){
@@ -16009,6 +16011,83 @@ function scTypoSearch(q){
   }catch(e){ return null; }
 }
 </script>
+
+<script id="sc-share-v1">
+/* 27/11/2026 (T): every product has its own link — selfcare-en.com/?item=<pharmacy_code> opens the site with that product's card open */
+(function(){
+  var TX = { en:"Share", cs:"Sdílet", sk:"Zdieľať", pl:"Udostępnij", ru:"Поделиться", ua:"Поділитися", de:"Teilen", ar:"مشاركة" };
+  var DONE = { en:"Link copied", cs:"Odkaz zkopírován", sk:"Odkaz skopírovaný", pl:"Link skopiowany", ru:"Ссылка скопирована", ua:"Посилання скопійовано", de:"Link kopiert", ar:"تم نسخ اللينك" };
+  function L(){ try{ return displayLanguage || "en"; }catch(e){ return "en"; } }
+  function codeOf(p){ return p ? String(p.pharmacy_code || p.code || "").trim() : ""; }
+  function linkFor(p){
+    var c = codeOf(p); if(!c) return "https://selfcare-en.com/";
+    var l = L(); var u = "https://selfcare-en.com/?item=" + encodeURIComponent(c);
+    if(l && l !== "en" && l !== "ar") u += "&lang=" + (l === "ua" ? "uk" : l);
+    return u;
+  }
+  function toast(msg){
+    var t = document.getElementById("scShareToast");
+    if(!t){ t = document.createElement("div"); t.id = "scShareToast"; document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove("on"); }, 1800);
+  }
+  function copy(txt){
+    function old(){ var a = document.createElement("textarea"); a.value = txt; a.setAttribute("readonly", ""); a.style.cssText = "position:fixed;opacity:0;top:0"; document.body.appendChild(a); a.select(); try{ document.execCommand("copy"); }catch(e){} a.remove(); }
+    try{ if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(txt).catch(old); }catch(e){}
+    old(); return Promise.resolve();
+  }
+  window.scShareProduct = function(){
+    try{
+      var p = products[currentModalIdx]; if(!p) return;
+      var url = linkFor(p), title = (typeof pName === "function" ? pName(p) : p.name) + " – Self Care Pharmacy";
+      try{ if(window.scTrack) window.scTrack("share", codeOf(p) + "|" + L()); }catch(e){}
+      if(navigator.share){ navigator.share({ title: title, url: url }).catch(function(){}); return; }
+      copy(url).then(function(){ toast(DONE[L()] || DONE.en); });
+    }catch(e){}
+  };
+  /* label follows the site language */
+  function label(){ var el = document.getElementById("mShareTxt"); if(el) el.textContent = TX[L()] || TX.en; var b = document.getElementById("mShare"); if(b) b.setAttribute("aria-label", TX[L()] || TX.en); }
+  var _om = window.openModal;
+  if(typeof _om === "function"){ window.openModal = function(i){ var r = _om.apply(this, arguments); label(); return r; }; try{ openModal = window.openModal; }catch(e){} }
+
+  /* opening a shared link: ?item=<code> */
+  var want = ""; try{ want = (new URLSearchParams(location.search).get("item") || "").trim(); }catch(e){}
+  if(!want) return;
+  var opened = -1, tries = 0;
+  function find(){
+    var w = want.toLowerCase();
+    for(var i = 0; i < products.length; i++){ var q = products[i]; if(q && (codeOf(q).toLowerCase() === w || String(q.code || "").toLowerCase() === w)) return i; }
+    return -1;
+  }
+  function dropParam(){ try{ var u = new URL(location.href); u.searchParams.delete("item"); history.replaceState(history.state, "", u.pathname + (u.search || "") + u.hash); }catch(e){} }
+  function tryOpen(final){
+    if(typeof products === "undefined" || !products || !products.length) return false;
+    var i = find(); if(i < 0) return false;
+    if(opened === i && !final) return true;
+    var already = opened === i;
+    opened = i;
+    try{
+      var ov = document.getElementById("modalOverlay");
+      if(!already || (ov && ov.classList.contains("open"))) openModal(i);
+    }catch(e){}
+    if(!already){ try{ if(window.scTrack) window.scTrack("item_open", want, true); }catch(e){} dropParam(); }
+    return true;
+  }
+  window.scShareItemReady = function(){ tryOpen(true); window.scShareItemReady = null; };
+  (function poll(){
+    tries++;
+    var ok = tryOpen(false);
+    if(window.__scDynLoaded){ if(!ok){ tryOpen(true); } return; }
+    if(tries < 60) setTimeout(poll, ok ? 600 : 250);
+  })();
+})();
+</script>
+<style id="sc-share-css">
+.modal-share{position:absolute;top:14px;left:14px;z-index:10;display:flex;align-items:center;gap:6px;height:34px;padding:0 13px 0 11px;border:none;border-radius:17px;background:rgba(255,255,255,.94);color:#1B2436;font:800 13px/1 inherit;font-family:inherit;box-shadow:0 2px 8px #0002;cursor:pointer}
+.modal-share:active{transform:scale(.96)}
+.modal-share:focus-visible{outline:2px solid #E07B2E;outline-offset:2px}
+#scShareToast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);background:#1B2436;color:#fff;font-weight:800;font-size:14px;padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.2s;z-index:99999}
+#scShareToast.on{opacity:1;transform:translate(-50%,0)}
+</style>
 </body>
 </html>
 

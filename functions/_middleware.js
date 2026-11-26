@@ -90,12 +90,33 @@ async function scMain(context){
     let q = (url.searchParams.get("lang") || "").toLowerCase(); if(q === "cz") q = "cs"; if(q === "uk") q = "ua";
     const hostLang = /(^|\.)selfcare-cz\.com$/.test(url.hostname) ? "cs" : "en";
     const lang = SC_ORDER.indexOf(q) >= 0 ? q : hostLang;
-    const m = SC_SEO[lang];
+    let m = SC_SEO[lang];
     const esc = v => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+    /* shared product link ?item=<pharmacy_code> → link previews (Facebook, WhatsApp…) show that product's name, use and photo */
+    let itemTags = "";
+    const item = (url.searchParams.get("item") || "").trim();
+    if(item && item.length <= 40){
+      try{
+        const r = await fetch(SC_SB + "/rest/v1/products?select=name_en,name_cz,use_en,use_cz,image_url&is_active=eq.true&pharmacy_code=eq." + encodeURIComponent(item) + "&limit=1",
+          { headers: { apikey: SC_SB_KEY, Authorization: "Bearer " + SC_SB_KEY }, cf: { cacheTtl: 300 } });
+        const row = r.ok ? (await r.json())[0] : null;
+        if(row){
+          const cz = lang === "cs" || lang === "sk";
+          const name = (cz && row.name_cz) || row.name_en || row.name_cz || "";
+          const use = (cz && row.use_cz) || row.use_en || "";
+          const tail = { en: "Delivered to your hotel in Hurghada", cs: "Doručení do hotelu v Hurghadě", sk: "Doručenie do hotela v Hurghade", pl: "Dostawa do hotelu w Hurghadzie", ru: "Доставка в отель в Хургаде", ua: "Доставка в готель у Хургаді", de: "Lieferung ins Hotel in Hurghada" }[lang] || "Delivered to your hotel in Hurghada";
+          let img = String(row.image_url || "");
+          if(/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(img)) img = img.replace(/\/image\/upload\/(f_auto,q_auto\/)?/, "/image/upload/f_jpg,q_auto,w_1000,h_1000,c_pad,b_white/");
+          m = { html: m.html, title: name + " – Self Care Pharmacy Hurghada", desc: (use ? use.replace(/\.$/, "") + ". " : "") + tail + "." };
+          itemTags = '<meta property="og:type" content="product"><meta property="og:url" content="' + esc(url.href) + '">' +
+            (img ? '<meta property="og:image" content="' + esc(img) + '"><meta property="og:image:width" content="1000"><meta property="og:image:height" content="1000"><meta name="twitter:card" content="summary_large_image">' : "");
+        }
+      }catch(e){}
+    }
     const links = '<link rel="canonical" href="' + esc(scLangUrl(lang)) + '">' +
       SC_ORDER.map(l => '<link rel="alternate" hreflang="' + SC_SEO[l].html + '" href="' + esc(scLangUrl(l)) + '">').join("") +
       '<link rel="alternate" hreflang="x-default" href="' + SC_HOSTS.en + '">' +
-      '<meta property="og:title" content="' + esc(m.title) + '"><meta property="og:description" content="' + esc(m.desc) + '"><meta property="og:locale" content="' + m.html + '">';
+      '<meta property="og:title" content="' + esc(m.title) + '"><meta property="og:description" content="' + esc(m.desc) + '"><meta property="og:locale" content="' + m.html + '">' + itemTags;
     return new HTMLRewriter()
       .on("html", { element(e){ e.setAttribute("lang", m.html); } })
       .on("head > title", { element(e){ e.setInnerContent(m.title); } })
