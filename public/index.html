@@ -6884,6 +6884,16 @@ header .cart-badge{background:#1f2f52!important;color:#fff!important;border-colo
 <script type="text/javascript">
 (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","zajpm4bnxl");
 </script>
+<style id="sc-co-card-v2">
+/* checkout: the total card is always shown (delivery + total), no extra toggle line */
+#checkoutOverlay .checkout-total-box{display:block!important}
+#checkoutOverlay #scCoSum{display:none!important}
+/* basket: minimum order progress */
+.sc-min-bar{margin:0 0 10px;padding:10px 12px;border-radius:12px;background:#FFF4E5;color:#8A4B00;font-size:13px;font-weight:700;line-height:1.35}
+.sc-min-track{height:6px;border-radius:6px;background:#F4DDBB;margin-top:7px;overflow:hidden}
+.sc-min-fill{height:100%;border-radius:6px;background:#F28C28;transition:width .25s}
+.cart-checkout-btn.sc-min-lock{opacity:.55}
+</style>
 </head>
 <body>
 
@@ -12369,10 +12379,7 @@ function renderCheckout(){
   const finalTotal = (Number(total) || 0) + deliveryFee + (Number(cardFee) || 0);
 
   document.getElementById("checkoutTotalBox").innerHTML = `
-    <div class="checkout-total-row"><span>${T("products")}</span><span>${total} EGP • ${approxText(total)}</span></div>
-    <div class="checkout-total-row"><span>${T("itemCount")}</span><span>${itemCount} ${T("pcs")}</span></div>
     <div class="checkout-total-row"><span>${T("delivery")}</span><span>${deliveryText}</span></div>
-    <div class="checkout-total-row"><span>${T("payment")}</span><span>${paymentMethod === "visa" ? T("cardDelivery") : T("cash")}</span></div>
     ${cardFee ? `<div class="checkout-total-row"><span>${T("visaFee")}</span><span>${cardFee} EGP • ${approxText(cardFee)}</span></div>` : ``}
     <div class="checkout-total-row final"><span>${T("total")}</span><span>${finalTotal} EGP<br><small>${approxText(finalTotal)}</small></span></div>
     ${displayCurrency === "CZK" ? `<div class="payment-note" style="display:block;margin-top:8px">${T("czkText")}</div>` : ``}
@@ -12906,6 +12913,7 @@ window.SELFCARE_EN_CLEAN_REVIEWED_VERSION="v22";
   function needAmount(){
     return Math.max(0, MIN_PRODUCTS_TOTAL - Math.round(productsTotal()));
   }
+  window.scMinNeed = needAmount;
 
   function currentLang(){
     return (typeof displayLanguage === "string" && displayLanguage) ? displayLanguage : "en";
@@ -15887,6 +15895,47 @@ function scFeeLabel(h){
   }
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState === "hidden") exit(); });
   addEventListener("pagehide", exit);
+})();
+</script>
+
+<script id="sc-basket-min-v1">
+/* minimum order (500 EGP products) shown in the basket, before the customer fills the checkout form */
+(function(){
+  var TX = {
+    en:function(a,x){ return "Add " + a + " EGP" + x + " more to order · minimum 500 EGP"; },
+    cs:function(a,x){ return "Přidejte ještě " + a + " EGP" + x + " · minimální objednávka 500 EGP"; },
+    sk:function(a,x){ return "Pridajte ešte " + a + " EGP" + x + " · minimálna objednávka 500 EGP"; },
+    pl:function(a,x){ return "Dodaj jeszcze " + a + " EGP" + x + " · minimalne zamówienie 500 EGP"; },
+    ru:function(a,x){ return "Добавьте ещё " + a + " EGP" + x + " · минимальный заказ 500 EGP"; },
+    ua:function(a,x){ return "Додайте ще " + a + " EGP" + x + " · мінімальне замовлення 500 EGP"; },
+    de:function(a,x){ return "Noch " + a + " EGP" + x + " hinzufügen · Mindestbestellung 500 EGP"; }
+  };
+  function need(){ try{ return typeof window.scMinNeed === "function" ? window.scMinNeed() : 0; }catch(e){ return 0; } }
+  function draw(){
+    try{
+      var sum = document.getElementById("cartSummary"), btn = document.getElementById("cartCheckoutBtn");
+      if(!sum) return;
+      var bar = document.getElementById("scMinBar"), n = need();
+      if(n <= 0){ if(bar) bar.remove(); if(btn) btn.classList.remove("sc-min-lock"); return; }
+      if(!bar){ bar = document.createElement("div"); bar.id = "scMinBar"; bar.className = "sc-min-bar"; sum.parentNode.insertBefore(bar, sum); }
+      var l = (typeof displayLanguage === "string" && TX[displayLanguage]) ? displayLanguage : "en";
+      var x = ""; try{ if(typeof approxText === "function"){ var t = approxText(n); if(t && !/EGP/.test(t)) x = " (" + t + ")"; } }catch(e){}
+      var pct = Math.max(4, Math.min(100, Math.round((500 - n) / 5)));
+      bar.innerHTML = TX[l](n, x) + '<div class="sc-min-track"><div class="sc-min-fill" style="width:' + pct + '%"></div></div>';
+      if(btn) btn.classList.add("sc-min-lock");
+    }catch(e){}
+  }
+  if(typeof renderCart === "function"){
+    var _rc = renderCart;
+    window.renderCart = renderCart = function(){ var r = _rc.apply(this, arguments); draw(); return r; };
+  }
+  if(typeof openCheckout === "function"){
+    var _oc = openCheckout;
+    window.openCheckout = openCheckout = function(){
+      if(need() > 0 && typeof window.openMinOrderPopup === "function"){ window.openMinOrderPopup(); return; }
+      return _oc.apply(this, arguments);
+    };
+  }
 })();
 </script>
 </body>
