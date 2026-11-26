@@ -14535,7 +14535,7 @@ async function submit(win) {
   const p = chosen();
   const payload = { items: [{ product_id: p.id, qty: 1 }], start_date: S.start, days: S.days, zone_id: S.zone,
     currency: S.cur, lang: S.lang, name: '', phone: mobPhone(), hotel: $('#hotel').value.trim(),
-    room: '', slot: $('#dtime').value, notes: '' };
+    room: '', slot: $('#dtime').value, notes: '', promoter_code: (function(){try{if(typeof scRefGet==='function')return scRefGet();var r=JSON.parse(localStorage.getItem('sc_ref')||'null');return r&&r.c&&Date.now()-r.t<2592e6?r.c:null}catch(e){return null}})() };
   const shown = draft();
   try {
     const res = await api.createBooking(payload);
