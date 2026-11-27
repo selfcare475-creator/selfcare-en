@@ -186,11 +186,11 @@ a.btn{min-height:clamp(50px,9.4dvh,84px)}
   </section>
 </main>
 <script>
-/* "Open now" only while the pharmacy is open (12 PM – 12 AM, Cairo time); otherwise say when it opens */
+/* "Open now" only while the pharmacy is open (10 AM – 2 AM, Cairo time, as on Google Maps); otherwise say when it opens */
 (function(){try{
   var h=+new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Cairo',hour:'2-digit',hour12:false}).format(new Date())%24;
   var b=document.querySelector('.badge-live'); if(!b) return;
-  if(h<12){ b.lastChild.textContent='Opens 12 PM'; b.firstChild.style.background='#f0a020'; }
+  if(h>=2&&h<10){ b.lastChild.textContent='Opens 10 AM'; b.firstChild.style.background='#f0a020'; }
 }catch(e){}})();
 /* carry ad tracking (utm_*, gclid) from this page into the full shop, so orders from ads are still attributed.
    Never carries shop=care: Order Online always opens the full shop. */
@@ -221,7 +221,7 @@ a.btn{min-height:clamp(50px,9.4dvh,84px)}
   T('.hero-tx strong','Заказать онлайн');
   T('.hero-tx span','Доставка в ваш отель в Хургаде');
   var b=document.querySelector('.badge-live');
-  if(b){ b.lastChild.textContent=(b.lastChild.textContent.indexOf('Opens')>-1)?'Откроется в 12:00':'Открыто'; }
+  if(b){ b.lastChild.textContent=(b.lastChild.textContent.indexOf('Opens')>-1)?'Откроется в 10:00':'Открыто'; }
   var chips=document.querySelectorAll('.hero-chips i'), ct=['⏱ Заказ за 1 минуту','💵 Оплата при получении','🏨 Доставка в отель'];
   for(var i=0;i<chips.length&&i<ct.length;i++) chips[i].textContent=ct[i];
   var labels=document.querySelectorAll('.label'); if(labels[0]) labels[0].textContent='Наши аптеки'; if(labels[1]) labels[1].textContent='Связаться с нами';
@@ -230,34 +230,36 @@ a.btn{min-height:clamp(50px,9.4dvh,84px)}
   var fb=document.querySelector('a.btn .ic.fb'); if(fb) fb.closest('a').href='https://www.facebook.com/profile.php?id=61596281158021';
   var fp=document.querySelector('.foot p'); if(fp) fp.innerHTML='<b>Аптека Self Care</b> · Хургада, Египет';
   var h=document.querySelector('a.hero');
-  if(h){ var u=new URL(h.href); u.pathname='/101'; u.searchParams.delete('lang'); h.href=u.toString(); h.setAttribute('aria-label','Заказать онлайн – доставка в ваш отель'); }
+  var fromGoogle=q.get('gclid')||/google/i.test(q.get('utm_source')||'');
+  if(h){ var u=new URL(h.href); if(fromGoogle){ u.searchParams.set('lang','ru'); } else { u.pathname='/101'; u.searchParams.delete('lang'); } h.href=u.toString(); h.setAttribute('aria-label','Заказать онлайн – доставка в ваш отель'); }
 }catch(e){}})();
 </script>
 <script>
-/* Czech version (27/11/2026): ?lang=cs (Google Ads Czech/Slovak ad group), or a Czech/Slovak phone when no ?lang is given.
-   Order Online opens the shop in Czech, keeping any ad tracking params (no promoter code: Google orders stay Google's). */
+/* Czech / German / Polish / Ukrainian versions (27/11/2026) for the Google Ads language ad groups:
+   ?lang=cs|sk|de|pl|uk, or (without ?lang) a Czech/Slovak/German/Polish phone. Russian is handled above.
+   Order Online opens the shop in that language, keeping the ad tracking params (no promoter code). */
 (function(){try{
   var q=new URLSearchParams(location.search), l=(q.get('lang')||'').toLowerCase().slice(0,2);
-  if(!l){ var n=(navigator.languages&&navigator.languages[0])||navigator.language||''; n=n.toLowerCase().slice(0,2); if(n==='cs'||n==='sk') l='cs'; }
-  if(l==='sk') l='cs';
-  if(l!=='cs') return;
-  document.documentElement.lang='cs';
-  document.title='Lékárna Self Care Hurghada – odkazy';
+  if(!l){ var n=(navigator.languages&&navigator.languages[0])||navigator.language||''; n=n.toLowerCase().slice(0,2); if(n==='cs'||n==='sk'||n==='de'||n==='pl') l=n; }
+  if(l==='sk') l='cs'; if(l==='ua') l='uk';
+  var D={
+    cs:{t:'Lékárna Self Care Hurghada – odkazy',h1:'Lékárna Self Care',sub:'Hurghada · doručení do hotelu',o:'Objednat online',os:'Doručíme až do vašeho hotelu v Hurghadě',open:'Otevřeno',opens:'Otevíráme ve 10:00',chips:['⏱ Objednávka za 1 minutu','💵 Platba při převzetí','🏨 Doručení do hotelu'],l1:'Naše lékárny',l2:'Kontakt',bt:[['Hlavní lékárna','Lékárna Dr. Thomas'],['Druhá pobočka','Lékárna Dr. Awny'],['Napište nám na WhatsApp','+20 150 140 1776'],['Jsme na Facebooku','Novinky a akce']],ft:'Lékárna Self Care',ctry:'Egypt',aria:'Objednat online – doručení do hotelu'},
+    de:{t:'Self Care Apotheke Hurghada – Links',h1:'Self Care Apotheke',sub:'Hurghada · Lieferung ins Hotel',o:'Online bestellen',os:'Lieferung in Ihr Hotel in Hurghada',open:'Jetzt geöffnet',opens:'Öffnet um 10:00',chips:['⏱ Bestellung in 1 Minute','💵 Zahlung bei Lieferung','🏨 Lieferung ins Hotel'],l1:'Unsere Apotheken',l2:'Kontakt',bt:[['Hauptapotheke','Dr. Thomas Apotheke'],['Zweite Filiale','Dr. Awny Apotheke'],['Schreiben Sie uns auf WhatsApp','+20 150 140 1776'],['Wir auf Facebook','Neuigkeiten und Angebote']],ft:'Self Care Apotheke',ctry:'Ägypten',aria:'Online bestellen – Lieferung ins Hotel'},
+    pl:{t:'Apteka Self Care Hurghada – linki',h1:'Apteka Self Care',sub:'Hurghada · dostawa do hotelu',o:'Zamów online',os:'Dostawa do Twojego hotelu w Hurghadzie',open:'Otwarte',opens:'Otwieramy o 10:00',chips:['⏱ Zamówienie w 1 minutę','💵 Płatność przy odbiorze','🏨 Dostawa do hotelu'],l1:'Nasze apteki',l2:'Kontakt',bt:[['Główna apteka','Apteka Dr. Thomas'],['Druga apteka','Apteka Dr. Awny'],['Napisz do nas na WhatsApp','+20 150 140 1776'],['Jesteśmy na Facebooku','Nowości i promocje']],ft:'Apteka Self Care',ctry:'Egipt',aria:'Zamów online – dostawa do hotelu'},
+    uk:{t:'Аптека Self Care Хургада – посилання',h1:'Аптека Self Care',sub:'Хургада · доставка в готель',o:'Замовити онлайн',os:'Доставка у ваш готель у Хургаді',open:'Відчинено',opens:'Відкриємось о 10:00',chips:['⏱ Замовлення за 1 хвилину','💵 Оплата при отриманні','🏨 Доставка в готель'],l1:'Наші аптеки',l2:'Звʼязатися з нами',bt:[['Головна аптека','Аптека Dr. Thomas'],['Друга аптека','Аптека Dr. Awny'],['Напишіть нам у WhatsApp','+20 150 140 1776'],['Ми у Facebook','Новини та акції']],ft:'Аптека Self Care',ctry:'Єгипет',aria:'Замовити онлайн – доставка в готель'}
+  };
+  var X=D[l]; if(!X) return;
+  document.documentElement.lang=l; document.title=X.t;
   var T=function(sel,txt){ var e=document.querySelector(sel); if(e) e.textContent=txt; };
-  T('.hdr h1','Lékárna Self Care');
-  T('.hdr p','Hurghada · doručení do hotelu');
-  T('.hero-tx strong','Objednat online');
-  T('.hero-tx span','Doručíme až do vašeho hotelu v Hurghadě');
+  T('.hdr h1',X.h1); T('.hdr p',X.sub); T('.hero-tx strong',X.o); T('.hero-tx span',X.os);
   var b=document.querySelector('.badge-live');
-  if(b){ b.lastChild.textContent=(b.lastChild.textContent.indexOf('Opens')>-1)?'Otevíráme ve 12:00':'Otevřeno'; }
-  var chips=document.querySelectorAll('.hero-chips i'), ct=['⏱ Objednávka za 1 minutu','💵 Platba při převzetí','🏨 Doručení do hotelu'];
-  for(var i=0;i<chips.length&&i<ct.length;i++) chips[i].textContent=ct[i];
-  var labels=document.querySelectorAll('.label'); if(labels[0]) labels[0].textContent='Naše lékárny'; if(labels[1]) labels[1].textContent='Kontakt';
-  var tx=document.querySelectorAll('a.btn .tx'), bt=[['Hlavní lékárna','Lékárna Dr. Thomas'],['Druhá pobočka','Lékárna Dr. Awny'],['Napište nám na WhatsApp','+20 150 140 1776'],['Jsme na Facebooku','Novinky a akce']];
-  for(var j=0;j<tx.length&&j<bt.length;j++){ tx[j].querySelector('strong').textContent=bt[j][0]; tx[j].querySelector('span').textContent=bt[j][1]; }
-  var fp=document.querySelector('.foot p'); if(fp) fp.innerHTML='<b>Lékárna Self Care</b> · Hurghada, Egypt';
+  if(b){ var bt=b.lastChild.textContent; b.lastChild.textContent=(/Opens|Откроется/.test(bt))?X.opens:X.open; }
+  var chips=document.querySelectorAll('.hero-chips i'); for(var i=0;i<chips.length&&i<X.chips.length;i++) chips[i].textContent=X.chips[i];
+  var labels=document.querySelectorAll('.label'); if(labels[0]) labels[0].textContent=X.l1; if(labels[1]) labels[1].textContent=X.l2;
+  var tx=document.querySelectorAll('a.btn .tx'); for(var j=0;j<tx.length&&j<X.bt.length;j++){ tx[j].querySelector('strong').textContent=X.bt[j][0]; tx[j].querySelector('span').textContent=X.bt[j][1]; }
+  var fp=document.querySelector('.foot p'); if(fp) fp.innerHTML='<b>'+X.ft+'</b> · Hurghada, '+X.ctry;
   var h=document.querySelector('a.hero');
-  if(h){ var u=new URL(h.href); u.searchParams.set('lang','cs'); h.href=u.toString(); h.setAttribute('aria-label','Objednat online – doručení do hotelu'); }
+  if(h){ var u=new URL(h.href); u.pathname='/'; u.searchParams.set('lang',l); h.href=u.toString(); h.setAttribute('aria-label',X.aria); }
 }catch(e){}})();
 </script>
 </body>
